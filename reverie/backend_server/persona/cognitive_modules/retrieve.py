@@ -10,8 +10,7 @@ import sys
 sys.path.append("../../")
 
 from global_methods import *
-from persona.prompt_template.gpt_structure import *
-
+from persona.prompt_template.gpt_structure import get_embedding
 from numpy import dot
 from numpy.linalg import norm
 

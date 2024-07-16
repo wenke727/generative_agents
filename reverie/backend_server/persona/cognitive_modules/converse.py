@@ -18,7 +18,20 @@ from persona.memory_structures.spatial_memory import *
 from persona.memory_structures.associative_memory import *
 from persona.memory_structures.scratch import *
 from persona.cognitive_modules.retrieve import *
-from persona.prompt_template.run_gpt_prompt import *
+from persona.prompt_template.gpt_structure import get_embedding
+from persona.prompt_template.run_gpt_prompt import (
+    run_gpt_generate_iterative_chat_utt,
+    run_gpt_generate_safety_score,
+    run_gpt_prompt_agent_chat,
+    run_gpt_prompt_agent_chat_summarize_ideas,
+    run_gpt_prompt_agent_chat_summarize_relationship,
+    run_gpt_prompt_chat_poignancy,
+    run_gpt_prompt_event_poignancy,
+    run_gpt_prompt_event_triple,
+    run_gpt_prompt_generate_next_convo_line,
+    run_gpt_prompt_generate_whisper_inner_thought,
+    run_gpt_prompt_summarize_ideas,
+)
 
 
 def generate_agent_chat_summarize_ideas(
