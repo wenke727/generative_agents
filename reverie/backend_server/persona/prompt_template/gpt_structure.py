@@ -221,22 +221,22 @@ def GPT_request(prompt, gpt_parameter):
       a str of GPT-3's response.
     """
     temp_sleep()
-    try:
-        response = openai.Completion.create(
-            model=gpt_parameter["engine"],
-            prompt=prompt,
-            temperature=gpt_parameter["temperature"],
-            max_tokens=gpt_parameter["max_tokens"],
-            top_p=gpt_parameter["top_p"],
-            frequency_penalty=gpt_parameter["frequency_penalty"],
-            presence_penalty=gpt_parameter["presence_penalty"],
-            stream=gpt_parameter["stream"],
-            stop=gpt_parameter["stop"],
-        )
-        return response.choices[0].text
-    except:
-        print("TOKEN LIMIT EXCEEDED")
-        return "TOKEN LIMIT EXCEEDED"
+    # try:
+    response = openai.ChatCompletion().create(
+        model=gpt_parameter["engine"],
+        messages=[{"role": "user", "content": prompt}],
+        temperature=gpt_parameter["temperature"],
+        max_tokens=gpt_parameter["max_tokens"],
+        top_p=gpt_parameter["top_p"],
+        frequency_penalty=gpt_parameter["frequency_penalty"],
+        presence_penalty=gpt_parameter["presence_penalty"],
+        stream=gpt_parameter["stream"],
+        stop=gpt_parameter["stop"],
+    )
+    return response.choices[0].message.content
+    # except:
+    #     print("TOKEN LIMIT EXCEEDED")
+    #     return "TOKEN LIMIT EXCEEDED"
 
 
 def generate_prompt(curr_input, prompt_lib_file):
@@ -299,7 +299,7 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 if __name__ == "__main__":
     gpt_parameter = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -311,6 +311,7 @@ if __name__ == "__main__":
     curr_input = ["driving to a friend's house"]
     prompt_lib_file = "./prompt_template/test_prompt_July5.txt"
     prompt_lib_file = "./v1/test_prompt_July5.txt"
+    prompt_lib_file = "/Users/wenke/Library/CloudStorage/OneDrive-Personal/3_Codes/generative_agents/reverie/backend_server/persona/prompt_template/v1/test_prompt_July5.txt"
     prompt = generate_prompt(curr_input, prompt_lib_file)
 
     def __func_validate(gpt_response, prompt):
@@ -320,7 +321,7 @@ if __name__ == "__main__":
             return False
         return True
 
-    def __func_clean_up(gpt_response):
+    def __func_clean_up(gpt_response, prompt):
         cleaned_response = gpt_response.strip()
         return cleaned_response
 

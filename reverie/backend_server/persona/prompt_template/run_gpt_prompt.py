@@ -157,7 +157,7 @@ def run_gpt_prompt_daily_plan(persona, wake_up_hour, test_input=None, verbose=Fa
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 500,
         "temperature": 1,
         "top_p": 1,
@@ -300,7 +300,7 @@ def run_gpt_prompt_generate_hourly_schedule(
     # # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0.5,
         "top_p": 1,
@@ -465,7 +465,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 1000,
         "temperature": 0,
         "top_p": 1,
@@ -735,7 +735,7 @@ def run_gpt_prompt_action_arena(
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -796,7 +796,7 @@ def run_gpt_prompt_action_game_object(
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -911,7 +911,7 @@ def run_gpt_prompt_pronunciatio(action_description, persona, verbose=False):
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 15,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 15,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": ["\n"]}
     # prompt_template = "persona/prompt_template/v2/generate_pronunciatio_v1.txt"
@@ -986,7 +986,7 @@ def run_gpt_prompt_event_triple(action_description, persona, verbose=False):
     # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 30,
         "temperature": 0,
         "top_p": 1,
@@ -1087,7 +1087,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 30,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 30,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": ["\n"]}
     # prompt_template = "persona/prompt_template/v2/generate_obj_event_v1.txt"
@@ -1130,7 +1130,7 @@ def run_gpt_prompt_act_obj_event_triple(
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 30,
         "temperature": 0,
         "top_p": 1,
@@ -1301,7 +1301,7 @@ def run_gpt_prompt_new_decomp_schedule(
         return ret
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 1000,
         "temperature": 0,
         "top_p": 1,
@@ -1425,7 +1425,7 @@ def run_gpt_prompt_decide_to_talk(
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 20,
         "temperature": 0,
         "top_p": 1,
@@ -1551,7 +1551,7 @@ def run_gpt_prompt_decide_to_react(
         return fs
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 20,
         "temperature": 0,
         "top_p": 1,
@@ -1706,7 +1706,7 @@ def run_gpt_prompt_create_conversation(
         return convo
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 1000,
         "temperature": 0.7,
         "top_p": 1,
@@ -1802,7 +1802,7 @@ def run_gpt_prompt_summarize_conversation(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 50,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 50,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/summarize_conversation_v1.txt"
@@ -1857,7 +1857,7 @@ def run_gpt_prompt_extract_keywords(
         return []
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -1905,7 +1905,7 @@ def run_gpt_prompt_keyword_to_thoughts(
         return ""
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 40,
         "temperature": 0.7,
         "top_p": 1,
@@ -1967,7 +1967,7 @@ def run_gpt_prompt_convo_to_thoughts(
         return ""
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 40,
         "temperature": 0.7,
         "top_p": 1,
@@ -2066,7 +2066,7 @@ def run_gpt_prompt_event_poignancy(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 3,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 3,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/poignancy_event_v1.txt"
@@ -2155,7 +2155,7 @@ def run_gpt_prompt_thought_poignancy(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 3,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 3,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/poignancy_thought_v1.txt"
@@ -2244,7 +2244,7 @@ def run_gpt_prompt_chat_poignancy(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 3,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 3,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/poignancy_chat_v1.txt"
@@ -2330,7 +2330,7 @@ def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=Fal
     # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 150,
         "temperature": 0,
         "top_p": 1,
@@ -2386,7 +2386,7 @@ def run_gpt_prompt_insight_and_guidance(
         return ["I am hungry"] * n
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 150,
         "temperature": 0.5,
         "top_p": 1,
@@ -2489,7 +2489,7 @@ def run_gpt_prompt_agent_chat_summarize_ideas(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 150,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 150,
     #              "temperature": 0.5, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/summarize_chat_ideas_v1.txt"
@@ -2571,7 +2571,7 @@ def run_gpt_prompt_agent_chat_summarize_relationship(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 150,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 150,
     #              "temperature": 0.5, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/summarize_chat_relationship_v1.txt"
@@ -2732,7 +2732,7 @@ def run_gpt_prompt_agent_chat(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 2000,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 2000,
     #              "temperature": 0.7, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/agent_chat_v1.txt"
@@ -2822,7 +2822,7 @@ def run_gpt_prompt_summarize_ideas(
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
 
-    # gpt_param = {"engine": "text-davinci-003", "max_tokens": 150,
+    # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 150,
     #              "temperature": 0.5, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v2/summarize_ideas_v1.txt"
@@ -2904,7 +2904,7 @@ def run_gpt_prompt_generate_next_convo_line(
     # # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 250,
         "temperature": 1,
         "top_p": 1,
@@ -2953,7 +2953,7 @@ def run_gpt_prompt_generate_whisper_inner_thought(
         return "..."
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3005,7 +3005,7 @@ def run_gpt_prompt_planning_thought_on_convo(
         return "..."
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3099,7 +3099,7 @@ def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=Fals
     # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3161,7 +3161,7 @@ def run_gpt_generate_safety_score(persona, comment, test_input=None, verbose=Fal
     print(output)
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3321,7 +3321,7 @@ def run_gpt_generate_iterative_chat_utt(
     print(output)
 
     gpt_param = {
-        "engine": "text-davinci-003",
+        "engine": "gpt-3.5-turbo",
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
