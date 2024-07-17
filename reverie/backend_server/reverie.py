@@ -29,16 +29,14 @@ import os
 import shutil
 import traceback
 
-from selenium import webdriver
-
 from global_methods import *
 from utils import *
 from maze import *
 from persona.persona import *
 
-##############################################################################
-#                                  REVERIE                                   #
-##############################################################################
+from misc.logger_helper import configure_loguru_integration
+logger = configure_loguru_integration(
+    './', 'agents.log', mode='w', filter_packages=['httpcore', 'httpx', 'openai'])
 
 
 class ReverieServer:

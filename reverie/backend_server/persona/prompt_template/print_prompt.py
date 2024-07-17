@@ -13,6 +13,7 @@ import json
 import numpy
 import datetime
 import random
+from loguru import logger
 
 from global_methods import *
 from persona.prompt_template.gpt_structure import *
@@ -31,16 +32,22 @@ def print_run_prompts(
     prompt=None,
     output=None,
 ):
-    print(f"=== {prompt_template}")
-    print("~~~ persona    ---------------------------------------------------")
-    print(persona.name, "\n")
-    print("~~~ gpt_param ----------------------------------------------------")
-    print(gpt_param, "\n")
-    print("~~~ prompt_input    ----------------------------------------------")
-    print(prompt_input, "\n")
-    print("~~~ prompt    ----------------------------------------------------")
-    print(prompt, "\n")
-    print("~~~ output    ----------------------------------------------------")
-    print(output, "\n")
-    print("=== END ==========================================================")
-    print("\n\n\n")
+    log_message = f"""
+### persona
+  {persona.name if persona else "None"}
+
+### prompt_input
+  {prompt_input}
+
+### prompt_template:
+  {prompt_template}
+
+### Prompt
+{prompt}
+
+### Output
+{output}
+"""
+# `gpt_param`: {gpt_param}
+
+    logger.debug(log_message)

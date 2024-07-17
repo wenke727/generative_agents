@@ -10,13 +10,14 @@ import re
 import datetime
 import sys
 import ast
-
+from loguru import logger
 sys.path.append("../../")
 
 from global_methods import *
 from persona.prompt_template.gpt_structure import *
 from persona.prompt_template.print_prompt import *
 
+LLM_MODEL = "gpt-3.5-turbo"
 
 def get_random_alphanumeric(i=6, j=6):
     """
@@ -76,7 +77,7 @@ def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
         return fs
 
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 5,
         "temperature": 0.8,
         "top_p": 1,
@@ -279,7 +280,7 @@ def run_gpt_prompt_generate_hourly_schedule(
     #   return True
 
     # print ("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 10") ########
-    # gpt_param = {"engine": "text-embedding-3-small", "max_tokens": 15,
+    # gpt_param = {"engine": LLM_MODEL, "max_tokens": 15,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v3_ChatGPT/generate_hourly_schedule_v2.txt" ########
@@ -613,7 +614,7 @@ def run_gpt_prompt_action_sector(
     #   return True
 
     # print ("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 20") ########
-    # gpt_param = {"engine": "text-embedding-3-small", "max_tokens": 15,
+    # gpt_param = {"engine": LLM_MODEL, "max_tokens": 15,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v3_ChatGPT/action_location_sector_v2.txt" ########
@@ -629,7 +630,7 @@ def run_gpt_prompt_action_sector(
     # # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -878,7 +879,7 @@ def run_gpt_prompt_pronunciatio(action_description, persona, verbose=False):
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 4")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -970,7 +971,7 @@ def run_gpt_prompt_event_triple(action_description, persona, verbose=False):
     #   return True
 
     # print ("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 5") ########
-    # gpt_param = {"engine": "text-embedding-3-small", "max_tokens": 15,
+    # gpt_param = {"engine": LLM_MODEL, "max_tokens": 15,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v3_ChatGPT/generate_event_triple_v1.txt" ########
@@ -1056,7 +1057,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 6")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -1083,6 +1084,8 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
         __chat_func_clean_up,
         True,
     )
+
+    logger.error(f"`run_gpt_prompt_act_obj_desc` prompt: \n{prompt}")
     if output != False:
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
@@ -1771,7 +1774,7 @@ def run_gpt_prompt_summarize_conversation(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 11")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2035,7 +2038,7 @@ def run_gpt_prompt_event_poignancy(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 7")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2124,7 +2127,7 @@ def run_gpt_prompt_thought_poignancy(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 8")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2213,7 +2216,7 @@ def run_gpt_prompt_chat_poignancy(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 9")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2298,7 +2301,7 @@ def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=Fal
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 12")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2454,7 +2457,7 @@ def run_gpt_prompt_agent_chat_summarize_ideas(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 17")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2540,7 +2543,7 @@ def run_gpt_prompt_agent_chat_summarize_relationship(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 18")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2698,7 +2701,7 @@ def run_gpt_prompt_agent_chat(
 
     # print ("HERE JULY 23 -- ----- ") ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2789,7 +2792,7 @@ def run_gpt_prompt_summarize_ideas(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 16")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2888,7 +2891,7 @@ def run_gpt_prompt_generate_next_convo_line(
     #     return False
 
     # print ("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 15") ########
-    # gpt_param = {"engine": "text-embedding-3-small", "max_tokens": 15,
+    # gpt_param = {"engine": LLM_MODEL, "max_tokens": 15,
     #              "temperature": 0, "top_p": 1, "stream": False,
     #              "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     # prompt_template = "persona/prompt_template/v3_ChatGPT/generate_next_convo_line_v1.txt" ########
@@ -3067,7 +3070,7 @@ def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=Fals
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 15")  ########
     gpt_param = {
-        "engine": "text-embedding-3-small",
+        "engine": LLM_MODEL,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,

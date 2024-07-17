@@ -4,18 +4,25 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 File: gpt_structure.py
 Description: Wrapper functions for calling OpenAI APIs.
 """
+
 import sys
 sys.path.append("../../")
 
 import json
-import random
-import openai
 import time
+import openai
+from openai import OpenAI
+# from langchain_openai import OpenAI, OpenAIEmbeddings
+from loguru import logger
 
 from utils import *
 
-openai.api_key = openai_api_key
+from dotenv import load_dotenv
 
+load_dotenv(".env", verbose=True)
+
+client = OpenAI()
+# client.invoke()
 
 def temp_sleep(seconds=0.1):
     time.sleep(seconds)
@@ -24,17 +31,13 @@ def temp_sleep(seconds=0.1):
 def ChatGPT_single_request(prompt):
     temp_sleep()
 
-    completion = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
     )
     return completion["choices"][0]["message"]["content"]
 
 
-# ============================================================================
-# #####################[SECTION 1: CHATGPT-3 STRUCTURE] ######################
-# ============================================================================
-
-
+""" SECTION 1: CHATGPT-3 STRUCTURE """
 def GPT4_request(prompt):
     """
     Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
@@ -50,13 +53,13 @@ def GPT4_request(prompt):
     temp_sleep()
 
     try:
-        completion = openai.ChatCompletion.create(
+        completion = client.chat.completions.create(
             model="gpt-4", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
 
-    except:
-        print("ChatGPT ERROR")
+    except openai.error.OpenAIError as e:
+        logger.error(f"OpenAI API error: {e}")
         return "ChatGPT ERROR"
 
 
@@ -74,13 +77,13 @@ def ChatGPT_request(prompt):
     """
     # temp_sleep()
     try:
-        completion = openai.ChatCompletion.create(
+        completion = client.chat.completions.create(
             model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
 
-    except:
-        print("ChatGPT ERROR")
+    except openai.error.OpenAIError as e:
+        logger.error(f"OpenAI API error: {e}")
         return "ChatGPT ERROR"
 
 
@@ -146,8 +149,8 @@ def ChatGPT_safe_generate_response(
     prompt += '{"output": "' + str(example_output) + '"}'
 
     if verbose:
-        print("CHAT GPT PROMPT")
-        print(prompt)
+        # print("CHAT GPT PROMPT")
+        logger.debug(f"prompt: \n{prompt}")
 
     for i in range(repeat):
 
@@ -161,13 +164,14 @@ def ChatGPT_safe_generate_response(
             # print (curr_gpt_response)
             # print ("000asdfhia")
 
-            if func_validate(curr_gpt_response, prompt=prompt):
-                return func_clean_up(curr_gpt_response, prompt=prompt)
+            # if func_validate(curr_gpt_response, prompt=prompt):
+            #     return func_clean_up(curr_gpt_response, prompt=prompt)
 
             if verbose:
-                print("---- repeat count: \n", i, curr_gpt_response)
-                print(curr_gpt_response)
-                print("~~~~")
+                # print("---- repeat count: \n", i, curr_gpt_response)
+                logger.debug(f"curr_gpt_response: \n{curr_gpt_response}")
+                # print(curr_gpt_response)
+                # print("~~~~")
 
         except:
             pass
@@ -203,11 +207,7 @@ def ChatGPT_safe_generate_response_OLD(
     return fail_safe_response
 
 
-# ============================================================================
-# ###################[SECTION 2: ORIGINAL GPT-3 STRUCTURE] ###################
-# ============================================================================
-
-
+""" SECTION 2: ORIGINAL GPT-3 STRUCTURE """
 def GPT_request(prompt, gpt_parameter):
     """
     Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
@@ -222,7 +222,7 @@ def GPT_request(prompt, gpt_parameter):
     """
     temp_sleep()
     # try:
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model=gpt_parameter["engine"],
         messages=[{"role": "user", "content": prompt}],
         temperature=gpt_parameter["temperature"],
@@ -277,16 +277,16 @@ def safe_generate_response(
     verbose=False,
 ):
     if verbose:
-        print(prompt)
+        logger.debug(f"prompt: {prompt}")
 
     for i in range(repeat):
         curr_gpt_response = GPT_request(prompt, gpt_parameter)
         if func_validate(curr_gpt_response, prompt=prompt):
             return func_clean_up(curr_gpt_response, prompt=prompt)
         if verbose:
-            print("---- repeat count: ", i, curr_gpt_response)
-            print(curr_gpt_response)
-            print("~~~~")
+            # print("---- repeat count: ", i, curr_gpt_response)
+            logger.info(f"curr_gpt_response: \n{curr_gpt_response}")
+            # print("~~~~")
     return fail_safe_response
 
 
@@ -294,7 +294,7 @@ def get_embedding(text, model="text-embedding-ada-002"):
     text = text.replace("\n", " ")
     if not text:
         text = "this is blank"
-    return openai.Embedding.create(input=[text], model=model)["data"][0]["embedding"]
+    return client.embeddings.create(input=[text], model=model).data[0].embedding
 
 
 if __name__ == "__main__":
