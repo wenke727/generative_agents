@@ -4,25 +4,30 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 File: gpt_structure.py
 Description: Wrapper functions for calling OpenAI APIs.
 """
-
+import os
 import sys
 sys.path.append("../../")
 
 import json
 import time
 import openai
-from openai import OpenAI
-# from langchain_openai import OpenAI, OpenAIEmbeddings
 from loguru import logger
 
 from utils import *
 
 from dotenv import load_dotenv
-
 load_dotenv(".env", verbose=True)
 
-client = OpenAI()
-# client.invoke()
+
+if int(openai.__version__.split(".")[0]) == 0:
+    openai.api_key = os.environ.get("OPENAI_API_KEY")
+    completions = openai.ChatCompletion
+    embeddings = openai.Embedding
+else:
+    client = openai.OpenAI()
+    completions = client.chat.completions
+    embeddings = client.embeddings
+
 
 def temp_sleep(seconds=0.1):
     time.sleep(seconds)
@@ -31,7 +36,7 @@ def temp_sleep(seconds=0.1):
 def ChatGPT_single_request(prompt):
     temp_sleep()
 
-    completion = client.chat.completions.create(
+    completion = completions.create(
         model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
     )
     return completion["choices"][0]["message"]["content"]
@@ -53,7 +58,7 @@ def GPT4_request(prompt):
     temp_sleep()
 
     try:
-        completion = client.chat.completions.create(
+        completion = completions.create(
             model="gpt-4", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
@@ -77,7 +82,7 @@ def ChatGPT_request(prompt):
     """
     # temp_sleep()
     try:
-        completion = client.chat.completions.create(
+        completion = completions.create(
             model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
@@ -164,12 +169,12 @@ def ChatGPT_safe_generate_response(
             # print (curr_gpt_response)
             # print ("000asdfhia")
 
-            # if func_validate(curr_gpt_response, prompt=prompt):
-            #     return func_clean_up(curr_gpt_response, prompt=prompt)
+            if func_validate(curr_gpt_response, prompt=prompt):
+                return func_clean_up(curr_gpt_response, prompt=prompt)
 
             if verbose:
                 # print("---- repeat count: \n", i, curr_gpt_response)
-                logger.debug(f"curr_gpt_response: \n{curr_gpt_response}")
+                logger.debug(f"curr_gpt_response: {curr_gpt_response}")
                 # print(curr_gpt_response)
                 # print("~~~~")
 
@@ -222,7 +227,7 @@ def GPT_request(prompt, gpt_parameter):
     """
     temp_sleep()
     # try:
-    response = client.chat.completions.create(
+    response = completions.create(
         model=gpt_parameter["engine"],
         messages=[{"role": "user", "content": prompt}],
         temperature=gpt_parameter["temperature"],
@@ -294,7 +299,7 @@ def get_embedding(text, model="text-embedding-ada-002"):
     text = text.replace("\n", " ")
     if not text:
         text = "this is blank"
-    return client.embeddings.create(input=[text], model=model).data[0].embedding
+    return embeddings.create(input=[text], model=model).data[0].embedding
 
 
 if __name__ == "__main__":
@@ -325,8 +330,47 @@ if __name__ == "__main__":
         cleaned_response = gpt_response.strip()
         return cleaned_response
 
-    output = safe_generate_response(
-        prompt, gpt_parameter, 5, "rest", __func_validate, __func_clean_up, True
-    )
+    # output = safe_generate_response(
+    #     prompt, gpt_parameter, 5, "rest", __func_validate, __func_clean_up, True
+    # )
+    # print(output)
 
+    # test case 2:
+    prompt_lib_file = "/Users/wenke/Library/CloudStorage/OneDrive-Personal/3_Codes/generative_agents/reverie/backend_server/persona/prompt_template/v3_ChatGPT/generate_obj_event_v1.txt"
+
+    prompt_input = ['bed', 'Isabella Rodriguez', 'sleeping', 'bed', 'bed']
+    prompt = generate_prompt(prompt_input, (prompt_lib_file))
+    example_output = "being fixed"  ########
+    special_instruction = "The output should ONLY contain the phrase that should go in <fill in>."  ########
+
+    def get_fail_safe(act_game_object):
+        fs = f"{act_game_object} is idle"
+        return fs
+
+    # ChatGPT Plugin ===========================================================
+    def __chat_func_clean_up(gpt_response, prompt=""):  ############
+        cr = gpt_response.strip()
+        if cr[-1] == ".":
+            cr = cr[:-1]
+        return cr
+
+    def __chat_func_validate(gpt_response, prompt=""):  ############
+        try:
+            gpt_response = __func_clean_up(gpt_response, prompt="")
+        except:
+            return False
+        return True
+
+
+    # fail_safe = get_fail_safe(act_game_object)  ########
+    output = ChatGPT_safe_generate_response(
+        prompt,
+        example_output,
+        special_instruction,
+        3,
+        "None",
+        __chat_func_validate,
+        __chat_func_clean_up,
+        True,
+    )
     print(output)

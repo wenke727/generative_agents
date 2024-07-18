@@ -9,7 +9,15 @@ import logging
 from loguru import logger
 from pathlib import Path
 
-def configure_loguru_integration(log_dir, log_file, mode='a', log_level='DEBUG', intercept=True, filter_packages=['httpcore', 'httpx'], log_args={}):
+def configure_loguru_integration(
+    log_dir,
+    log_file,
+    mode='a',
+    console=True,
+    log_level='DEBUG',
+    intercept=True,
+    filter_packages=['httpcore', 'httpx'],
+    log_args={}):
     """
     Sets up and configures Loguru logger integration with Python's logging module.
 
@@ -31,7 +39,8 @@ def configure_loguru_integration(log_dir, log_file, mode='a', log_level='DEBUG',
 
     logger.remove()
     logger.add(log_path / log_file, level=log_level, mode=mode, **log_args)
-    logger.add(sys.stderr, level=log_level)
+    if console:
+        logger.add(sys.stderr, level=log_level)
 
     if intercept:
         class InterceptHandler(logging.Handler):

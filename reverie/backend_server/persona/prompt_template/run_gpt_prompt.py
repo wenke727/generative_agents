@@ -1085,7 +1085,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
         True,
     )
 
-    logger.error(f"`run_gpt_prompt_act_obj_desc` prompt: \n{prompt}")
+    logger.error(f"`run_gpt_prompt_act_obj_desc` prompt: \n{prompt}, \nprompt_input:\n{prompt_input}")
     if output != False:
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
