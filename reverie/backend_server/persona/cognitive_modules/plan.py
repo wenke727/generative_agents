@@ -10,6 +10,7 @@ import math
 import random
 import sys
 import time
+from loguru import logger
 
 sys.path.append("../../")
 
@@ -30,7 +31,7 @@ from persona.prompt_template.run_gpt_prompt import (
     run_gpt_prompt_task_decomp,
     run_gpt_prompt_wake_up_hour,
 )
-from persona.prompt_template.gpt_structure import get_embedding
+from persona.prompt_template.gpt_structure import ChatGPT_single_request, get_embedding
 from persona.cognitive_modules.retrieve import *
 from persona.cognitive_modules.converse import *
 
@@ -693,13 +694,14 @@ def _determine_action(persona, maze):
     # Generate an <Action> instance from the action description and duration. By
     # this point, we assume that all the relevant actions are decomposed and
     # ready in f_daily_schedule.
-    print("DEBUG LJSDLFSKJF")
+    debug_info = ""
+    debug_info += "\n" + "DEBUG LJSDLFSKJF"
     for i in persona.scratch.f_daily_schedule:
-        print(i)
-    print(curr_index)
-    print(len(persona.scratch.f_daily_schedule))
-    print(persona.scratch.name)
-    print("------")
+        debug_info += "\n" + str(i)
+    debug_info += "\ncurr index: " + str(curr_index)
+    debug_info += "\nlength: " + str(len(persona.scratch.f_daily_schedule))
+    debug_info += "\nname: " + persona.scratch.name
+    logger.debug(debug_info)
 
     # 1440
     x_emergency = 0

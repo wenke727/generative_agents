@@ -492,7 +492,10 @@ class ReverieServer:
                     # Runs the number of steps specified in the prompt.
                     # Example: run 1000
                     int_count = int(sim_command.split()[-1])
+                    logger.info(f"run {int_count}")
                     rs.start_server(int_count)
+                    logger.warning(f"run {int_count} finished")
+
 
                 elif "print persona schedule" in sim_command[:22].lower():
                     # Print the decomposed schedule of the persona specified in the

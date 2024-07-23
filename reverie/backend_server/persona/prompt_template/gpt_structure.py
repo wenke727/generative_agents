@@ -18,15 +18,45 @@ from utils import *
 from dotenv import load_dotenv
 load_dotenv(".env", verbose=True)
 
+LLM_MODEL = "gpt-3.5-turbo"
 
-if int(openai.__version__.split(".")[0]) == 0:
-    openai.api_key = os.environ.get("OPENAI_API_KEY")
-    completions = openai.ChatCompletion
-    embeddings = openai.Embedding
-else:
-    client = openai.OpenAI()
-    completions = client.chat.completions
-    embeddings = client.embeddings
+
+
+def initialize_openai_client():
+    """
+    Initialize the OpenAI client based on the available environment variables.
+
+    Returns:
+        completions: The completion client object.
+        embeddings: The embeddings client object.
+        chat: The chat completion create function (if applicable).
+    """
+    openai_version = int(openai.__version__.split(".")[0])
+
+    if openai_version == 0:
+        openai.api_key = os.environ.get("OPENAI_API_KEY")
+        client = None
+        chat = openai.ChatCompletion.create
+        embeddings = openai.Embedding.create
+    else:
+        azure_api_key = os.getenv('AZURE_OPENAI_API_KEY')
+
+        if azure_api_key:
+            client = openai.AzureOpenAI(
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+                api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+                api_version=os.getenv("OPENAI_API_VERSION"),
+            )
+        else:
+            client = openai.OpenAI()
+
+        chat = client.chat.completions.create
+        embeddings = client.embeddings.create
+
+    return client, chat, embeddings
+
+client, chat, embeddings = initialize_openai_client()
+
 
 
 def temp_sleep(seconds=0.1):
@@ -36,8 +66,8 @@ def temp_sleep(seconds=0.1):
 def ChatGPT_single_request(prompt):
     temp_sleep()
 
-    completion = completions.create(
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
+    completion = chat(
+        model=LLM_MODEL, messages=[{"role": "user", "content": prompt}]
     )
     return completion["choices"][0]["message"]["content"]
 
@@ -58,7 +88,7 @@ def GPT4_request(prompt):
     temp_sleep()
 
     try:
-        completion = completions.create(
+        completion = chat(
             model="gpt-4", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
@@ -82,8 +112,8 @@ def ChatGPT_request(prompt):
     """
     # temp_sleep()
     try:
-        completion = completions.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
+        completion = chat(
+            model=LLM_MODEL, messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
 
@@ -227,7 +257,7 @@ def GPT_request(prompt, gpt_parameter):
     """
     temp_sleep()
     # try:
-    response = completions.create(
+    response = chat(
         model=gpt_parameter["engine"],
         messages=[{"role": "user", "content": prompt}],
         temperature=gpt_parameter["temperature"],
@@ -299,12 +329,13 @@ def get_embedding(text, model="text-embedding-ada-002"):
     text = text.replace("\n", " ")
     if not text:
         text = "this is blank"
-    return embeddings.create(input=[text], model=model).data[0].embedding
+    return embeddings(input=[text], model=model).data[0].embedding
 
 
-if __name__ == "__main__":
+""" SECTION 3: test case """
+def test_case_0():
     gpt_parameter = {
-        "engine": "gpt-3.5-turbo",
+        "engine": LLM_MODEL,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -316,7 +347,6 @@ if __name__ == "__main__":
     curr_input = ["driving to a friend's house"]
     prompt_lib_file = "./prompt_template/test_prompt_July5.txt"
     prompt_lib_file = "./v1/test_prompt_July5.txt"
-    prompt_lib_file = "/Users/wenke/Library/CloudStorage/OneDrive-Personal/3_Codes/generative_agents/reverie/backend_server/persona/prompt_template/v1/test_prompt_July5.txt"
     prompt = generate_prompt(curr_input, prompt_lib_file)
 
     def __func_validate(gpt_response, prompt):
@@ -330,13 +360,14 @@ if __name__ == "__main__":
         cleaned_response = gpt_response.strip()
         return cleaned_response
 
-    # output = safe_generate_response(
-    #     prompt, gpt_parameter, 5, "rest", __func_validate, __func_clean_up, True
-    # )
-    # print(output)
+    output = safe_generate_response(
+        prompt, gpt_parameter, 5, "rest", __func_validate, __func_clean_up, True
+    )
+    logger.info(output)
 
-    # test case 2:
-    prompt_lib_file = "/Users/wenke/Library/CloudStorage/OneDrive-Personal/3_Codes/generative_agents/reverie/backend_server/persona/prompt_template/v3_ChatGPT/generate_obj_event_v1.txt"
+
+def test_case_1():
+    prompt_lib_file = "./v3_ChatGPT/generate_obj_event_v1.txt"
 
     prompt_input = ['bed', 'Isabella Rodriguez', 'sleeping', 'bed', 'bed']
     prompt = generate_prompt(prompt_input, (prompt_lib_file))
@@ -353,6 +384,10 @@ if __name__ == "__main__":
         if cr[-1] == ".":
             cr = cr[:-1]
         return cr
+
+    def __func_clean_up(gpt_response, prompt):
+        cleaned_response = gpt_response.strip()
+        return cleaned_response
 
     def __chat_func_validate(gpt_response, prompt=""):  ############
         try:
@@ -373,4 +408,9 @@ if __name__ == "__main__":
         __chat_func_clean_up,
         True,
     )
-    print(output)
+    logger.info(output)
+
+
+if __name__ == "__main__":
+    test_case_0()
+    test_case_1()

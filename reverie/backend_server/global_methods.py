@@ -218,6 +218,10 @@ def copyanything(src, dst):
     None
   """
   try:
+    if os.path.exists(dst):
+    # 如果目标目录存在，删除该目录
+      shutil.rmtree(dst)
+      print(f"Deleted existing directory: {dst}")
     shutil.copytree(src, dst)
   except OSError as exc: # python >2.5
     if exc.errno in (errno.ENOTDIR, errno.EINVAL):
