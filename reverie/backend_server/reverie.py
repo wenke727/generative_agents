@@ -38,7 +38,8 @@ from persona.persona import *
 from misc.logger_helper import configure_loguru_integration
 
 logger = configure_loguru_integration(
-    './', 'agents.log', mode='w', console=False, filter_packages=['httpcore', 'httpx', 'openai', 'urllib3'])
+    './', 'agents.log', mode = 'w', console = True,
+    filter_packages = ['httpcore', 'httpx', 'openai', 'urllib3'])
 
 
 class ReverieServer:
@@ -58,6 +59,9 @@ class ReverieServer:
         # movement_folder = Path(sim_folder) / 'movement'
         # movement_folder.mkdir(parents=True, exist_ok=True)
         copyanything(fork_folder, sim_folder)
+
+        movement_folder = Path(sim_folder) / 'movement'
+        movement_folder.mkdir(parents=True, exist_ok=True)
 
         with open(f"{sim_folder}/reverie/meta.json") as json_file:
             reverie_meta = json.load(json_file)
@@ -425,7 +429,7 @@ class ReverieServer:
                     # {"persona": {"Maria Lopez": {"movement": [58, 9]}},
                     #  "persona": {"Klaus Mueller": {"movement": [38, 12]}},
                     #  "meta": {curr_time: <datetime>}}
-                    curr_move_file = f"{sim_folder}/movement_{self.step}.json"
+                    curr_move_file = f"{sim_folder}/movement/{self.step}.json"
                     with open(curr_move_file, "w") as outfile:
                         outfile.write(json.dumps(movements, indent=2))
 
@@ -437,6 +441,7 @@ class ReverieServer:
                     int_counter -= 1
 
             # Sleep so we don't burn our machines.
+            logger.warning("Machine is sleeping")
             time.sleep(self.server_sleep)
 
     def open_server(self):

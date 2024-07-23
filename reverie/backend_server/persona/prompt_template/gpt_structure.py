@@ -14,49 +14,10 @@ import openai
 from loguru import logger
 
 from utils import *
+from persona.prompt_template.openai_helper import initialize_openai_client, GPT_35_TURBO
 
-from dotenv import load_dotenv
-load_dotenv(".env", verbose=True)
-
-LLM_MODEL = "gpt-3.5-turbo"
-
-
-
-def initialize_openai_client():
-    """
-    Initialize the OpenAI client based on the available environment variables.
-
-    Returns:
-        completions: The completion client object.
-        embeddings: The embeddings client object.
-        chat: The chat completion create function (if applicable).
-    """
-    openai_version = int(openai.__version__.split(".")[0])
-
-    if openai_version == 0:
-        openai.api_key = os.environ.get("OPENAI_API_KEY")
-        client = None
-        chat = openai.ChatCompletion.create
-        embeddings = openai.Embedding.create
-    else:
-        azure_api_key = os.getenv('AZURE_OPENAI_API_KEY')
-
-        if azure_api_key:
-            client = openai.AzureOpenAI(
-                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-                api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-                api_version=os.getenv("OPENAI_API_VERSION"),
-            )
-        else:
-            client = openai.OpenAI()
-
-        chat = client.chat.completions.create
-        embeddings = client.embeddings.create
-
-    return client, chat, embeddings
 
 client, chat, embeddings = initialize_openai_client()
-
 
 
 def temp_sleep(seconds=0.1):
@@ -67,7 +28,7 @@ def ChatGPT_single_request(prompt):
     temp_sleep()
 
     completion = chat(
-        model=LLM_MODEL, messages=[{"role": "user", "content": prompt}]
+        model=GPT_35_TURBO, messages=[{"role": "user", "content": prompt}]
     )
     return completion["choices"][0]["message"]["content"]
 
@@ -113,9 +74,10 @@ def ChatGPT_request(prompt):
     # temp_sleep()
     try:
         completion = chat(
-            model=LLM_MODEL, messages=[{"role": "user", "content": prompt}]
+            model=GPT_35_TURBO, messages=[{"role": "user", "content": prompt}]
         )
-        return completion["choices"][0]["message"]["content"]
+        return completion.choices[0].message.content
+        # return completion["choices"][0]["message"]["content"]
 
     except openai.error.OpenAIError as e:
         logger.error(f"OpenAI API error: {e}")
@@ -175,7 +137,7 @@ def ChatGPT_safe_generate_response(
     func_clean_up=None,
     verbose=False,
 ):
-    # prompt = 'GPT-3 Prompt:\n"""\n' + prompt + '\n"""\n'
+    prompt = 'GPT-3 Prompt:\n"""\n' + prompt + '\n"""\n'
     prompt = '"""\n' + prompt + '\n"""\n'
     prompt += (
         f"Output the response to the prompt above in json. {special_instruction}\n"
@@ -183,12 +145,19 @@ def ChatGPT_safe_generate_response(
     prompt += "Example output json:\n"
     prompt += '{"output": "' + str(example_output) + '"}'
 
+#     prompt = f"""----
+# {prompt}
+# ----
+# Output the response to the prompt above in json. {special_instruction}
+# Example output json:
+# {"output": "' + str(example_output) + '"}
+# """
+
     if verbose:
         # print("CHAT GPT PROMPT")
         logger.debug(f"prompt: \n{prompt}")
 
     for i in range(repeat):
-
         try:
             curr_gpt_response = ChatGPT_request(prompt).strip()
             end_index = curr_gpt_response.rfind("}") + 1
@@ -199,14 +168,14 @@ def ChatGPT_safe_generate_response(
             # print (curr_gpt_response)
             # print ("000asdfhia")
 
-            if func_validate(curr_gpt_response, prompt=prompt):
-                return func_clean_up(curr_gpt_response, prompt=prompt)
-
             if verbose:
                 # print("---- repeat count: \n", i, curr_gpt_response)
                 logger.debug(f"curr_gpt_response: {curr_gpt_response}")
                 # print(curr_gpt_response)
                 # print("~~~~")
+
+            if func_validate(curr_gpt_response, prompt=prompt):
+                return func_clean_up(curr_gpt_response, prompt=prompt)
 
         except:
             pass
@@ -335,7 +304,7 @@ def get_embedding(text, model="text-embedding-ada-002"):
 """ SECTION 3: test case """
 def test_case_0():
     gpt_parameter = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,

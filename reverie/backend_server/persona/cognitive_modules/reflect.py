@@ -14,6 +14,7 @@ import random
 
 from numpy import dot
 from numpy.linalg import norm
+from loguru import logger
 
 from global_methods import *
 from persona.prompt_template.run_gpt_prompt import (
@@ -30,9 +31,6 @@ from persona.cognitive_modules.retrieve import *
 from utils import debug
 
 def generate_focal_points(persona, n=3):
-    if debug:
-        print("GNS FUNCTION: <generate_focal_points>")
-
     nodes = [
         [i.last_accessed, i]
         for i in persona.a_mem.seq_event + persona.a_mem.seq_thought
@@ -46,20 +44,20 @@ def generate_focal_points(persona, n=3):
     for node in nodes[-1 * persona.scratch.importance_ele_n :]:
         statements += node.embedding_key + "\n"
 
-    return run_gpt_prompt_focal_pt(persona, statements, n)[0]
+    ret = run_gpt_prompt_focal_pt(persona, statements, n)[0]
+    logger.debug(f"Reflect: {ret}\nstatements: {statements}")
+
+    return ret
 
 
 def generate_insights_and_evidence(persona, nodes, n=5):
-    if debug:
-        print("GNS FUNCTION: <generate_insights_and_evidence>")
-
     statements = ""
     for count, node in enumerate(nodes):
         statements += f"{str(count)}. {node.embedding_key}\n"
 
     ret = run_gpt_prompt_insight_and_guidance(persona, statements, n)[0]
 
-    print(ret)
+    logger.debug(ret)
     try:
 
         for thought, evi_raw in ret.items():
@@ -173,18 +171,17 @@ def reflection_trigger(persona):
       True if we are running a new reflection.
       False otherwise.
     """
-    print(
-        persona.scratch.name,
-        "persona.scratch.importance_trigger_curr::",
-        persona.scratch.importance_trigger_curr,
-    )
-    print(persona.scratch.importance_trigger_max)
+
+    info = f"`{persona.scratch.name}`, importance_trigger_curr: {persona.scratch.importance_trigger_curr}({persona.scratch.importance_trigger_max})"
 
     if (
         persona.scratch.importance_trigger_curr <= 0
         and [] != persona.a_mem.seq_event + persona.a_mem.seq_thought
     ):
+        logger.warning(info)
         return True
+
+    logger.debug(info)
     return False
 
 

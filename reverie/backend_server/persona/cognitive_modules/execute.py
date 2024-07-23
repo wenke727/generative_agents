@@ -7,6 +7,7 @@ Description: This defines the "Act" module for generative agents.
 
 import sys
 import random
+from loguru import logger
 
 sys.path.append("../../")
 
@@ -45,8 +46,7 @@ def execute(persona, maze, personas, plan):
         # to execute the current action. The goal is to pick one of them.
         target_tiles = None
 
-        print("aldhfoaf/????")
-        print(plan)
+        logger.info(plan)
 
         if "<persona>" in plan:
             # Executing persona-persona interaction.
@@ -165,4 +165,6 @@ def execute(persona, maze, personas, plan):
     description += f" @ {persona.scratch.act_address}"
 
     execution = ret, persona.scratch.act_pronunciatio, description
+    logger.warning(f"{execution}")
+
     return execution

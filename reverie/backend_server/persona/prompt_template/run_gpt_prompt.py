@@ -23,8 +23,8 @@ from persona.prompt_template.gpt_structure import (
     safe_generate_response,
 )
 from persona.prompt_template.print_prompt import print_run_prompts
+from persona.prompt_template.openai_helper import GPT_35_TURBO
 
-LLM_MODEL = "gpt-3.5-turbo"
 
 def get_random_alphanumeric(i=6, j=6):
     """
@@ -84,7 +84,7 @@ def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 5,
         "temperature": 0.8,
         "top_p": 1,
@@ -99,13 +99,13 @@ def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
     fail_safe = get_fail_safe()
 
     output = safe_generate_response(
-        prompt, gpt_param, 5, fail_safe, __func_validate, __func_clean_up
+        prompt, gpt_param, 5, fail_safe, __func_validate, __func_clean_up, verbose=False
     )
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        # print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
+        _p = prompt.replace('\n', '; ')
+        logger.debug(f"`{persona.name}` wake up at {output}, `prompt`: {_p}")
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -165,7 +165,7 @@ def run_gpt_prompt_daily_plan(persona, wake_up_hour, test_input=None, verbose=Fa
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 500,
         "temperature": 1,
         "top_p": 1,
@@ -187,9 +187,8 @@ def run_gpt_prompt_daily_plan(persona, wake_up_hour, test_input=None, verbose=Fa
     ] + output
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
+        logger.debug(f"\n{persona.name}'s daily plan:\n{output}, \n### prompt\n{prompt}")
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -308,7 +307,7 @@ def run_gpt_prompt_generate_hourly_schedule(
     # # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0.5,
         "top_p": 1,
@@ -328,10 +327,11 @@ def run_gpt_prompt_generate_hourly_schedule(
         prompt, gpt_param, 5, fail_safe, __func_validate, __func_clean_up
     )
 
-    if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+    # FIX: 输出过多暂时隐藏
+    # if debug or verbose:
+    #     print_run_prompts(
+    #         prompt_template, persona, gpt_param, prompt_input, prompt, output
+    #     )
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -363,7 +363,6 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
         summ_str = f'Today is {persona.scratch.curr_time.strftime("%B %d, %Y")}. '
         summ_str += f"From "
         for index in all_indices:
-            print("index", index)
             if index < len(persona.scratch.f_daily_schedule_hourly_org):
                 start_min = 0
                 for i in range(index):
@@ -371,12 +370,8 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
                 end_min = (
                     start_min + persona.scratch.f_daily_schedule_hourly_org[index][1]
                 )
-                start_time = datetime.datetime.strptime(
-                    "00:00:00", "%H:%M:%S"
-                ) + datetime.timedelta(minutes=start_min)
-                end_time = datetime.datetime.strptime(
-                    "00:00:00", "%H:%M:%S"
-                ) + datetime.timedelta(minutes=end_min)
+                start_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S") + datetime.timedelta(minutes=start_min)
+                end_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S") + datetime.timedelta(minutes=end_min)
                 start_time_str = start_time.strftime("%H:%M%p")
                 end_time_str = end_time.strftime("%H:%M%p")
                 summ_str += f"{start_time_str} ~ {end_time_str}, {persona.name} is planning on {persona.scratch.f_daily_schedule_hourly_org[index][0]}, "
@@ -471,7 +466,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 1000,
         "temperature": 0,
         "top_p": 1,
@@ -635,7 +630,7 @@ def run_gpt_prompt_action_sector(
     # # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -741,7 +736,7 @@ def run_gpt_prompt_action_arena(
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -802,7 +797,7 @@ def run_gpt_prompt_action_game_object(
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -884,7 +879,7 @@ def run_gpt_prompt_pronunciatio(action_description, persona, verbose=False):
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 4")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -992,7 +987,7 @@ def run_gpt_prompt_event_triple(action_description, persona, verbose=False):
     # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 30,
         "temperature": 0,
         "top_p": 1,
@@ -1011,9 +1006,7 @@ def run_gpt_prompt_event_triple(action_description, persona, verbose=False):
     output = (persona.name, output[0], output[1])
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -1037,7 +1030,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
 
     def __func_validate(gpt_response, prompt=""):
         try:
-            gpt_response = __func_clean_up(gpt_response, prompt="")
+            gpt_response = __func_clean_up(gpt_response, prompt=prompt)
         except:
             return False
         return True
@@ -1062,7 +1055,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 6")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -1138,7 +1131,7 @@ def run_gpt_prompt_act_obj_event_triple(
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 30,
         "temperature": 0,
         "top_p": 1,
@@ -1309,7 +1302,7 @@ def run_gpt_prompt_new_decomp_schedule(
         return ret
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 1000,
         "temperature": 0,
         "top_p": 1,
@@ -1433,7 +1426,7 @@ def run_gpt_prompt_decide_to_talk(
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 20,
         "temperature": 0,
         "top_p": 1,
@@ -1559,7 +1552,7 @@ def run_gpt_prompt_decide_to_react(
         return fs
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 20,
         "temperature": 0,
         "top_p": 1,
@@ -1714,7 +1707,7 @@ def run_gpt_prompt_create_conversation(
         return convo
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 1000,
         "temperature": 0.7,
         "top_p": 1,
@@ -1779,7 +1772,7 @@ def run_gpt_prompt_summarize_conversation(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 11")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -1865,7 +1858,7 @@ def run_gpt_prompt_extract_keywords(
         return []
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -1913,7 +1906,7 @@ def run_gpt_prompt_keyword_to_thoughts(
         return ""
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 40,
         "temperature": 0.7,
         "top_p": 1,
@@ -1975,7 +1968,7 @@ def run_gpt_prompt_convo_to_thoughts(
         return ""
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 40,
         "temperature": 0.7,
         "top_p": 1,
@@ -2003,9 +1996,7 @@ def run_gpt_prompt_convo_to_thoughts(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_event_poignancy(
-    persona, event_description, test_input=None, verbose=False
-):
+def run_gpt_prompt_event_poignancy(persona, event_description, test_input=None, verbose=False):
     def create_prompt_input(persona, event_description, test_input=None):
         prompt_input = [
             persona.scratch.name,
@@ -2041,9 +2032,9 @@ def run_gpt_prompt_event_poignancy(
         except:
             return False
 
-    print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 7")  ########
+    # print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 7")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2068,8 +2059,10 @@ def run_gpt_prompt_event_poignancy(
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        verbose=False,
     )
+    logger.debug(f"{persona.name}, score: {output}, event: {event_description}")
+
     if output != False:
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
@@ -2089,7 +2082,7 @@ def run_gpt_prompt_event_poignancy(
     #   print_run_prompts(prompt_template, persona, gpt_param,
     #                     prompt_input, prompt, output)
 
-    # return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
 def run_gpt_prompt_thought_poignancy(
@@ -2132,7 +2125,7 @@ def run_gpt_prompt_thought_poignancy(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 8")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2221,7 +2214,7 @@ def run_gpt_prompt_chat_poignancy(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 9")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2306,7 +2299,7 @@ def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=Fal
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 12")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2338,7 +2331,7 @@ def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=Fal
     # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 150,
         "temperature": 0,
         "top_p": 1,
@@ -2357,9 +2350,7 @@ def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=Fal
     )
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -2394,7 +2385,7 @@ def run_gpt_prompt_insight_and_guidance(
         return ["I am hungry"] * n
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 150,
         "temperature": 0.5,
         "top_p": 1,
@@ -2462,7 +2453,7 @@ def run_gpt_prompt_agent_chat_summarize_ideas(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 17")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2548,7 +2539,7 @@ def run_gpt_prompt_agent_chat_summarize_relationship(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 18")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2706,7 +2697,7 @@ def run_gpt_prompt_agent_chat(
 
     # print ("HERE JULY 23 -- ----- ") ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2797,7 +2788,7 @@ def run_gpt_prompt_summarize_ideas(
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 16")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -2912,7 +2903,7 @@ def run_gpt_prompt_generate_next_convo_line(
     # # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 250,
         "temperature": 1,
         "top_p": 1,
@@ -2961,7 +2952,7 @@ def run_gpt_prompt_generate_whisper_inner_thought(
         return "..."
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3013,7 +3004,7 @@ def run_gpt_prompt_planning_thought_on_convo(
         return "..."
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3075,7 +3066,7 @@ def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=Fals
 
     print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 15")  ########
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 15,
         "temperature": 0,
         "top_p": 1,
@@ -3107,7 +3098,7 @@ def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=Fals
     # ChatGPT Plugin ===========================================================
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3169,7 +3160,7 @@ def run_gpt_generate_safety_score(persona, comment, test_input=None, verbose=Fal
     print(output)
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
@@ -3329,7 +3320,7 @@ def run_gpt_generate_iterative_chat_utt(
     print(output)
 
     gpt_param = {
-        "engine": LLM_MODEL,
+        "engine": GPT_35_TURBO,
         "max_tokens": 50,
         "temperature": 0,
         "top_p": 1,
