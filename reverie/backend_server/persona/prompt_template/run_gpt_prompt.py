@@ -399,6 +399,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
     def __func_clean_up(gpt_response, prompt=""):
         logger.info(f"TOODOOOOOO: \n{gpt_response}")
 
+
         # TODO SOMETHING HERE sometimes fails... See screenshot
         temp = [i.strip() for i in gpt_response.split("\n")]
         _cr = []
