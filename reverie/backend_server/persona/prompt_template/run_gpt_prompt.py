@@ -7,14 +7,15 @@ interface with the safe_generate_response function.
 """
 
 import json
+import random
 import re
 import datetime
+import string
 import sys
 import ast
 from loguru import logger
 sys.path.append("../../")
 
-from global_methods import *
 from utils import debug
 from persona.prompt_template.gpt_structure import (
     ChatGPT_safe_generate_response,

@@ -20,9 +20,7 @@ framework.
 """
 
 import json
-import numpy
 import datetime
-import pickle
 import time
 import math
 import os
@@ -30,10 +28,10 @@ import shutil
 import traceback
 from pathlib import Path
 
-from global_methods import *
-from utils import *
-from maze import *
-from persona.persona import *
+from maze import Maze
+from persona.persona import Persona
+from utils import fs_temp_storage, fs_storage
+from global_methods import check_if_file_exists, copyanything
 
 from misc.logger_helper import configure_loguru_integration
 
@@ -374,20 +372,12 @@ class ReverieServer:
                         if not persona.scratch.planned_path:
                             # We add that new object action event to the backend tile map.
                             # At its creation, it is stored in the persona's backend.
-                            game_obj_cleanup[
-                                persona.scratch.get_curr_obj_event_and_desc()
-                            ] = new_tile
-                            self.maze.add_event_from_tile(
-                                persona.scratch.get_curr_obj_event_and_desc(), new_tile
-                            )
+                            cur = persona.scratch.get_curr_obj_event_and_desc()
+                            game_obj_cleanup[cur] = new_tile
+                            self.maze.add_event_from_tile(cur, new_tile)
                             # We also need to remove the temporary blank action for the
                             # object that is currently taking the action.
-                            blank = (
-                                persona.scratch.get_curr_obj_event_and_desc()[0],
-                                None,
-                                None,
-                                None,
-                            )
+                            blank = (cur[0], None, None, None,)
                             self.maze.remove_event_from_tile(blank, new_tile)
 
                     # Then we need to actually have each of the personas perceive and
@@ -409,19 +399,12 @@ class ReverieServer:
                         )
                         movements["persona"][persona_name] = {}
                         movements["persona"][persona_name]["movement"] = next_tile
-                        movements["persona"][persona_name][
-                            "pronunciatio"
-                        ] = pronunciatio
+                        movements["persona"][persona_name]["pronunciatio"] = pronunciatio
                         movements["persona"][persona_name]["description"] = description
-                        movements["persona"][persona_name][
-                            "chat"
-                        ] = persona.scratch.chat
+                        movements["persona"][persona_name]["chat"] = persona.scratch.chat
 
-                    # Include the meta information about the current stage in the
-                    # movements dictionary.
-                    movements["meta"]["curr_time"] = self.curr_time.strftime(
-                        "%B %d, %Y, %H:%M:%S"
-                    )
+                    # Include the meta information about the current stage in the movements dictionary.
+                    movements["meta"]["curr_time"] = self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
 
                     # We then write the personas' movements to a file that will be sent
                     # to the frontend server.

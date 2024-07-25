@@ -1,11 +1,10 @@
+import os
+import openai
 from dotenv import load_dotenv
 load_dotenv(".env", verbose=True)
 
-import os
-import openai
 
-GPT_35_TURBO = "gpt-3.5-turbo"
-# GPT_35_TURBO = "gpt-3.5-turbo"
+GPT_35_TURBO = os.environ.get("BASE_MODEL", "gpt-35-turbo")
 
 
 def initialize_openai_client():

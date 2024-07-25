@@ -3,7 +3,7 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 
 File: path_finder.py
 Description: Implements various path finding functions for generative agents.
-Some of the functions are defunct. 
+Some of the functions are defunct.
 """
 import numpy as np
 
@@ -14,7 +14,7 @@ def print_maze(maze):
     print()
 
 
-def path_finder_v1(maze, start, end, collision_block_char, verbose=False): 
+def path_finder_v1(maze, start, end, collision_block_char, verbose=False):
   def prepare_maze(maze, start, end):
     maze[start[0]][start[1]] = "S"
     maze[end[0]][end[1]] = "E"
@@ -45,7 +45,7 @@ def path_finder_v1(maze, start, end, collision_block_char, verbose=False):
     # Go through the stack as long as there are elements
     while len(stack) > 0:
       pos_r, pos_c = stack.pop()
-      if verbose: 
+      if verbose:
         print("Current position", pos_r, pos_c)
       if maze[pos_r][pos_c] == 'E':
         path += [(pos_r, pos_c)]
@@ -67,7 +67,7 @@ def path_finder_v1(maze, start, end, collision_block_char, verbose=False):
         stack.append((pos_r, pos_c + 1))
 
       # To follow the maze
-      if verbose: 
+      if verbose:
         print('Stack:' , stack)
         print_maze(maze)
 
@@ -76,12 +76,12 @@ def path_finder_v1(maze, start, end, collision_block_char, verbose=False):
 
   # clean maze
   new_maze = []
-  for row in maze: 
+  for row in maze:
     new_row = []
-    for j in row: 
-      if j == collision_block_char: 
+    for j in row:
+      if j == collision_block_char:
         new_row += ["#"]
-      else: 
+      else:
         new_row += [" "]
     new_maze += [new_row]
 
@@ -108,12 +108,12 @@ def path_finder_v2(a, start, end, collision_block_char, verbose=False):
              m[i][j+1] = k + 1
 
   new_maze = []
-  for row in a: 
+  for row in a:
     new_row = []
     for j in row:
-      if j == collision_block_char: 
+      if j == collision_block_char:
         new_row += [1]
-      else: 
+      else:
         new_row += [0]
     new_maze += [new_row]
   a = new_maze
@@ -124,7 +124,7 @@ def path_finder_v2(a, start, end, collision_block_char, verbose=False):
       for j in range(len(a[i])):
           m[-1].append(0)
   i,j = start
-  m[i][j] = 1 
+  m[i][j] = 1
 
   k = 0
   except_handle = 150
@@ -132,9 +132,9 @@ def path_finder_v2(a, start, end, collision_block_char, verbose=False):
       k += 1
       make_step(m, k)
 
-      if except_handle == 0: 
+      if except_handle == 0:
         break
-      except_handle -= 1 
+      except_handle -= 1
 
   i, j = end
   k = m[i][j]
@@ -156,7 +156,7 @@ def path_finder_v2(a, start, end, collision_block_char, verbose=False):
       i, j = i, j+1
       the_path.append((i, j))
       k -= 1
-        
+
   the_path.reverse()
   return the_path
 
@@ -170,25 +170,25 @@ def path_finder(maze, start, end, collision_block_char, verbose=False):
   path = path_finder_v2(maze, start, end, collision_block_char, verbose)
 
   new_path = []
-  for i in path: 
+  for i in path:
     new_path += [(i[1], i[0])]
   path = new_path
-  
+
   return path
 
 
-def closest_coordinate(curr_coordinate, target_coordinates): 
+def closest_coordinate(curr_coordinate, target_coordinates):
   min_dist = None
   closest_coordinate = None
-  for coordinate in target_coordinates: 
+  for coordinate in target_coordinates:
     a = np.array(coordinate)
     b = np.array(curr_coordinate)
     dist = abs(np.linalg.norm(a-b))
-    if not closest_coordinate: 
+    if not closest_coordinate:
       min_dist = dist
       closest_coordinate = coordinate
-    else: 
-      if min_dist > dist: 
+    else:
+      if min_dist > dist:
         min_dist = dist
         closest_coordinate = coordinate
 
@@ -207,11 +207,11 @@ def path_finder_2(maze, start, end, collision_block_char, verbose=False):
   t_right = (end[0]+1, end[1])
   pot_target_coordinates = [t_top, t_bottom, t_left, t_right]
 
-  maze_width = len(maze[0]) 
+  maze_width = len(maze[0])
   maze_height = len(maze)
   target_coordinates = []
-  for coordinate in pot_target_coordinates: 
-    if coordinate[0] >= 0 and coordinate[0] < maze_width and coordinate[1] >= 0 and coordinate[1] < maze_height: 
+  for coordinate in pot_target_coordinates:
+    if coordinate[0] >= 0 and coordinate[0] < maze_width and coordinate[1] >= 0 and coordinate[1] < maze_height:
       target_coordinates += [coordinate]
 
   target_coordinate = closest_coordinate(start, target_coordinates)
@@ -225,9 +225,9 @@ def path_finder_3(maze, start, end, collision_block_char, verbose=False):
   # end => persona_b
 
   curr_path = path_finder(maze, start, end, collision_block_char, verbose=False)
-  if len(curr_path) <= 2: 
+  if len(curr_path) <= 2:
     return []
-  else: 
+  else:
     a_path = curr_path[:int(len(curr_path)/2)]
     b_path = curr_path[int(len(curr_path)/2)-1:]
   b_path.reverse()
@@ -238,13 +238,13 @@ def path_finder_3(maze, start, end, collision_block_char, verbose=False):
 
 
 if __name__ == '__main__':
-  maze = [['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'], 
-          [' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'], 
-          ['#', ' ', '#', ' ', ' ', '#', '#', ' ', ' ', ' ', '#', ' ', '#'], 
-          ['#', ' ', '#', ' ', ' ', '#', '#', ' ', '#', ' ', '#', ' ', '#'], 
-          ['#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'], 
-          ['#', '#', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#'], 
-          ['#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' '], 
+  maze = [['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'],
+          [' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'],
+          ['#', ' ', '#', ' ', ' ', '#', '#', ' ', ' ', ' ', '#', ' ', '#'],
+          ['#', ' ', '#', ' ', ' ', '#', '#', ' ', '#', ' ', '#', ' ', '#'],
+          ['#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'],
+          ['#', '#', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#'],
+          ['#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' '],
           ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']]
   start = (0, 1)
   end = (0, 1)

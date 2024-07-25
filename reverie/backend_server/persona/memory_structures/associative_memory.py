@@ -8,7 +8,6 @@ Note (May 1, 2023) -- this class is the Memory Stream module in the generative
 agents paper.
 """
 
-from global_methods import *
 import datetime
 import json
 import sys

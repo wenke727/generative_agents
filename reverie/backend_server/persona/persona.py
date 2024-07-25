@@ -9,14 +9,8 @@ the term we used internally back in 2022, taking from our Social Simulacra
 paper.
 """
 
-import math
 import sys
-import datetime
-import random
-
 sys.path.append("../")
-
-from global_methods import *
 
 from persona.memory_structures.spatial_memory import MemoryTree
 from persona.memory_structures.associative_memory import AssociativeMemory

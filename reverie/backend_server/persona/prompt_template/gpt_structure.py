@@ -4,7 +4,6 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 File: gpt_structure.py
 Description: Wrapper functions for calling OpenAI APIs.
 """
-import os
 import sys
 sys.path.append("../../")
 
@@ -13,14 +12,13 @@ import time
 import openai
 from loguru import logger
 
-from utils import *
 from persona.prompt_template.openai_helper import initialize_openai_client, GPT_35_TURBO
 
 
 client, chat, embeddings = initialize_openai_client()
 
 
-def temp_sleep(seconds=0.1):
+def temp_sleep(seconds=0.15):
     time.sleep(seconds)
 
 

@@ -5,19 +5,13 @@ File: converse.py
 Description: An extra cognitive module for generating conversations.
 """
 
-import math
 import sys
 import datetime
-import random
 
 sys.path.append("../")
 
-from global_methods import *
-
-from persona.memory_structures.spatial_memory import *
-from persona.memory_structures.associative_memory import *
-from persona.memory_structures.scratch import *
-from persona.cognitive_modules.retrieve import *
+from global_methods import check_if_file_exists
+from persona.cognitive_modules.retrieve import new_retrieve
 from persona.prompt_template.gpt_structure import get_embedding
 from persona.prompt_template.run_gpt_prompt import (
     run_gpt_generate_iterative_chat_utt,
@@ -32,6 +26,7 @@ from persona.prompt_template.run_gpt_prompt import (
     run_gpt_prompt_generate_whisper_inner_thought,
     run_gpt_prompt_summarize_ideas,
 )
+from utils import debug
 
 
 def generate_agent_chat_summarize_ideas(

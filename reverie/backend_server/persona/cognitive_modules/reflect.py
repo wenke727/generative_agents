@@ -6,17 +6,10 @@ Description: This defines the "Reflect" module for generative agents.
 """
 
 import sys
-
 sys.path.append("../../")
-
 import datetime
-import random
-
-from numpy import dot
-from numpy.linalg import norm
 from loguru import logger
 
-from global_methods import *
 from persona.prompt_template.run_gpt_prompt import (
     run_gpt_prompt_chat_poignancy,
     run_gpt_prompt_event_poignancy,

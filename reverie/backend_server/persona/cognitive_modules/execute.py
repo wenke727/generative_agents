@@ -11,12 +11,13 @@ from loguru import logger
 
 sys.path.append("../../")
 
-from global_methods import *
-from path_finder import *
-from utils import *
+from maze import Maze
+from persona.persona import Persona
+from path_finder import path_finder
+from utils import collision_block_id
 
 
-def execute(persona, maze, personas, plan):
+def execute(persona: Persona, maze:Maze, personas:list, plan):
     """
     Given a plan (action's string address), we execute the plan (actually
     outputs the tile coordinate path and the next coordinate for the
