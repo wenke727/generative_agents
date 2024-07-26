@@ -236,8 +236,24 @@ class Persona:
         return self.scratch.get_str_iss()
 
     @property
-    def name(self):
-        return self.scratch.name
+    def curr_tile(self):
+      return self.scratch.curr_tile
+
+    @property
+    def vison_r(self):
+      return self.scratch.vison_r
+
+    @property
+    def get_embedding_in_a_men(self):
+        return self.a_mem.embeddings
+
+    @property
+    def act_description(self):
+        return self.scratch.act_description
+
+    @property
+    def f_daily_schedule(self):
+        return self.scratch.f_daily_schedule
 
 
 if __name__ == "__main__":

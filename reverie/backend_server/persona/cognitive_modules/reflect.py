@@ -10,7 +10,6 @@ sys.path.append("../../")
 import datetime
 from loguru import logger
 
-from persona.persona import Persona
 from persona.prompt_template.run_gpt_prompt import (
     run_gpt_prompt_chat_poignancy,
     run_gpt_prompt_event_poignancy,
@@ -25,7 +24,7 @@ from persona.cognitive_modules.retrieve import new_retrieve
 from utils import debug
 
 
-def _generate_focal_points(persona: Persona, n=3):
+def _generate_focal_points(persona, n=3):
     nodes = [
         [i.last_accessed, i]
         for i in persona.a_mem.seq_event + persona.a_mem.seq_thought
@@ -45,7 +44,7 @@ def _generate_focal_points(persona: Persona, n=3):
     return ret
 
 
-def _generate_insights_and_evidence(persona: Persona, nodes, n=5):
+def _generate_insights_and_evidence(persona, nodes, n=5):
     statements = ""
     for count, node in enumerate(nodes):
         statements += f"{str(count)}. {node.embedding_key}\n"
@@ -63,7 +62,7 @@ def _generate_insights_and_evidence(persona: Persona, nodes, n=5):
         return {"this is blank": "node_1"}
 
 
-def _generate_action_event_triple(act_desp: Persona, persona):
+def _generate_action_event_triple(act_desp, persona):
     """TODO
 
     INPUT:
@@ -79,7 +78,7 @@ def _generate_action_event_triple(act_desp: Persona, persona):
     return run_gpt_prompt_event_triple(act_desp, persona)[0]
 
 
-def _generate_poig_score(persona, event_type: Persona, description):
+def _generate_poig_score(persona, event_type, description):
     if debug:
         print("GNS FUNCTION: <generate_poig_score>")
 
@@ -89,24 +88,24 @@ def _generate_poig_score(persona, event_type: Persona, description):
     if event_type == "event" or event_type == "thought":
         return run_gpt_prompt_event_poignancy(persona, description)[0]
     elif event_type == "chat":
-        return run_gpt_prompt_chat_poignancy(persona, persona.scratch.act_description)[
+        return run_gpt_prompt_chat_poignancy(persona, persona.act_description)[
             0
         ]
 
 
-def _generate_planning_thought_on_convo(persona: Persona, all_utt):
+def _generate_planning_thought_on_convo(persona, all_utt):
     if debug:
         print("GNS FUNCTION: <generate_planning_thought_on_convo>")
     return run_gpt_prompt_planning_thought_on_convo(persona, all_utt)[0]
 
 
-def _generate_memo_on_convo(persona: Persona, all_utt):
+def _generate_memo_on_convo(persona, all_utt):
     if debug:
         print("GNS FUNCTION: <generate_memo_on_convo>")
     return run_gpt_prompt_memo_on_convo(persona, all_utt)[0]
 
 
-def run_reflect(persona: Persona):
+def run_reflect(persona):
     """
     Run the actual reflection. We generate the focal points, retrieve any
     relevant nodes, and generate thoughts and insights.
@@ -152,7 +151,7 @@ def run_reflect(persona: Persona):
             )
 
 
-def _reflection_trigger(persona: Persona):
+def _reflection_trigger(persona):
     """
     Given the current persona, determine whether the persona should run a
     reflection.
@@ -180,7 +179,7 @@ def _reflection_trigger(persona: Persona):
     return False
 
 
-def _reset_reflection_counter(persona: Persona):
+def _reset_reflection_counter(persona):
     """
     We reset the counters used for the reflection trigger.
 
@@ -194,7 +193,7 @@ def _reset_reflection_counter(persona: Persona):
     persona.scratch.importance_ele_n = 0
 
 
-def reflect(persona: Persona):
+def reflect(persona):
     """
     The main reflection module for the persona. We first check if the trigger
     conditions are met, and if so, run the reflection and reset any of the

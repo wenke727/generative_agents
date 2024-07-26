@@ -16,7 +16,6 @@ import ast
 from loguru import logger
 sys.path.append("../../")
 
-from persona.persona import Persona
 from persona.prompt_template.gpt_structure import (
     ChatGPT_safe_generate_response,
     ChatGPT_safe_generate_response_OLD,
@@ -49,7 +48,7 @@ def get_random_alphanumeric(i=6, j=6):
 ##############################################################################
 
 
-def run_gpt_prompt_wake_up_hour(persona: Persona, test_input=None, verbose=False):
+def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
     """
     Given the persona, returns an integer that indicates the hour when the
     persona wakes up.
@@ -112,7 +111,7 @@ def run_gpt_prompt_wake_up_hour(persona: Persona, test_input=None, verbose=False
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_daily_plan(persona: Persona, wake_up_hour, test_input=None, verbose=False):
+def run_gpt_prompt_daily_plan(persona, wake_up_hour, test_input=None, verbose=False):
     """
     Basically the long term planning that spans a day. Returns a list of actions
     that the persona will take today. Usually comes in the following form:
@@ -338,7 +337,7 @@ def run_gpt_prompt_generate_hourly_schedule(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_task_decomp(persona: Persona, task, duration, test_input=None, verbose=False):
+def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose=False):
     def create_prompt_input(persona, task, duration, test_input=None):
         """
         Today is Saturday June 25. From 00:00 ~ 06:00am, Maeve is
@@ -352,31 +351,31 @@ def run_gpt_prompt_task_decomp(persona: Persona, task, duration, test_input=None
         # if curr_f_org_index > 0:
         #   all_indices += [curr_f_org_index-1]
         all_indices += [curr_f_org_index]
-        if curr_f_org_index + 1 <= len(persona.scratch.f_daily_schedule_hourly_org):
+        if curr_f_org_index + 1 <= len(persona.f_daily_schedule_hourly_org):
             all_indices += [curr_f_org_index + 1]
-        if curr_f_org_index + 2 <= len(persona.scratch.f_daily_schedule_hourly_org):
+        if curr_f_org_index + 2 <= len(persona.f_daily_schedule_hourly_org):
             all_indices += [curr_f_org_index + 2]
 
         curr_time_range = ""
 
-        logger.debug(f"persona.scratch.f_daily_schedule_hourly_org:\n{persona.scratch.f_daily_schedule_hourly_org}")
+        logger.debug(f"persona.f_daily_schedule_hourly_org:\n{persona.f_daily_schedule_hourly_org}")
         logger.debug(f"all_indices: {all_indices}")
 
         summ_str = f'Today is {persona.curr_time.strftime("%B %d, %Y")}. '
         summ_str += f"From "
         for index in all_indices:
-            if index < len(persona.scratch.f_daily_schedule_hourly_org):
+            if index < len(persona.f_daily_schedule_hourly_org):
                 start_min = 0
                 for i in range(index):
-                    start_min += persona.scratch.f_daily_schedule_hourly_org[i][1]
+                    start_min += persona.f_daily_schedule_hourly_org[i][1]
                 end_min = (
-                    start_min + persona.scratch.f_daily_schedule_hourly_org[index][1]
+                    start_min + persona.f_daily_schedule_hourly_org[index][1]
                 )
                 start_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S") + datetime.timedelta(minutes=start_min)
                 end_time = datetime.datetime.strptime("00:00:00", "%H:%M:%S") + datetime.timedelta(minutes=end_min)
                 start_time_str = start_time.strftime("%H:%M%p")
                 end_time_str = end_time.strftime("%H:%M%p")
-                summ_str += f"{start_time_str} ~ {end_time_str}, {persona.name} is planning on {persona.scratch.f_daily_schedule_hourly_org[index][0]}, "
+                summ_str += f"{start_time_str} ~ {end_time_str}, {persona.name} is planning on {persona.f_daily_schedule_hourly_org[index][0]}, "
                 if curr_f_org_index + 1 == index:
                     curr_time_range = f"{start_time_str} ~ {end_time_str}"
         summ_str = summ_str[:-2] + "."
@@ -537,10 +536,10 @@ def run_gpt_prompt_task_decomp(persona: Persona, task, duration, test_input=None
 
 
 def run_gpt_prompt_action_sector(
-    action_description, persona: Persona, maze, test_input=None, verbose=False
+    action_description, persona, maze, test_input=None, verbose=False
 ):
     def create_prompt_input(action_description, persona, maze, test_input=None):
-        act_world = f"{maze.access_tile(persona.scratch.curr_tile)['world']}"
+        act_world = f"{maze.access_tile(persona.curr_tile)['world']}"
 
         prompt_input = []
 
@@ -550,8 +549,8 @@ def run_gpt_prompt_action_sector(
         prompt_input += [persona.s_mem.get_str_accessible_sector_arenas(x)]
 
         prompt_input += [persona.scratch.get_str_name()]
-        prompt_input += [f"{maze.access_tile(persona.scratch.curr_tile)['sector']}"]
-        x = f"{act_world}:{maze.access_tile(persona.scratch.curr_tile)['sector']}"
+        prompt_input += [f"{maze.access_tile(persona.curr_tile)['sector']}"]
+        x = f"{act_world}:{maze.access_tile(persona.curr_tile)['sector']}"
         prompt_input += [persona.s_mem.get_str_accessible_sector_arenas(x)]
 
         if persona.scratch.get_str_daily_plan_req() != "":
@@ -649,7 +648,7 @@ def run_gpt_prompt_action_sector(
     output = safe_generate_response(
         prompt, gpt_param, 5, fail_safe, __func_validate, __func_clean_up
     )
-    y = f"{maze.access_tile(persona.scratch.curr_tile)['world']}"
+    y = f"{maze.access_tile(persona.curr_tile)['world']}"
     x = [i.strip() for i in persona.s_mem.get_str_accessible_sectors(y).split(",")]
     if output not in x:
         # output = random.choice(x)
@@ -679,8 +678,8 @@ def run_gpt_prompt_action_arena(
     ):
         prompt_input = []
         # prompt_input += [persona.scratch.get_str_name()]
-        # prompt_input += [maze.access_tile(persona.scratch.curr_tile)["arena"]]
-        # prompt_input += [maze.access_tile(persona.scratch.curr_tile)["sector"]]
+        # prompt_input += [maze.access_tile(persona.curr_tile)["arena"]]
+        # prompt_input += [maze.access_tile(persona.curr_tile)["sector"]]
         prompt_input += [persona.scratch.get_str_name()]
         x = f"{act_world}:{act_sector}"
         prompt_input += [act_sector]
@@ -714,8 +713,8 @@ def run_gpt_prompt_action_arena(
         prompt_input += [act_sector]
 
         prompt_input += [accessible_arena_str]
-        # prompt_input += [maze.access_tile(persona.scratch.curr_tile)["arena"]]
-        # x = f"{maze.access_tile(persona.scratch.curr_tile)['world']}:{maze.access_tile(persona.scratch.curr_tile)['sector']}:{maze.access_tile(persona.scratch.curr_tile)['arena']}"
+        # prompt_input += [maze.access_tile(persona.curr_tile)["arena"]]
+        # x = f"{maze.access_tile(persona.curr_tile)['world']}:{maze.access_tile(persona.curr_tile)['sector']}:{maze.access_tile(persona.curr_tile)['arena']}"
         # prompt_input += [persona.s_mem.get_str_accessible_arena_game_objects(x)]
 
         return prompt_input
@@ -1365,7 +1364,7 @@ def run_gpt_prompt_decide_to_talk(
             context += f"{c_node.description}. "
 
         curr_time = init_persona.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
-        init_act_desc = init_persona.scratch.act_description
+        init_act_desc = init_persona.act_description
         if "(" in init_act_desc:
             init_act_desc = init_act_desc.split("(")[-1][:-1]
 
@@ -1379,7 +1378,7 @@ def run_gpt_prompt_decide_to_talk(
         else:
             init_p_desc = f"{init_persona.name} is on the way to {init_act_desc}"
 
-        target_act_desc = target_persona.scratch.act_description
+        target_act_desc = target_persona.act_description
         if "(" in target_act_desc:
             target_act_desc = target_act_desc.split("(")[-1][:-1]
 
@@ -1470,7 +1469,7 @@ def run_gpt_prompt_decide_to_react(
             context += f"{c_node.description}. "
 
         curr_time = init_persona.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
-        init_act_desc = init_persona.scratch.act_description
+        init_act_desc = init_persona.act_description
         if "(" in init_act_desc:
             init_act_desc = init_act_desc.split("(")[-1][:-1]
         if len(init_persona.scratch.planned_path) == 0:
@@ -1494,7 +1493,7 @@ def run_gpt_prompt_decide_to_react(
                 f"{init_persona.name} is on the way to {init_act_desc} at {loc}"
             )
 
-        target_act_desc = target_persona.scratch.act_description
+        target_act_desc = target_persona.act_description
         if "(" in target_act_desc:
             target_act_desc = target_act_desc.split("(")[-1][:-1]
         if len(target_persona.scratch.planned_path) == 0:
@@ -1634,18 +1633,18 @@ def run_gpt_prompt_create_conversation(
 
         init_persona_curr_desc = ""
         if init_persona.scratch.planned_path:
-            init_persona_curr_desc = f"{init_persona.name} is on the way to {init_persona.scratch.act_description}"
+            init_persona_curr_desc = f"{init_persona.name} is on the way to {init_persona.act_description}"
         else:
             init_persona_curr_desc = (
-                f"{init_persona.name} is {init_persona.scratch.act_description}"
+                f"{init_persona.name} is {init_persona.act_description}"
             )
 
         target_persona_curr_desc = ""
         if target_persona.scratch.planned_path:
-            target_persona_curr_desc = f"{target_persona.name} is on the way to {target_persona.scratch.act_description}"
+            target_persona_curr_desc = f"{target_persona.name} is on the way to {target_persona.act_description}"
         else:
             target_persona_curr_desc = (
-                f"{target_persona.name} is {target_persona.scratch.act_description}"
+                f"{target_persona.name} is {target_persona.act_description}"
             )
 
         curr_loc = curr_loc["arena"]
@@ -1998,7 +1997,7 @@ def run_gpt_prompt_convo_to_thoughts(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_event_poignancy(persona: Persona, event_description, test_input=None, verbose=False):
+def run_gpt_prompt_event_poignancy(persona, event_description, test_input=None, verbose=False):
     def create_prompt_input(persona, event_description, test_input=None):
         prompt_input = [
             persona.name,
@@ -2265,7 +2264,7 @@ def run_gpt_prompt_chat_poignancy(
     # return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_focal_pt(persona: Persona, statements, n, test_input=None, verbose=False):
+def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=False):
     def create_prompt_input(persona, statements, n, test_input=None):
         prompt_input = [statements, str(n)]
         return prompt_input
@@ -2632,8 +2631,8 @@ def run_gpt_prompt_agent_chat(
                 prev_convo_insert = ""
         print(prev_convo_insert)
 
-        curr_sector = f"{maze.access_tile(persona.scratch.curr_tile)['sector']}"
-        curr_arena = f"{maze.access_tile(persona.scratch.curr_tile)['arena']}"
+        curr_sector = f"{maze.access_tile(persona.curr_tile)['sector']}"
+        curr_arena = f"{maze.access_tile(persona.curr_tile)['arena']}"
         curr_location = f"{curr_arena} in {curr_sector}"
 
         prompt_input = [
@@ -3032,7 +3031,7 @@ def run_gpt_prompt_planning_thought_on_convo(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_memo_on_convo(persona: Persona, all_utt, test_input=None, verbose=False):
+def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=False):
     def create_prompt_input(persona, all_utt, test_input=None):
         prompt_input = [
             all_utt,
@@ -3126,7 +3125,7 @@ def run_gpt_prompt_memo_on_convo(persona: Persona, all_utt, test_input=None, ver
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_generate_safety_score(persona: Persona, comment, test_input=None, verbose=False):
+def run_gpt_generate_safety_score(persona, comment, test_input=None, verbose=False):
     def create_prompt_input(comment, test_input=None):
         prompt_input = [comment]
         return prompt_input
@@ -3239,8 +3238,8 @@ def run_gpt_generate_iterative_chat_utt(
                 prev_convo_insert = ""
         print(prev_convo_insert)
 
-        curr_sector = f"{maze.access_tile(persona.scratch.curr_tile)['sector']}"
-        curr_arena = f"{maze.access_tile(persona.scratch.curr_tile)['arena']}"
+        curr_sector = f"{maze.access_tile(persona.curr_tile)['sector']}"
+        curr_arena = f"{maze.access_tile(persona.curr_tile)['arena']}"
         curr_location = f"{curr_arena} in {curr_sector}"
 
         retrieved_str = ""

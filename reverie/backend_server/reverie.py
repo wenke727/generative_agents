@@ -32,8 +32,7 @@ from collections import defaultdict
 from maze import Maze
 from persona.persona import Persona
 from persona.cognitive_modules.converse import load_history_via_whisper
-from reverie.global_methods import read_file_to_list
-from global_methods import check_if_file_exists, copyanything
+from global_methods import check_if_file_exists, copyanything, read_file_to_list
 from utils import fs_temp_storage, fs_storage, maze_assets_loc
 from misc.logger_helper import configure_loguru_integration
 

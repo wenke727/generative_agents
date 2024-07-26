@@ -18,12 +18,12 @@ from persona.prompt_template.openai_helper import initialize_openai_client, GPT_
 client, chat, embeddings = initialize_openai_client()
 
 
-def temp_sleep(seconds=0.15):
+def _temp_sleep(seconds=0.15):
     time.sleep(seconds)
 
 
 def ChatGPT_single_request(prompt):
-    temp_sleep()
+    _temp_sleep()
 
     completion = chat(
         model=GPT_35_TURBO, messages=[{"role": "user", "content": prompt}]
@@ -32,7 +32,7 @@ def ChatGPT_single_request(prompt):
 
 
 """ SECTION 1: CHATGPT-3 STRUCTURE """
-def GPT4_request(prompt):
+def _GPT4_request(prompt):
     """
     Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
     server and returns the response.
@@ -44,7 +44,7 @@ def GPT4_request(prompt):
     RETURNS:
       a str of GPT-3's response.
     """
-    temp_sleep()
+    _temp_sleep()
 
     try:
         completion = chat(
@@ -57,7 +57,7 @@ def GPT4_request(prompt):
         return "ChatGPT ERROR"
 
 
-def ChatGPT_request(prompt):
+def _ChatGPT_request(prompt):
     """
     Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
     server and returns the response.
@@ -82,7 +82,7 @@ def ChatGPT_request(prompt):
         return "ChatGPT ERROR"
 
 
-def GPT4_safe_generate_response(
+def _GPT4_safe_generate_response(
     prompt,
     example_output,
     special_instruction,
@@ -106,7 +106,7 @@ def GPT4_safe_generate_response(
     for i in range(repeat):
 
         try:
-            curr_gpt_response = GPT4_request(prompt).strip()
+            curr_gpt_response = _GPT4_request(prompt).strip()
             end_index = curr_gpt_response.rfind("}") + 1
             curr_gpt_response = curr_gpt_response[:end_index]
             curr_gpt_response = json.loads(curr_gpt_response)["output"]
@@ -157,7 +157,7 @@ def ChatGPT_safe_generate_response(
 
     for i in range(repeat):
         try:
-            curr_gpt_response = ChatGPT_request(prompt).strip()
+            curr_gpt_response = _ChatGPT_request(prompt).strip()
             end_index = curr_gpt_response.rfind("}") + 1
             curr_gpt_response = curr_gpt_response[:end_index]
             curr_gpt_response = json.loads(curr_gpt_response)["output"]
@@ -195,7 +195,7 @@ def ChatGPT_safe_generate_response_OLD(
 
     for i in range(repeat):
         try:
-            curr_gpt_response = ChatGPT_request(prompt).strip()
+            curr_gpt_response = _ChatGPT_request(prompt).strip()
             if func_validate(curr_gpt_response, prompt=prompt):
                 return func_clean_up(curr_gpt_response, prompt=prompt)
             if verbose:
@@ -210,7 +210,7 @@ def ChatGPT_safe_generate_response_OLD(
 
 
 """ SECTION 2: ORIGINAL GPT-3 STRUCTURE """
-def GPT_request(prompt, gpt_parameter):
+def _GPT_request(prompt, gpt_parameter):
     """
     Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
     server and returns the response.
@@ -222,7 +222,7 @@ def GPT_request(prompt, gpt_parameter):
     RETURNS:
       a str of GPT-3's response.
     """
-    temp_sleep()
+    _temp_sleep()
     # try:
     response = chat(
         model=gpt_parameter["engine"],
@@ -282,7 +282,7 @@ def safe_generate_response(
         logger.debug(f"prompt: {prompt}")
 
     for i in range(repeat):
-        curr_gpt_response = GPT_request(prompt, gpt_parameter)
+        curr_gpt_response = _GPT_request(prompt, gpt_parameter)
         if func_validate(curr_gpt_response, prompt=prompt):
             return func_clean_up(curr_gpt_response, prompt=prompt)
         if verbose:
@@ -300,7 +300,7 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 
 """ SECTION 3: test case """
-def test_case_0():
+def _test_case_0():
     gpt_parameter = {
         "engine": GPT_35_TURBO,
         "max_tokens": 50,
@@ -333,7 +333,7 @@ def test_case_0():
     logger.info(output)
 
 
-def test_case_1():
+def _test_case_1():
     prompt_lib_file = "./v3_ChatGPT/generate_obj_event_v1.txt"
 
     prompt_input = ['bed', 'Isabella Rodriguez', 'sleeping', 'bed', 'bed']
@@ -379,5 +379,5 @@ def test_case_1():
 
 
 if __name__ == "__main__":
-    test_case_0()
-    test_case_1()
+    _test_case_0()
+    _test_case_1()

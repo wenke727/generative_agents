@@ -12,12 +12,11 @@ from loguru import logger
 sys.path.append("../../")
 
 from maze import Maze
-from persona.persona import Persona
 from path_finder import path_finder
 from utils import collision_block_id
 
 
-def execute(persona: Persona, maze:Maze, personas:list, plan):
+def execute(persona, maze:Maze, personas:list, plan):
     """
     Given a plan (action's string address), we execute the plan (actually
     outputs the tile coordinate path and the next coordinate for the
@@ -56,7 +55,7 @@ def execute(persona: Persona, maze:Maze, personas:list, plan):
             ].scratch.curr_tile
             potential_path = path_finder(
                 maze.collision_maze,
-                persona.scratch.curr_tile,
+                persona.curr_tile,
                 target_p_tile,
                 collision_block_id,
             )
@@ -65,13 +64,13 @@ def execute(persona: Persona, maze:Maze, personas:list, plan):
             else:
                 potential_1 = path_finder(
                     maze.collision_maze,
-                    persona.scratch.curr_tile,
+                    persona.curr_tile,
                     potential_path[int(len(potential_path) / 2)],
                     collision_block_id,
                 )
                 potential_2 = path_finder(
                     maze.collision_maze,
-                    persona.scratch.curr_tile,
+                    persona.curr_tile,
                     potential_path[int(len(potential_path) / 2) + 1],
                     collision_block_id,
                 )
@@ -131,7 +130,7 @@ def execute(persona: Persona, maze:Maze, personas:list, plan):
 
         # Now that we've identified the target tile, we find the shortest path to
         # one of the target tiles.
-        curr_tile = persona.scratch.curr_tile
+        curr_tile = persona.curr_tile
         collision_maze = maze.collision_maze
         closest_target_tile = None
         path = None
@@ -157,12 +156,12 @@ def execute(persona: Persona, maze:Maze, personas:list, plan):
 
     # Setting up the next immediate step. We stay at our curr_tile if there is
     # no <planned_path> left, but otherwise, we go to the next tile in the path.
-    ret = persona.scratch.curr_tile
+    ret = persona.curr_tile
     if persona.scratch.planned_path:
         ret = persona.scratch.planned_path[0]
         persona.scratch.planned_path = persona.scratch.planned_path[1:]
 
-    description = f"{persona.scratch.act_description}"
+    description = f"{persona.act_description}"
     description += f" @ {persona.scratch.act_address}"
 
     execution = ret, persona.scratch.act_pronunciatio, description

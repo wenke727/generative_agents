@@ -12,11 +12,10 @@ sys.path.append("../../")
 from loguru import logger
 from numpy import dot
 from numpy.linalg import norm
-from persona.persona import Persona
 from persona.prompt_template.gpt_structure import get_embedding
 
 
-def retrieve(persona: Persona, perceived):
+def retrieve(persona, perceived):
     """
     This function takes the events that are perceived by the persona as input
     and returns a set of related events and thoughts that the persona would
@@ -51,7 +50,7 @@ def retrieve(persona: Persona, perceived):
     return retrieved
 
 
-def cos_sim(a, b):
+def _cos_sim(a, b):
     """
     This function calculates the cosine similarity between two input vectors
     'a' and 'b'. Cosine similarity is a measure of similarity between two
@@ -72,7 +71,7 @@ def cos_sim(a, b):
     return dot(a, b) / (norm(a) * norm(b))
 
 
-def normalize_dict_floats(d, target_min, target_max):
+def _normalize_dict_floats(d, target_min, target_max):
     """
     This function normalizes the float values of a given dictionary 'd' between
     a target minimum and maximum value. The normalization is done by scaling the
@@ -110,7 +109,7 @@ def normalize_dict_floats(d, target_min, target_max):
     return d
 
 
-def top_highest_x_values(d, x):
+def _top_highest_x_values(d, x):
     """
     This function takes a dictionary 'd' and an integer 'x' as input, and
     returns a new dictionary containing the top 'x' key-value pairs from the
@@ -133,7 +132,7 @@ def top_highest_x_values(d, x):
     return top_v
 
 
-def extract_recency(persona: Persona, nodes):
+def _extract_recency(persona, nodes):
     """
     Gets the current Persona object and a list of nodes that are in a
     chronological order, and outputs a dictionary that has the recency score
@@ -155,7 +154,7 @@ def extract_recency(persona: Persona, nodes):
     return recency_out
 
 
-def extract_importance(persona, nodes):
+def _extract_importance(persona, nodes):
     """
     Gets the current Persona object and a list of nodes that are in a
     chronological order, and outputs a dictionary that has the importance score
@@ -175,7 +174,7 @@ def extract_importance(persona, nodes):
     return importance_out
 
 
-def extract_relevance(persona, nodes, focal_pt):
+def _extract_relevance(persona, nodes, focal_pt):
     """
     Gets the current Persona object, a list of nodes that are in a
     chronological order, and the focal_pt string and outputs a dictionary
@@ -194,7 +193,7 @@ def extract_relevance(persona, nodes, focal_pt):
     relevance_out = dict()
     for count, node in enumerate(nodes):
         node_embedding = persona.a_mem.embeddings[node.embedding_key]
-        relevance_out[node.node_id] = cos_sim(node_embedding, focal_embedding)
+        relevance_out[node.node_id] = _cos_sim(node_embedding, focal_embedding)
 
     return relevance_out
 
@@ -226,19 +225,19 @@ def new_retrieve(persona, focal_points, n_count=30):
         # You could also imagine getting the raw conversation, but for now.
         nodes = [
             [i.last_accessed, i]
-            for i in persona.a_mem.seq_event + persona.a_mem.seq_thought
-            if "idle" not in i.embedding_key
+                for i in persona.a_mem.seq_event + persona.a_mem.seq_thought
+                    if "idle" not in i.embedding_key
         ]
         nodes = sorted(nodes, key=lambda x: x[0])
         nodes = [i for created, i in nodes]
 
         # Calculating the component dictionaries and normalizing them.
-        recency_out = extract_recency(persona, nodes)
-        recency_out = normalize_dict_floats(recency_out, 0, 1)
-        importance_out = extract_importance(persona, nodes)
-        importance_out = normalize_dict_floats(importance_out, 0, 1)
-        relevance_out = extract_relevance(persona, nodes, focal_pt)
-        relevance_out = normalize_dict_floats(relevance_out, 0, 1)
+        recency_out = _extract_recency(persona, nodes)
+        recency_out = _normalize_dict_floats(recency_out, 0, 1)
+        importance_out = _extract_importance(persona, nodes)
+        importance_out = _normalize_dict_floats(importance_out, 0, 1)
+        relevance_out = _extract_relevance(persona, nodes, focal_pt)
+        relevance_out = _normalize_dict_floats(relevance_out, 0, 1)
 
         # Computing the final scores that combines the component values.
         # Note to self: test out different weights. [1, 1, 1] tends to work
@@ -255,7 +254,7 @@ def new_retrieve(persona, focal_points, n_count=30):
                 + persona.scratch.importance_w * importance_out[key] * gw[2]
             )
 
-        master_out = top_highest_x_values(master_out, len(master_out.keys()))
+        master_out = _top_highest_x_values(master_out, len(master_out.keys()))
         for key, val in master_out.items():
             scores = (
                 persona.scratch.recency_w * recency_out[key] * 1,
@@ -265,12 +264,11 @@ def new_retrieve(persona, focal_points, n_count=30):
             info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
             logger.debig(info)
 
-
         # Extracting the highest x values.
         # <master_out> has the key of node.id and value of float. Once we get the
         # highest x values, we want to translate the node.id into nodes and return
         # the list of nodes.
-        master_out = top_highest_x_values(master_out, n_count)
+        master_out = _top_highest_x_values(master_out, n_count)
         master_nodes = [
             persona.a_mem.id_to_node[key] for key in list(master_out.keys())
         ]

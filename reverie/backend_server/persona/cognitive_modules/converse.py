@@ -10,7 +10,6 @@ import datetime
 
 sys.path.append("../")
 
-from global_methods import check_if_file_exists
 from persona.cognitive_modules.retrieve import new_retrieve
 from persona.prompt_template.gpt_structure import get_embedding
 from persona.prompt_template.run_gpt_prompt import (
@@ -29,9 +28,7 @@ from persona.prompt_template.run_gpt_prompt import (
 from utils import debug
 
 
-def generate_agent_chat_summarize_ideas(
-    init_persona, target_persona, retrieved, curr_context
-):
+def generate_agent_chat_summarize_ideas(init_persona, target_persona, retrieved, curr_context):
     all_embedding_keys = list()
     for key, val in retrieved.items():
         for i in val:
@@ -42,8 +39,8 @@ def generate_agent_chat_summarize_ideas(
 
     try:
         summarized_idea = run_gpt_prompt_agent_chat_summarize_ideas(
-            init_persona, target_persona, all_embedding_key_str, curr_context
-        )[0]
+            init_persona, target_persona, all_embedding_key_str, curr_context)[0]
+
     except:
         summarized_idea = ""
     return summarized_idea
@@ -59,8 +56,8 @@ def generate_summarize_agent_relationship(init_persona, target_persona, retrieve
         all_embedding_key_str += f"{i}\n"
 
     summarized_relationship = run_gpt_prompt_agent_chat_summarize_relationship(
-        init_persona, target_persona, all_embedding_key_str
-    )[0]
+        init_persona, target_persona, all_embedding_key_str)[0]
+
     return summarized_relationship
 
 
@@ -84,10 +81,10 @@ def agent_chat_v1(maze, init_persona, target_persona):
     # Chat version optimized for speed via batch generation
     curr_context = (
         f"{init_persona.name} "
-        + f"was {init_persona.scratch.act_description} "
+        + f"was {init_persona.act_description} "
         + f"when {init_persona.name} "
         + f"saw {target_persona.name} "
-        + f"in the middle of {target_persona.scratch.act_description}.\n"
+        + f"in the middle of {target_persona.act_description}.\n"
     )
     curr_context += (
         f"{init_persona.name} "
@@ -125,10 +122,10 @@ def generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_c
     # Chat version optimized for speed via batch generation
     curr_context = (
         f"{init_persona.name} "
-        + f"was {init_persona.scratch.act_description} "
+        + f"was {init_persona.act_description} "
         + f"when {init_persona.name} "
         + f"saw {target_persona.name} "
-        + f"in the middle of {target_persona.scratch.act_description}.\n"
+        + f"in the middle of {target_persona.act_description}.\n"
     )
     curr_context += (
         f"{init_persona.name} "
@@ -138,8 +135,7 @@ def generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_c
 
     print("July 23 5")
     x = run_gpt_generate_iterative_chat_utt(
-        maze, init_persona, target_persona, retrieved, curr_context, curr_chat
-    )[0]
+        maze, init_persona, target_persona, retrieved, curr_context, curr_chat)[0]
 
     print("July 23 6")
 
@@ -165,13 +161,13 @@ def agent_chat_v2(maze, init_persona, target_persona):
         if last_chat:
             focal_points = [
                 f"{relationship}",
-                f"{target_persona.name} is {target_persona.scratch.act_description}",
+                f"{target_persona.name} is {target_persona.act_description}",
                 last_chat,
             ]
         else:
             focal_points = [
                 f"{relationship}",
-                f"{target_persona.name} is {target_persona.scratch.act_description}",
+                f"{target_persona.name} is {target_persona.act_description}",
             ]
         retrieved = new_retrieve(init_persona, focal_points, 15)
         utt, end = generate_one_utterance(
@@ -194,13 +190,13 @@ def agent_chat_v2(maze, init_persona, target_persona):
         if last_chat:
             focal_points = [
                 f"{relationship}",
-                f"{init_persona.name} is {init_persona.scratch.act_description}",
+                f"{init_persona.name} is {init_persona.act_description}",
                 last_chat,
             ]
         else:
             focal_points = [
                 f"{relationship}",
-                f"{init_persona.name} is {init_persona.scratch.act_description}",
+                f"{init_persona.name} is {init_persona.act_description}",
             ]
         retrieved = new_retrieve(target_persona, focal_points, 15)
         utt, end = generate_one_utterance(
@@ -270,7 +266,7 @@ def generate_poig_score(persona, event_type, description):
     if event_type == "event" or event_type == "thought":
         return run_gpt_prompt_event_poignancy(persona, description)[0]
     elif event_type == "chat":
-        return run_gpt_prompt_chat_poignancy(persona, persona.scratch.act_description)[
+        return run_gpt_prompt_chat_poignancy(persona, persona.act_description)[
             0
         ]
 

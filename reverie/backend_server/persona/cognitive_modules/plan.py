@@ -14,7 +14,6 @@ from loguru import logger
 sys.path.append("../../")
 
 from maze import Maze
-from persona.persona import Persona
 from persona.prompt_template.run_gpt_prompt import (
     run_gpt_prompt_act_obj_desc,
     run_gpt_prompt_act_obj_event_triple,
@@ -338,7 +337,7 @@ def _generate_act_obj_event_triple(act_game_object, act_obj_desc, persona):
 
 """ _chat_react """
 def _generate_convo(maze, init_persona, target_persona):
-    curr_loc = maze.access_tile(init_persona.scratch.curr_tile)
+    curr_loc = maze.access_tile(init_persona.curr_tile)
 
     # convo = run_gpt_prompt_create_conversation(init_persona, target_persona, curr_loc)[0]
     # convo = agent_chat_v1(maze, init_persona, target_persona)
@@ -424,7 +423,7 @@ def generate_new_decomp_schedule(
     count = 0  # enumerate count
     truncated_fin = False
 
-    print("DEBUG::: ", persona.name)
+    print("DEBUG::: ", persona.scratch.name)
     for act, dur in p.scratch.f_daily_schedule:
         if (dur_sum >= start_hour * 60) and (dur_sum < end_hour * 60):
             main_act_dur += [[act, dur]]
@@ -492,8 +491,8 @@ def generate_new_decomp_schedule(
 ##############################################################################
 
 
-def _revise_identity(persona: Persona):
-    p_name = persona.name
+def _revise_identity(persona):
+    p_name = persona.scratch.name
 
     focal_points = [
         f"{p_name}'s plan for {persona.scratch.get_str_curr_date_str()}.",
@@ -544,7 +543,7 @@ def _revise_identity(persona: Persona):
     persona.scratch.currently = new_currently
 
     daily_req_prompt = persona.iss + "\n"
-    daily_req_prompt += f"Today is {persona.curr_time.strftime('%A %B %d')}. Here is {persona.name}'s plan today in broad-strokes (with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm).\n\n"
+    daily_req_prompt += f"Today is {persona.curr_time.strftime('%A %B %d')}. Here is {persona.scratch.name}'s plan today in broad-strokes (with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm).\n\n"
     daily_req_prompt += (
         f"Follow this format (the list should have 4~6 items but no more):\n"
     )
@@ -558,7 +557,7 @@ def _revise_identity(persona: Persona):
     persona.scratch.daily_plan_req = new_daily_req
 
 
-def _long_term_planning(persona: Persona, new_day):
+def _long_term_planning(persona, new_day):
     """
     Formulates the persona's daily long-term plan if it is the start of a new
     day. This basically has two components: first, we create the wake-up hour,
@@ -590,17 +589,17 @@ def _long_term_planning(persona: Persona, new_day):
     # Based on the daily_req, we create an hourly schedule for the persona,
     # which is a list of todo items with a time duration (in minutes) that
     # add up to 24 hours.
-    persona.scratch.f_daily_schedule = _generate_hourly_schedule(persona, wake_up_hour)
-    persona.scratch.f_daily_schedule_hourly_org = persona.scratch.f_daily_schedule[:]
+    persona.f_daily_schedule = _generate_hourly_schedule(persona, wake_up_hour)
+    persona.f_daily_schedule_hourly_org = persona.f_daily_schedule[:]
 
     # Adding plan to the memory.
-    thought = f"This is {persona.name}'s plan for {persona.curr_time.strftime('%A %B %d')}:"
+    thought = f"This is {persona.scratch.name}'s plan for {persona.curr_time.strftime('%A %B %d')}:"
     for i in persona.scratch.daily_req:
         thought += f" {i},"
     thought = thought[:-1] + "."
     created = persona.curr_time
     expiration = persona.curr_time + datetime.timedelta(days=30)
-    s, p, o = (persona.name, "plan", persona.curr_time.strftime("%A %B %d"),)
+    s, p, o = (persona.scratch.name, "plan", persona.curr_time.strftime("%A %B %d"),)
     keywords = set(["plan"])
     thought_poignancy = 5
     thought_embedding_pair = (thought, get_embedding(thought))
@@ -622,7 +621,7 @@ def _long_term_planning(persona: Persona, new_day):
     # print("Done sleeping!")
 
 
-def _determine_action(persona: Persona, maze):
+def _determine_action(persona, maze):
     """
     Creates the next action sequence for the persona.
     The main goal of this function is to run "add_new_action" on the persona's
@@ -669,33 +668,33 @@ def _determine_action(persona: Persona, maze):
     # sequence. We do that here.
     if curr_index == 0:
         # This portion is invoked if it is the first hour of the day.
-        act_desp, act_dura = persona.scratch.f_daily_schedule[curr_index]
+        act_desp, act_dura = persona.f_daily_schedule[curr_index]
         if act_dura >= 60:
             # We decompose if the next action is longer than an hour, and fits the
             # criteria described in determine_decomp.
             if determine_decomp(act_desp, act_dura):
-                persona.scratch.f_daily_schedule[curr_index : curr_index + 1] = (
+                persona.f_daily_schedule[curr_index : curr_index + 1] = (
                     _generate_task_decomp(persona, act_desp, act_dura)
                 )
-        if curr_index_60 + 1 < len(persona.scratch.f_daily_schedule):
-            act_desp, act_dura = persona.scratch.f_daily_schedule[curr_index_60 + 1]
+        if curr_index_60 + 1 < len(persona.f_daily_schedule):
+            act_desp, act_dura = persona.f_daily_schedule[curr_index_60 + 1]
             if act_dura >= 60:
                 if determine_decomp(act_desp, act_dura):
-                    persona.scratch.f_daily_schedule[
+                    persona.f_daily_schedule[
                         curr_index_60 + 1 : curr_index_60 + 2
                     ] = _generate_task_decomp(persona, act_desp, act_dura)
 
-    if curr_index_60 < len(persona.scratch.f_daily_schedule):
+    if curr_index_60 < len(persona.f_daily_schedule):
         # If it is not the first hour of the day, this is always invoked (it is
         # also invoked during the first hour of the day -- to double up so we can
         # decompose two hours in one go). Of course, we need to have something to
         # decompose as well, so we check for that too.
         if persona.curr_time.hour < 23:
             # And we don't want to decompose after 11 pm.
-            act_desp, act_dura = persona.scratch.f_daily_schedule[curr_index_60]
+            act_desp, act_dura = persona.f_daily_schedule[curr_index_60]
             if act_dura >= 60:
                 if determine_decomp(act_desp, act_dura):
-                    persona.scratch.f_daily_schedule[
+                    persona.f_daily_schedule[
                         curr_index_60 : curr_index_60 + 1
                     ] = _generate_task_decomp(persona, act_desp, act_dura)
     # * End of Decompose *
@@ -705,29 +704,29 @@ def _determine_action(persona: Persona, maze):
     # ready in f_daily_schedule.
     debug_info = ""
     debug_info += "\n" + "DEBUG LJSDLFSKJF"
-    for i in persona.scratch.f_daily_schedule:
+    for i in persona.f_daily_schedule:
         debug_info += "\n" + str(i)
     debug_info += "\ncurr index: " + str(curr_index)
-    debug_info += "\nlength: " + str(len(persona.scratch.f_daily_schedule))
-    debug_info += "\nname: " + persona.name
+    debug_info += "\nlength: " + str(len(persona.f_daily_schedule))
+    debug_info += "\nname: " + persona.scratch.name
     logger.debug(debug_info)
 
     # 1440
     x_emergency = 0
-    for i in persona.scratch.f_daily_schedule:
+    for i in persona.f_daily_schedule:
         x_emergency += i[1]
     # print ("x_emergency", x_emergency)
 
     if 1440 - x_emergency > 0:
         print("x_emergency__AAA", x_emergency)
-    persona.scratch.f_daily_schedule += [["sleeping", 1440 - x_emergency]]
+    persona.f_daily_schedule += [["sleeping", 1440 - x_emergency]]
 
-    act_desp, act_dura = persona.scratch.f_daily_schedule[curr_index]
+    act_desp, act_dura = persona.f_daily_schedule[curr_index]
 
     # Finding the target location of the action and creating action-related
     # variables.
-    act_world = maze.access_tile(persona.scratch.curr_tile)["world"]
-    # act_sector = maze.access_tile(persona.scratch.curr_tile)["sector"]
+    act_world = maze.access_tile(persona.curr_tile)["world"]
+    # act_sector = maze.access_tile(persona.curr_tile)["sector"]
     act_sector = _generate_action_sector(act_desp, persona, maze)
     act_arena = _generate_action_arena(act_desp, persona, maze, act_world, act_sector)
     act_address = f"{act_world}:{act_sector}:{act_arena}"
@@ -758,7 +757,7 @@ def _determine_action(persona: Persona, maze):
     )
 
 
-def _choose_retrieved(persona: Persona, retrieved):
+def _choose_retrieved(persona, retrieved):
     """
     Retrieved elements have multiple core "curr_events". We need to choose one
     event to which we are going to react to. We pick that event here.
@@ -801,7 +800,7 @@ def _choose_retrieved(persona: Persona, retrieved):
     return None
 
 
-def _should_react(persona: Persona, retrieved, personas):
+def _should_react(persona, retrieved, personas):
     """
     Determines what form of reaction the persona should exihibit given the
     retrieved values.
@@ -821,15 +820,15 @@ def _should_react(persona: Persona, retrieved, personas):
     def lets_talk(init_persona, target_persona, retrieved):
         if (
             not target_persona.scratch.act_address
-            or not target_persona.scratch.act_description
+            or not target_persona.act_description
             or not init_persona.scratch.act_address
-            or not init_persona.scratch.act_description
+            or not init_persona.act_description
         ):
             return False
 
         if (
-            "sleeping" in target_persona.scratch.act_description
-            or "sleeping" in init_persona.scratch.act_description
+            "sleeping" in target_persona.act_description
+            or "sleeping" in init_persona.act_description
         ):
             return False
 
@@ -854,15 +853,15 @@ def _should_react(persona: Persona, retrieved, personas):
     def lets_react(init_persona, target_persona, retrieved):
         if (
             not target_persona.scratch.act_address
-            or not target_persona.scratch.act_description
+            or not target_persona.act_description
             or not init_persona.scratch.act_address
-            or not init_persona.scratch.act_description
+            or not init_persona.act_description
         ):
             return False
 
         if (
-            "sleeping" in target_persona.scratch.act_description
-            or "sleeping" in init_persona.scratch.act_description
+            "sleeping" in target_persona.act_description
+            or "sleeping" in init_persona.act_description
         ):
             return False
 
@@ -870,7 +869,7 @@ def _should_react(persona: Persona, retrieved, personas):
         if init_persona.curr_time.hour == 23:
             return False
 
-        if "waiting" in target_persona.scratch.act_description:
+        if "waiting" in target_persona.act_description:
             return False
         if init_persona.scratch.planned_path == []:
             return False
@@ -916,7 +915,7 @@ def _should_react(persona: Persona, retrieved, personas):
 
 
 def _create_react(
-    persona: Persona,
+    persona,
     inserted_act,
     inserted_act_dur,
     act_address,
@@ -991,7 +990,7 @@ def _create_react(
     )
 
 
-def _chat_react(maze, persona: Persona, focused_event, reaction_mode, personas):
+def _chat_react(maze, persona, focused_event, reaction_mode, personas):
     # There are two personas -- the persona who is initiating the conversation
     # and the persona who is the target. We get the persona instances here.
     init_persona = persona
@@ -1052,7 +1051,7 @@ def _chat_react(maze, persona: Persona, focused_event, reaction_mode, personas):
         )
 
 
-def _wait_react(persona: Persona, reaction_mode):
+def _wait_react(persona, reaction_mode):
     p = persona
 
     inserted_act = f'waiting to start {p.scratch.act_description.split("(")[-1][:-1]}'
@@ -1098,7 +1097,7 @@ def _wait_react(persona: Persona, reaction_mode):
     )
 
 
-def plan(persona: Persona, maze: Maze, personas, new_day, retrieved: dict):
+def plan(persona, maze: Maze, personas, new_day, retrieved: dict):
     """
     Main cognitive function of the chain. It takes the retrieved memory and
     perception, as well as the maze and the first day state to conduct both
