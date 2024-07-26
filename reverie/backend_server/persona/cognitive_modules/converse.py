@@ -83,16 +83,16 @@ def generate_agent_chat(
 def agent_chat_v1(maze, init_persona, target_persona):
     # Chat version optimized for speed via batch generation
     curr_context = (
-        f"{init_persona.scratch.name} "
+        f"{init_persona.name} "
         + f"was {init_persona.scratch.act_description} "
-        + f"when {init_persona.scratch.name} "
-        + f"saw {target_persona.scratch.name} "
+        + f"when {init_persona.name} "
+        + f"saw {target_persona.name} "
         + f"in the middle of {target_persona.scratch.act_description}.\n"
     )
     curr_context += (
-        f"{init_persona.scratch.name} "
+        f"{init_persona.name} "
         + f"is thinking of initating a conversation with "
-        + f"{target_persona.scratch.name}."
+        + f"{target_persona.name}."
     )
 
     summarized_ideas = []
@@ -124,16 +124,16 @@ def agent_chat_v1(maze, init_persona, target_persona):
 def generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_chat):
     # Chat version optimized for speed via batch generation
     curr_context = (
-        f"{init_persona.scratch.name} "
+        f"{init_persona.name} "
         + f"was {init_persona.scratch.act_description} "
-        + f"when {init_persona.scratch.name} "
-        + f"saw {target_persona.scratch.name} "
+        + f"when {init_persona.name} "
+        + f"saw {target_persona.name} "
         + f"in the middle of {target_persona.scratch.act_description}.\n"
     )
     curr_context += (
-        f"{init_persona.scratch.name} "
+        f"{init_persona.name} "
         + f"is initiating a conversation with "
-        + f"{target_persona.scratch.name}."
+        + f"{target_persona.name}."
     )
 
     print("July 23 5")
@@ -153,7 +153,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
     print("July 23")
 
     for i in range(8):
-        focal_points = [f"{target_persona.scratch.name}"]
+        focal_points = [f"{target_persona.name}"]
         retrieved = new_retrieve(init_persona, focal_points, 50)
         relationship = generate_summarize_agent_relationship(
             init_persona, target_persona, retrieved
@@ -165,24 +165,24 @@ def agent_chat_v2(maze, init_persona, target_persona):
         if last_chat:
             focal_points = [
                 f"{relationship}",
-                f"{target_persona.scratch.name} is {target_persona.scratch.act_description}",
+                f"{target_persona.name} is {target_persona.scratch.act_description}",
                 last_chat,
             ]
         else:
             focal_points = [
                 f"{relationship}",
-                f"{target_persona.scratch.name} is {target_persona.scratch.act_description}",
+                f"{target_persona.name} is {target_persona.scratch.act_description}",
             ]
         retrieved = new_retrieve(init_persona, focal_points, 15)
         utt, end = generate_one_utterance(
             maze, init_persona, target_persona, retrieved, curr_chat
         )
 
-        curr_chat += [[init_persona.scratch.name, utt]]
+        curr_chat += [[init_persona.name, utt]]
         if end:
             break
 
-        focal_points = [f"{init_persona.scratch.name}"]
+        focal_points = [f"{init_persona.name}"]
         retrieved = new_retrieve(target_persona, focal_points, 50)
         relationship = generate_summarize_agent_relationship(
             target_persona, init_persona, retrieved
@@ -194,20 +194,20 @@ def agent_chat_v2(maze, init_persona, target_persona):
         if last_chat:
             focal_points = [
                 f"{relationship}",
-                f"{init_persona.scratch.name} is {init_persona.scratch.act_description}",
+                f"{init_persona.name} is {init_persona.scratch.act_description}",
                 last_chat,
             ]
         else:
             focal_points = [
                 f"{relationship}",
-                f"{init_persona.scratch.name} is {init_persona.scratch.act_description}",
+                f"{init_persona.name} is {init_persona.scratch.act_description}",
             ]
         retrieved = new_retrieve(target_persona, focal_points, 15)
         utt, end = generate_one_utterance(
             maze, target_persona, init_persona, retrieved, curr_chat
         )
 
-        curr_chat += [[target_persona.scratch.name, utt]]
+        curr_chat += [[target_persona.name, utt]]
         if end:
             break
 
@@ -282,8 +282,8 @@ def load_history_via_whisper(personas, whispers):
 
         thought = generate_inner_thought(persona, whisper)
 
-        created = persona.scratch.curr_time
-        expiration = persona.scratch.curr_time + datetime.timedelta(days=30)
+        created = persona.curr_time
+        expiration = persona.curr_time + datetime.timedelta(days=30)
         s, p, o = generate_action_event_triple(thought, persona)
         keywords = set([s, p, o])
         thought_poignancy = generate_poig_score(persona, "event", whisper)
@@ -314,7 +314,7 @@ def open_convo_session(persona, convo_mode):
 
             if int(run_gpt_generate_safety_score(persona, line)[0]) >= 8:
                 print(
-                    f"{persona.scratch.name} is a computational agent, and as such, it may be inappropriate to attribute human agency to the agent in your communication."
+                    f"{persona.name} is a computational agent, and as such, it may be inappropriate to attribute human agency to the agent in your communication."
                 )
 
             else:
@@ -325,14 +325,14 @@ def open_convo_session(persona, convo_mode):
                 next_line = generate_next_line(
                     persona, interlocutor_desc, curr_convo, summarized_idea
                 )
-                curr_convo += [[persona.scratch.name, next_line]]
+                curr_convo += [[persona.name, next_line]]
 
     elif convo_mode == "whisper":
         whisper = input("Enter Input: ")
         thought = generate_inner_thought(persona, whisper)
 
-        created = persona.scratch.curr_time
-        expiration = persona.scratch.curr_time + datetime.timedelta(days=30)
+        created = persona.curr_time
+        expiration = persona.curr_time + datetime.timedelta(days=30)
         s, p, o = generate_action_event_triple(thought, persona)
         keywords = set([s, p, o])
         thought_poignancy = generate_poig_score(persona, "event", whisper)

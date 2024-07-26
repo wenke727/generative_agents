@@ -424,7 +424,7 @@ def generate_new_decomp_schedule(
     count = 0  # enumerate count
     truncated_fin = False
 
-    print("DEBUG::: ", persona.scratch.name)
+    print("DEBUG::: ", persona.name)
     for act, dur in p.scratch.f_daily_schedule:
         if (dur_sum >= start_hour * 60) and (dur_sum < end_hour * 60):
             main_act_dur += [[act, dur]]
@@ -493,7 +493,7 @@ def generate_new_decomp_schedule(
 
 
 def _revise_identity(persona: Persona):
-    p_name = persona.scratch.name
+    p_name = persona.name
 
     focal_points = [
         f"{p_name}'s plan for {persona.scratch.get_str_curr_date_str()}.",
@@ -511,7 +511,7 @@ def _revise_identity(persona: Persona):
     # print (";adjhfno;asdjao;idfjo;af", p_name)
     plan_prompt = statements + "\n"
     plan_prompt += f"Given the statements above, is there anything that {p_name} should remember as they plan for"
-    plan_prompt += f" *{persona.scratch.curr_time.strftime('%A %B %d')}*? "
+    plan_prompt += f" *{persona.curr_time.strftime('%A %B %d')}*? "
     plan_prompt += f"If there is any scheduling information, be as specific as possible (include date, time, and location if stated in the statement)\n\n"
     plan_prompt += f"Write the response from {p_name}'s perspective."
     plan_note = ChatGPT_single_request(plan_prompt)
@@ -525,11 +525,11 @@ def _revise_identity(persona: Persona):
     logger.debug(f"thought_prompt: \n{thought_prompt}")
     logger.debug(f"thought_note: \n{thought_note}")
 
-    currently_prompt = f"{p_name}'s status from {(persona.scratch.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}:\n"
+    currently_prompt = f"{p_name}'s status from {(persona.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}:\n"
     currently_prompt += f"{persona.scratch.currently}\n\n"
-    currently_prompt += f"{p_name}'s thoughts at the end of {(persona.scratch.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}:\n"
+    currently_prompt += f"{p_name}'s thoughts at the end of {(persona.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}:\n"
     currently_prompt += (plan_note + thought_note).replace("\n", "") + "\n\n"
-    currently_prompt += f"It is now {persona.scratch.curr_time.strftime('%A %B %d')}. Given the above, write {p_name}'s status for {persona.scratch.curr_time.strftime('%A %B %d')} that reflects {p_name}'s thoughts at the end of {(persona.scratch.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}. Write this in third-person talking about {p_name}."
+    currently_prompt += f"It is now {persona.curr_time.strftime('%A %B %d')}. Given the above, write {p_name}'s status for {persona.curr_time.strftime('%A %B %d')} that reflects {p_name}'s thoughts at the end of {(persona.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}. Write this in third-person talking about {p_name}."
     currently_prompt += f"If there is any scheduling information, be as specific as possible (include date, time, and location if stated in the statement).\n\n"
     currently_prompt += "Follow this format below:\nStatus: <new status>"
     # print ("DEBUG ;adjhfno;asdjao;asdfsidfjo;af", p_name)
@@ -543,8 +543,8 @@ def _revise_identity(persona: Persona):
 
     persona.scratch.currently = new_currently
 
-    daily_req_prompt = persona.scratch.get_str_iss() + "\n"
-    daily_req_prompt += f"Today is {persona.scratch.curr_time.strftime('%A %B %d')}. Here is {persona.scratch.name}'s plan today in broad-strokes (with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm).\n\n"
+    daily_req_prompt = persona.iss + "\n"
+    daily_req_prompt += f"Today is {persona.curr_time.strftime('%A %B %d')}. Here is {persona.name}'s plan today in broad-strokes (with the time of the day. e.g., have a lunch at 12:00 pm, watch TV from 7 to 8 pm).\n\n"
     daily_req_prompt += (
         f"Follow this format (the list should have 4~6 items but no more):\n"
     )
@@ -594,13 +594,13 @@ def _long_term_planning(persona: Persona, new_day):
     persona.scratch.f_daily_schedule_hourly_org = persona.scratch.f_daily_schedule[:]
 
     # Adding plan to the memory.
-    thought = f"This is {persona.scratch.name}'s plan for {persona.scratch.curr_time.strftime('%A %B %d')}:"
+    thought = f"This is {persona.name}'s plan for {persona.curr_time.strftime('%A %B %d')}:"
     for i in persona.scratch.daily_req:
         thought += f" {i},"
     thought = thought[:-1] + "."
-    created = persona.scratch.curr_time
-    expiration = persona.scratch.curr_time + datetime.timedelta(days=30)
-    s, p, o = (persona.scratch.name, "plan", persona.scratch.curr_time.strftime("%A %B %d"),)
+    created = persona.curr_time
+    expiration = persona.curr_time + datetime.timedelta(days=30)
+    s, p, o = (persona.name, "plan", persona.curr_time.strftime("%A %B %d"),)
     keywords = set(["plan"])
     thought_poignancy = 5
     thought_embedding_pair = (thought, get_embedding(thought))
@@ -690,7 +690,7 @@ def _determine_action(persona: Persona, maze):
         # also invoked during the first hour of the day -- to double up so we can
         # decompose two hours in one go). Of course, we need to have something to
         # decompose as well, so we check for that too.
-        if persona.scratch.curr_time.hour < 23:
+        if persona.curr_time.hour < 23:
             # And we don't want to decompose after 11 pm.
             act_desp, act_dura = persona.scratch.f_daily_schedule[curr_index_60]
             if act_dura >= 60:
@@ -709,7 +709,7 @@ def _determine_action(persona: Persona, maze):
         debug_info += "\n" + str(i)
     debug_info += "\ncurr index: " + str(curr_index)
     debug_info += "\nlength: " + str(len(persona.scratch.f_daily_schedule))
-    debug_info += "\nname: " + persona.scratch.name
+    debug_info += "\nname: " + persona.name
     logger.debug(debug_info)
 
     # 1440
@@ -833,7 +833,7 @@ def _should_react(persona: Persona, retrieved, personas):
         ):
             return False
 
-        if init_persona.scratch.curr_time.hour == 23:
+        if init_persona.curr_time.hour == 23:
             return False
 
         if "<waiting>" in target_persona.scratch.act_address:
@@ -867,7 +867,7 @@ def _should_react(persona: Persona, retrieved, personas):
             return False
 
         # return False
-        if init_persona.scratch.curr_time.hour == 23:
+        if init_persona.curr_time.hour == 23:
             return False
 
         if "waiting" in target_persona.scratch.act_description:
@@ -1006,7 +1006,7 @@ def _chat_react(maze, persona: Persona, focused_event, reaction_mode, personas):
 
     act_start_time = target_persona.scratch.act_start_time
 
-    curr_time = target_persona.scratch.curr_time
+    curr_time = target_persona.curr_time
     if curr_time.second != 0:
         temp_curr_time = curr_time + datetime.timedelta(seconds=60 - curr_time.second)
         chatting_end_time = temp_curr_time + datetime.timedelta(

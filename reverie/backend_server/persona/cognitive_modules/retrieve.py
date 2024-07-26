@@ -9,12 +9,14 @@ import sys
 
 sys.path.append("../../")
 
+from loguru import logger
 from numpy import dot
 from numpy.linalg import norm
+from persona.persona import Persona
 from persona.prompt_template.gpt_structure import get_embedding
 
 
-def retrieve(persona, perceived):
+def retrieve(persona: Persona, perceived):
     """
     This function takes the events that are perceived by the persona as input
     and returns a set of related events and thoughts that the persona would
@@ -131,7 +133,7 @@ def top_highest_x_values(d, x):
     return top_v
 
 
-def extract_recency(persona, nodes):
+def extract_recency(persona: Persona, nodes):
     """
     Gets the current Persona object and a list of nodes that are in a
     chronological order, and outputs a dictionary that has the recency score
@@ -144,7 +146,7 @@ def extract_recency(persona, nodes):
       recency_out: A dictionary whose keys are the node.node_id and whose values
                    are the float that represents the recency score.
     """
-    recency_vals = [persona.scratch.recency_decay**i for i in range(1, len(nodes) + 1)]
+    recency_vals = [persona.scratch.recency_decay ** i for i in range(1, len(nodes) + 1)]
 
     recency_out = dict()
     for count, node in enumerate(nodes):
@@ -255,12 +257,14 @@ def new_retrieve(persona, focal_points, n_count=30):
 
         master_out = top_highest_x_values(master_out, len(master_out.keys()))
         for key, val in master_out.items():
-            print(persona.a_mem.id_to_node[key].embedding_key, val)
-            print(
+            scores = (
                 persona.scratch.recency_w * recency_out[key] * 1,
                 persona.scratch.relevance_w * relevance_out[key] * 1,
                 persona.scratch.importance_w * importance_out[key] * 1,
             )
+            info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
+            logger.debig(info)
+
 
         # Extracting the highest x values.
         # <master_out> has the key of node.id and value of float. Once we get the
@@ -272,7 +276,7 @@ def new_retrieve(persona, focal_points, n_count=30):
         ]
 
         for n in master_nodes:
-            n.last_accessed = persona.scratch.curr_time
+            n.last_accessed = persona.curr_time
 
         retrieved[focal_pt] = master_nodes
 

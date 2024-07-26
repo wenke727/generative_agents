@@ -100,7 +100,7 @@ class Persona:
         OUTPUT:
           a list of <ConceptNode> that are perceived and new.
             See associative_memory.py -- but to get you a sense of what it
-            receives as its input: "s, p, o, desc, persona.scratch.curr_time"
+            receives as its input: "s, p, o, desc, persona.curr_time"
         """
         return perceive(self, maze)
 
@@ -226,6 +226,19 @@ class Persona:
 
     def open_convo_session(self, convo_mode):
         open_convo_session(self, convo_mode)
+
+    @property
+    def curr_time(self):
+        return self.scratch.curr_time
+
+    @property
+    def iss(self):
+        return self.scratch.get_str_iss()
+
+    @property
+    def name(self):
+        return self.scratch.name
+
 
 if __name__ == "__main__":
     pass

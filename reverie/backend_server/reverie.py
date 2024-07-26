@@ -27,12 +27,14 @@ import os
 import shutil
 import traceback
 from pathlib import Path
+from collections import defaultdict
 
 from maze import Maze
 from persona.persona import Persona
-from utils import fs_temp_storage, fs_storage
+from persona.cognitive_modules.converse import load_history_via_whisper
+from reverie.global_methods import read_file_to_list
 from global_methods import check_if_file_exists, copyanything
-
+from utils import fs_temp_storage, fs_storage, maze_assets_loc
 from misc.logger_helper import configure_loguru_integration
 
 logger = configure_loguru_integration(
@@ -104,7 +106,7 @@ class ReverieServer:
         # This dictionary is meant to keep track of all personas who are part of
         # the Reverie instance.
         # e.g., ["Isabella Rodriguez"] = Persona("Isabella Rodriguezs")
-        self.personas = dict()
+        self.personas = defaultdict(Persona())
         # <personas_tile> is a dictionary that contains the tile location of
         # the personas (!-> NOT px tile, but the actual tile coordinate).
         # The tile take the form of a set, (row, col).

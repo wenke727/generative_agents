@@ -77,6 +77,7 @@ class Scratch:
         # They have to be renewed at the end of the day, which is why we are
         # keeping track of when they were first generated.
         self.daily_req = []
+
         # <f_daily_schedule> denotes a form of long term planning. This lays out
         # the persona's daily plan.
         # Note that we take the long term planning and short term decomposition
@@ -98,6 +99,7 @@ class Scratch:
         #         ['having lunch', 60],
         #         ['working on her painting', 180], ...]
         self.f_daily_schedule = []
+
         # <f_daily_schedule_hourly_org> is a replica of f_daily_schedule
         # initially, but retains the original non-decomposed version of the hourly
         # schedule.
@@ -117,14 +119,18 @@ class Scratch:
         # <start_time> is a python datetime instance that indicates when the
         # action has started.
         self.act_start_time = None
+
         # <duration> is the integer value that indicates the number of minutes an
         # action is meant to last.
         self.act_duration = None
+
         # <description> is a string description of the action.
         self.act_description = None
+
         # <pronunciatio> is the descriptive expression of the self.description.
         # Currently, it is implemented as emojis.
         self.act_pronunciatio = None
+
         # <event_form> represents the event triple that the persona is currently
         # engaged in.
         self.act_event = (self.name, None, None)
@@ -415,6 +421,7 @@ class Scratch:
         commonset += f"Current Date: {self.curr_time.strftime('%A %B %d')}\n"
         return commonset
 
+    """ 获取代理基本信息字符串 """
     def get_str_name(self):
         return self.name
 
@@ -445,6 +452,7 @@ class Scratch:
     def get_str_curr_date_str(self):
         return self.curr_time.strftime("%A %B %d")
 
+    """ 获取当前事件和描述 """
     def get_curr_event(self):
         if not self.act_address:
             return (self.name, None, None)
@@ -452,6 +460,7 @@ class Scratch:
             return self.act_event
 
     def get_curr_event_and_desc(self):
+        """返回当前对象事件的三元组和描述"""
         if not self.act_address:
             return (self.name, None, None, None)
         else:
@@ -473,6 +482,7 @@ class Scratch:
                 self.act_obj_description,
             )
 
+    """ others """
     def add_new_action(
         self,
         action_address,

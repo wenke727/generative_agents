@@ -16,7 +16,7 @@ import ast
 from loguru import logger
 sys.path.append("../../")
 
-from utils import debug
+from persona.persona import Persona
 from persona.prompt_template.gpt_structure import (
     ChatGPT_safe_generate_response,
     ChatGPT_safe_generate_response_OLD,
@@ -25,6 +25,7 @@ from persona.prompt_template.gpt_structure import (
 )
 from persona.prompt_template.print_prompt import print_run_prompts
 from persona.prompt_template.openai_helper import GPT_35_TURBO
+from utils import debug
 
 
 def get_random_alphanumeric(i=6, j=6):
@@ -48,7 +49,7 @@ def get_random_alphanumeric(i=6, j=6):
 ##############################################################################
 
 
-def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
+def run_gpt_prompt_wake_up_hour(persona: Persona, test_input=None, verbose=False):
     """
     Given the persona, returns an integer that indicates the hour when the
     persona wakes up.
@@ -63,7 +64,7 @@ def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
         if test_input:
             return test_input
         prompt_input = [
-            persona.scratch.get_str_iss(),
+            persona.iss,
             persona.scratch.get_str_lifestyle(),
             persona.scratch.get_str_firstname(),
         ]
@@ -111,7 +112,7 @@ def run_gpt_prompt_wake_up_hour(persona, test_input=None, verbose=False):
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_daily_plan(persona, wake_up_hour, test_input=None, verbose=False):
+def run_gpt_prompt_daily_plan(persona: Persona, wake_up_hour, test_input=None, verbose=False):
     """
     Basically the long term planning that spans a day. Returns a list of actions
     that the persona will take today. Usually comes in the following form:
@@ -129,7 +130,7 @@ def run_gpt_prompt_daily_plan(persona, wake_up_hour, test_input=None, verbose=Fa
         if test_input:
             return test_input
         prompt_input = []
-        prompt_input += [persona.scratch.get_str_iss()]
+        prompt_input += [persona.iss]
         prompt_input += [persona.scratch.get_str_lifestyle()]
         prompt_input += [persona.scratch.get_str_curr_date_str()]
         prompt_input += [persona.scratch.get_str_firstname()]
@@ -245,7 +246,7 @@ def run_gpt_prompt_generate_hourly_schedule(
 
         prompt_input = []
         prompt_input += [schedule_format]
-        prompt_input += [persona.scratch.get_str_iss()]
+        prompt_input += [persona.iss]
 
         prompt_input += [prior_schedule + "\n"]
         prompt_input += [intermission_str]
@@ -337,7 +338,7 @@ def run_gpt_prompt_generate_hourly_schedule(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose=False):
+def run_gpt_prompt_task_decomp(persona: Persona, task, duration, test_input=None, verbose=False):
     def create_prompt_input(persona, task, duration, test_input=None):
         """
         Today is Saturday June 25. From 00:00 ~ 06:00am, Maeve is
@@ -361,7 +362,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
         logger.debug(f"persona.scratch.f_daily_schedule_hourly_org:\n{persona.scratch.f_daily_schedule_hourly_org}")
         logger.debug(f"all_indices: {all_indices}")
 
-        summ_str = f'Today is {persona.scratch.curr_time.strftime("%B %d, %Y")}. '
+        summ_str = f'Today is {persona.curr_time.strftime("%B %d, %Y")}. '
         summ_str += f"From "
         for index in all_indices:
             if index < len(persona.scratch.f_daily_schedule_hourly_org):
@@ -381,7 +382,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
         summ_str = summ_str[:-2] + "."
 
         prompt_input = []
-        prompt_input += [persona.scratch.get_str_iss()]
+        prompt_input += [persona.iss]
         prompt_input += [summ_str]
         # prompt_input += [persona.scratch.get_str_curr_date_str()]
         prompt_input += [persona.scratch.get_str_firstname()]
@@ -536,7 +537,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
 
 
 def run_gpt_prompt_action_sector(
-    action_description, persona, maze, test_input=None, verbose=False
+    action_description, persona: Persona, maze, test_input=None, verbose=False
 ):
     def create_prompt_input(action_description, persona, maze, test_input=None):
         act_world = f"{maze.access_tile(persona.scratch.curr_tile)['world']}"
@@ -1363,7 +1364,7 @@ def run_gpt_prompt_decide_to_talk(
         for c_node in retrieved["thoughts"]:
             context += f"{c_node.description}. "
 
-        curr_time = init_persona.scratch.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
+        curr_time = init_persona.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
         init_act_desc = init_persona.scratch.act_description
         if "(" in init_act_desc:
             init_act_desc = init_act_desc.split("(")[-1][:-1]
@@ -1468,7 +1469,7 @@ def run_gpt_prompt_decide_to_react(
         for c_node in retrieved["thoughts"]:
             context += f"{c_node.description}. "
 
-        curr_time = init_persona.scratch.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
+        curr_time = init_persona.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
         init_act_desc = init_persona.scratch.act_description
         if "(" in init_act_desc:
             init_act_desc = init_act_desc.split("(")[-1][:-1]
@@ -1587,9 +1588,9 @@ def run_gpt_prompt_create_conversation(
         prev_convo_insert = "\n"
         if init_persona.a_mem.seq_chat:
             for i in init_persona.a_mem.seq_chat:
-                if i.object == target_persona.scratch.name:
+                if i.object == target_persona.name:
                     v1 = int(
-                        (init_persona.scratch.curr_time - i.created).total_seconds()
+                        (init_persona.curr_time - i.created).total_seconds()
                         / 60
                     )
                     prev_convo_insert += (
@@ -1604,7 +1605,7 @@ def run_gpt_prompt_create_conversation(
             if (
                 int(
                     (
-                        init_persona.scratch.curr_time
+                        init_persona.curr_time
                         - init_persona.a_mem.seq_chat[-1].created
                     ).total_seconds()
                     / 60
@@ -1650,8 +1651,8 @@ def run_gpt_prompt_create_conversation(
         curr_loc = curr_loc["arena"]
 
         prompt_input = []
-        prompt_input += [init_persona.scratch.get_str_iss()]
-        prompt_input += [target_persona.scratch.get_str_iss()]
+        prompt_input += [init_persona.iss]
+        prompt_input += [target_persona.iss]
 
         prompt_input += [init_persona.name]
         prompt_input += [target_persona.name]
@@ -1661,7 +1662,7 @@ def run_gpt_prompt_create_conversation(
         prompt_input += [init_persona.name]
         prompt_input += [target_persona_thought]
 
-        prompt_input += [init_persona.scratch.curr_time.strftime("%B %d, %Y, %H:%M:%S")]
+        prompt_input += [init_persona.curr_time.strftime("%B %d, %Y, %H:%M:%S")]
 
         prompt_input += [init_persona_curr_desc]
         prompt_input += [target_persona_curr_desc]
@@ -1997,12 +1998,12 @@ def run_gpt_prompt_convo_to_thoughts(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_event_poignancy(persona, event_description, test_input=None, verbose=False):
+def run_gpt_prompt_event_poignancy(persona: Persona, event_description, test_input=None, verbose=False):
     def create_prompt_input(persona, event_description, test_input=None):
         prompt_input = [
-            persona.scratch.name,
-            persona.scratch.get_str_iss(),
-            persona.scratch.name,
+            persona.name,
+            persona.iss,
+            persona.name,
             event_description,
         ]
         return prompt_input
@@ -2091,9 +2092,9 @@ def run_gpt_prompt_thought_poignancy(
 ):
     def create_prompt_input(persona, event_description, test_input=None):
         prompt_input = [
-            persona.scratch.name,
-            persona.scratch.get_str_iss(),
-            persona.scratch.name,
+            persona.name,
+            persona.iss,
+            persona.name,
             event_description,
         ]
         return prompt_input
@@ -2180,9 +2181,9 @@ def run_gpt_prompt_chat_poignancy(
 ):
     def create_prompt_input(persona, event_description, test_input=None):
         prompt_input = [
-            persona.scratch.name,
-            persona.scratch.get_str_iss(),
-            persona.scratch.name,
+            persona.name,
+            persona.iss,
+            persona.name,
             event_description,
         ]
         return prompt_input
@@ -2264,7 +2265,7 @@ def run_gpt_prompt_chat_poignancy(
     # return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_focal_pt(persona, statements, n, test_input=None, verbose=False):
+def run_gpt_prompt_focal_pt(persona: Persona, statements, n, test_input=None, verbose=False):
     def create_prompt_input(persona, statements, n, test_input=None):
         prompt_input = [statements, str(n)]
         return prompt_input
@@ -2423,8 +2424,8 @@ def run_gpt_prompt_agent_chat_summarize_ideas(
             curr_context,
             persona.scratch.currently,
             statements,
-            persona.scratch.name,
-            target_persona.scratch.name,
+            persona.name,
+            target_persona.name,
         ]
         return prompt_input
 
@@ -2511,7 +2512,7 @@ def run_gpt_prompt_agent_chat_summarize_relationship(
     persona, target_persona, statements, test_input=None, verbose=False
 ):
     def create_prompt_input(persona, target_persona, statements, test_input=None):
-        prompt_input = [statements, persona.scratch.name, target_persona.scratch.name]
+        prompt_input = [statements, persona.name, target_persona.name]
         return prompt_input
 
     def __func_clean_up(gpt_response, prompt=""):
@@ -2610,11 +2611,11 @@ def run_gpt_prompt_agent_chat(
         prev_convo_insert = "\n"
         if persona.a_mem.seq_chat:
             for i in persona.a_mem.seq_chat:
-                if i.object == target_persona.scratch.name:
+                if i.object == target_persona.name:
                     v1 = int(
-                        (persona.scratch.curr_time - i.created).total_seconds() / 60
+                        (persona.curr_time - i.created).total_seconds() / 60
                     )
-                    prev_convo_insert += f"{str(v1)} minutes ago, {persona.scratch.name} and {target_persona.scratch.name} were already {i.description} This context takes place after that conversation."
+                    prev_convo_insert += f"{str(v1)} minutes ago, {persona.name} and {target_persona.name} were already {i.description} This context takes place after that conversation."
                     break
         if prev_convo_insert == "\n":
             prev_convo_insert = ""
@@ -2622,7 +2623,7 @@ def run_gpt_prompt_agent_chat(
             if (
                 int(
                     (
-                        persona.scratch.curr_time - persona.a_mem.seq_chat[-1].created
+                        persona.curr_time - persona.a_mem.seq_chat[-1].created
                     ).total_seconds()
                     / 60
                 )
@@ -2641,15 +2642,15 @@ def run_gpt_prompt_agent_chat(
             prev_convo_insert,
             curr_context,
             curr_location,
-            persona.scratch.name,
+            persona.name,
             init_summ_idea,
-            persona.scratch.name,
-            target_persona.scratch.name,
-            target_persona.scratch.name,
+            persona.name,
+            target_persona.name,
+            target_persona.name,
             target_summ_idea,
-            target_persona.scratch.name,
-            persona.scratch.name,
-            persona.scratch.name,
+            target_persona.name,
+            persona.name,
+            persona.name,
         ]
         return prompt_input
 
@@ -2760,7 +2761,7 @@ def run_gpt_prompt_summarize_ideas(
     persona, statements, question, test_input=None, verbose=False
 ):
     def create_prompt_input(persona, statements, question, test_input=None):
-        prompt_input = [statements, persona.scratch.name, question]
+        prompt_input = [statements, persona.name, question]
         return prompt_input
 
     def __func_clean_up(gpt_response, prompt=""):
@@ -2852,14 +2853,14 @@ def run_gpt_prompt_generate_next_convo_line(
         persona, interlocutor_desc, prev_convo, retrieved_summary, test_input=None
     ):
         prompt_input = [
-            persona.scratch.name,
-            persona.scratch.get_str_iss(),
-            persona.scratch.name,
+            persona.name,
+            persona.iss,
+            persona.name,
             interlocutor_desc,
             prev_convo,
-            persona.scratch.name,
+            persona.name,
             retrieved_summary,
-            persona.scratch.name,
+            persona.name,
         ]
         return prompt_input
 
@@ -2936,7 +2937,7 @@ def run_gpt_prompt_generate_whisper_inner_thought(
     persona, whisper, test_input=None, verbose=False
 ):
     def create_prompt_input(persona, whisper, test_input=None):
-        prompt_input = [persona.scratch.name, whisper]
+        prompt_input = [persona.name, whisper]
         return prompt_input
 
     def __func_clean_up(gpt_response, prompt=""):
@@ -2985,9 +2986,9 @@ def run_gpt_prompt_planning_thought_on_convo(
     def create_prompt_input(persona, all_utt, test_input=None):
         prompt_input = [
             all_utt,
-            persona.scratch.name,
-            persona.scratch.name,
-            persona.scratch.name,
+            persona.name,
+            persona.name,
+            persona.name,
         ]
         return prompt_input
 
@@ -3031,13 +3032,13 @@ def run_gpt_prompt_planning_thought_on_convo(
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=False):
+def run_gpt_prompt_memo_on_convo(persona: Persona, all_utt, test_input=None, verbose=False):
     def create_prompt_input(persona, all_utt, test_input=None):
         prompt_input = [
             all_utt,
-            persona.scratch.name,
-            persona.scratch.name,
-            persona.scratch.name,
+            persona.name,
+            persona.name,
+            persona.name,
         ]
         return prompt_input
 
@@ -3125,7 +3126,7 @@ def run_gpt_prompt_memo_on_convo(persona, all_utt, test_input=None, verbose=Fals
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_generate_safety_score(persona, comment, test_input=None, verbose=False):
+def run_gpt_generate_safety_score(persona: Persona, comment, test_input=None, verbose=False):
     def create_prompt_input(comment, test_input=None):
         prompt_input = [comment]
         return prompt_input
@@ -3217,11 +3218,11 @@ def run_gpt_generate_iterative_chat_utt(
         prev_convo_insert = "\n"
         if persona.a_mem.seq_chat:
             for i in persona.a_mem.seq_chat:
-                if i.object == target_persona.scratch.name:
+                if i.object == target_persona.name:
                     v1 = int(
-                        (persona.scratch.curr_time - i.created).total_seconds() / 60
+                        (persona.curr_time - i.created).total_seconds() / 60
                     )
-                    prev_convo_insert += f"{str(v1)} minutes ago, {persona.scratch.name} and {target_persona.scratch.name} were already {i.description} This context takes place after that conversation."
+                    prev_convo_insert += f"{str(v1)} minutes ago, {persona.name} and {target_persona.name} were already {i.description} This context takes place after that conversation."
                     break
         if prev_convo_insert == "\n":
             prev_convo_insert = ""
@@ -3229,7 +3230,7 @@ def run_gpt_generate_iterative_chat_utt(
             if (
                 int(
                     (
-                        persona.scratch.curr_time - persona.a_mem.seq_chat[-1].created
+                        persona.curr_time - persona.a_mem.seq_chat[-1].created
                     ).total_seconds()
                     / 60
                 )
@@ -3253,22 +3254,22 @@ def run_gpt_generate_iterative_chat_utt(
         if convo_str == "":
             convo_str = "[The conversation has not started yet -- start it!]"
 
-        init_iss = f"Here is Here is a brief description of {init_persona.scratch.name}.\n{init_persona.scratch.get_str_iss()}"
+        init_iss = f"Here is Here is a brief description of {init_persona.name}.\n{init_persona.iss}"
         prompt_input = [
             init_iss,
-            init_persona.scratch.name,
+            init_persona.name,
             retrieved_str,
             prev_convo_insert,
             curr_location,
             curr_context,
-            init_persona.scratch.name,
-            target_persona.scratch.name,
+            init_persona.name,
+            target_persona.name,
             convo_str,
-            init_persona.scratch.name,
-            target_persona.scratch.name,
-            init_persona.scratch.name,
-            init_persona.scratch.name,
-            init_persona.scratch.name,
+            init_persona.name,
+            target_persona.name,
+            init_persona.name,
+            init_persona.name,
+            init_persona.name,
         ]
         return prompt_input
 
