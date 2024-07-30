@@ -4,6 +4,8 @@
 
 ## 1. 核心类和方法
 
+<img src=".fig/Retrieve.asset/new_retrieve.png" alt="image-25670730132246487" style="zoom:50%;" />
+
 ### 1.1 全局方法
 
 #### 1.1.1 检索方法 `retrieve`

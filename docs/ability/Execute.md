@@ -4,6 +4,8 @@
 
 ## 1. 核心类和方法
 
+<img src=".fig/Execute.asset/excute.png" alt="image-25670730133827599" style="zoom:50%;" />
+
 ### 1.1 全局方法
 
 #### 1.1.1 执行方法 `execute`

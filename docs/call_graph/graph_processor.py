@@ -35,7 +35,7 @@ def process_graph(file_path, old_prefix, new_prefix='./', ignore_paths=None):
     graph = rename_nodes(graph, old_prefix, new_prefix)
     logger.debug(f"{graph.to_string()}")
 
-    out_fn = ".".join(file_path.split(".")[:-1]) + "_simplified.svg"
+    out_fn = ".".join(file_path.split(".")[:-1]) + "_simplified.dot"
     graph.write(out_fn)
 
     logger.info(f"Modified graph written to {out_fn}")

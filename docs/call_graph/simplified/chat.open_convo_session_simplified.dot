@@ -1,0 +1,145 @@
+digraph {
+	graph [rankdir=LR];
+	subgraph "cluster_/Users/wenke/.conda/envs/x/lib/python3.9/json/__init__.py" {
+		graph [label="/Users/wenke/.conda/envs/x/lib/python3.9/json/__init__.py"];
+	}
+	subgraph "cluster_/Users/wenke/.conda/envs/x/lib/python3.9/json/decoder.py" {
+		graph [label="/Users/wenke/.conda/envs/x/lib/python3.9/json/decoder.py"];
+	}
+	subgraph "cluster_/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/json/__init__.pyi" {
+		graph [label="/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/json/__init__.pyi"];
+	}
+	subgraph "cluster_./persona/prompt_template/print_prompt.py" {
+		graph [label="./persona/prompt_template/print_prompt.py"];
+		"./persona/prompt_template/print_prompt.py#print_run_prompts@10:4"	[label=print_run_prompts];
+	}
+	subgraph "cluster_./persona/cognitive_modules/retrieve.py" {
+		graph [label="./persona/cognitive_modules/retrieve.py"];
+		"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4"	[label=new_retrieve];
+		"./persona/cognitive_modules/retrieve.py#_extract_recency@134:4"	[label=_extract_recency];
+		"./persona/cognitive_modules/retrieve.py#_normalize_dict_floats@73:4"	[label=_normalize_dict_floats];
+		"./persona/cognitive_modules/retrieve.py#_extract_importance@156:4"	[label=_extract_importance];
+		"./persona/cognitive_modules/retrieve.py#_extract_relevance@176:4"	[label=_extract_relevance];
+		"./persona/cognitive_modules/retrieve.py#_top_highest_x_values@111:4"	[label=_top_highest_x_values];
+		"./persona/cognitive_modules/retrieve.py#_cos_sim@52:4"	[label=_cos_sim];
+	}
+	subgraph "cluster_/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/io.pyi" {
+		graph [label="/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/io.pyi"];
+	}
+	subgraph "cluster_./persona/prompt_template/run_gpt_prompt.py" {
+		graph [label="./persona/prompt_template/run_gpt_prompt.py"];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_generate_safety_score@3127:4"	[label=run_gpt_generate_safety_score];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@3128:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@3147:8"	[label=get_fail_safe];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4"	[label=run_gpt_prompt_summarize_ideas];
+		"./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2765:8"	[label=__func_clean_up];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2761:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2775:8"	[label=get_fail_safe];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4"	[label=run_gpt_prompt_generate_next_convo_line];
+		"./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2865:8"	[label=__func_clean_up];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2850:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2875:8"	[label=get_fail_safe];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4"	[label=run_gpt_prompt_generate_whisper_inner_thought];
+		"./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2941:8"	[label=__func_clean_up];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2937:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2951:8"	[label=get_fail_safe];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4"	[label=run_gpt_prompt_event_triple];
+		"./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@941:8"	[label=__func_clean_up];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@935:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@955:8"	[label=get_fail_safe];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4"	[label=run_gpt_prompt_event_poignancy];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4"	[label=run_gpt_prompt_chat_poignancy];
+		"./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2009:8"	[label=__func_clean_up];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2000:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2020:8"	[label=get_fail_safe];
+		"./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2189:8"	[label=__func_clean_up];
+		"./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2180:8"	[label=create_prompt_input];
+		"./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2200:8"	[label=get_fail_safe];
+	}
+	subgraph "cluster_/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/datetime.pyi" {
+		graph [label="/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/datetime.pyi"];
+	}
+	subgraph "cluster_/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/builtins.pyi" {
+		graph [label="/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/builtins.pyi"];
+	}
+	subgraph "cluster_./persona/cognitive_modules/converse.py" {
+		graph [label="./persona/cognitive_modules/converse.py"];
+		"./persona/cognitive_modules/converse.py#open_convo_session@300:4"	[label=open_convo_session];
+		"./persona/cognitive_modules/converse.py#_generate_summarize_ideas@217:4"	[label=_generate_summarize_ideas];
+		"./persona/cognitive_modules/converse.py#_generate_next_line@225:4"	[label=_generate_next_line];
+		"./persona/cognitive_modules/converse.py#_generate_inner_thought@237:4"	[label=_generate_inner_thought];
+		"./persona/cognitive_modules/converse.py#_generate_action_event_triple@242:4"	[label=_generate_action_event_triple];
+		"./persona/cognitive_modules/converse.py#_generate_poig_score@258:4"	[label=_generate_poig_score];
+	}
+	subgraph "cluster_./persona/prompt_template/gpt_structure.py" {
+		graph [label="./persona/prompt_template/gpt_structure.py"];
+		"./persona/prompt_template/gpt_structure.py#get_embedding@294:4"	[label=get_embedding];
+		"./persona/prompt_template/gpt_structure.py#generate_prompt@243:4"	[label=generate_prompt];
+		"./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response_OLD@183:4"	[label=ChatGPT_safe_generate_response_OLD];
+		"./persona/prompt_template/gpt_structure.py#_ChatGPT_request@59:4"	[label=_ChatGPT_request];
+		"./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response@127:4"	[label=ChatGPT_safe_generate_response];
+		"./persona/prompt_template/gpt_structure.py#safe_generate_response@271:4"	[label=safe_generate_response];
+	}
+	subgraph "cluster_/Users/wenke/.conda/envs/x/lib/python3.9/site-packages/loguru/__init__.pyi" {
+		graph [label="/Users/wenke/.conda/envs/x/lib/python3.9/site-packages/loguru/__init__.pyi"];
+	}
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/cognitive_modules/converse.py#_generate_summarize_ideas@217:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/cognitive_modules/converse.py#_generate_next_line@225:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/cognitive_modules/converse.py#_generate_inner_thought@237:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/cognitive_modules/converse.py#_generate_action_event_triple@242:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/cognitive_modules/converse.py#_generate_poig_score@258:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_generate_safety_score@3127:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/cognitive_modules/retrieve.py#new_retrieve@200:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@300:4" -> "./persona/prompt_template/gpt_structure.py#get_embedding@294:4";
+	"./persona/cognitive_modules/converse.py#_generate_summarize_ideas@217:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4";
+	"./persona/cognitive_modules/converse.py#_generate_next_line@225:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4";
+	"./persona/cognitive_modules/converse.py#_generate_inner_thought@237:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4";
+	"./persona/cognitive_modules/converse.py#_generate_action_event_triple@242:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4";
+	"./persona/cognitive_modules/converse.py#_generate_poig_score@258:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4";
+	"./persona/cognitive_modules/converse.py#_generate_poig_score@258:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_generate_safety_score@3127:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@3128:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_generate_safety_score@3127:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@3147:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_generate_safety_score@3127:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_generate_safety_score@3127:4" -> "./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response_OLD@183:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4" -> "./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2765:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2761:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2775:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_summarize_ideas@2758:4" -> "./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response@127:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4" -> "./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2865:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2850:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2875:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4" -> "./persona/prompt_template/gpt_structure.py#safe_generate_response@271:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_next_convo_line@2842:4" -> "./persona/prompt_template/print_prompt.py#print_run_prompts@10:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4" -> "./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2941:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2937:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2951:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4" -> "./persona/prompt_template/gpt_structure.py#safe_generate_response@271:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_whisper_inner_thought@2934:4" -> "./persona/prompt_template/print_prompt.py#print_run_prompts@10:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4" -> "./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@941:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@935:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@955:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4" -> "./persona/prompt_template/gpt_structure.py#safe_generate_response@271:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_triple@934:4" -> "./persona/prompt_template/print_prompt.py#print_run_prompts@10:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4" -> "./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2009:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2000:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2020:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_event_poignancy@1999:4" -> "./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response@127:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4" -> "./persona/prompt_template/run_gpt_prompt.py#__func_clean_up@2189:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4" -> "./persona/prompt_template/run_gpt_prompt.py#create_prompt_input@2180:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4" -> "./persona/prompt_template/run_gpt_prompt.py#get_fail_safe@2200:8";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4" -> "./persona/prompt_template/gpt_structure.py#generate_prompt@243:4";
+	"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_chat_poignancy@2177:4" -> "./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response@127:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/retrieve.py#_extract_recency@134:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/retrieve.py#_normalize_dict_floats@73:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/retrieve.py#_extract_importance@156:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/retrieve.py#_extract_relevance@176:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/retrieve.py#_top_highest_x_values@111:4";
+	"./persona/cognitive_modules/retrieve.py#_extract_relevance@176:4" -> "./persona/cognitive_modules/retrieve.py#_cos_sim@52:4";
+	"./persona/cognitive_modules/retrieve.py#_extract_relevance@176:4" -> "./persona/prompt_template/gpt_structure.py#get_embedding@294:4";
+	"./persona/prompt_template/gpt_structure.py#ChatGPT_safe_generate_response_OLD@183:4" -> "./persona/prompt_template/gpt_structure.py#_ChatGPT_request@59:4";
+}

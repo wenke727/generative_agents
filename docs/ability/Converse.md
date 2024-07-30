@@ -6,6 +6,12 @@
 
 ## 1. 核心类和方法
 
+![image-25670730133449353](.fig/Converse.asset/agent_chat_v2.png)
+
+![image-25670730133518684](.fig/Converse.asset/load_history_via_whisper.png)
+
+![image-25670730133655633](.fig/Converse.asset/open_convo_session.png)
+
 ### 1.1 生成对话相关的方法
 
 #### 1.1.1 生成代理对话总结 `generate_agent_chat_summarize_ideas`

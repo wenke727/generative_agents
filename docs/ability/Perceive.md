@@ -4,6 +4,8 @@
 
 ## 1. 核心类和方法
 
+![image-25670730131722507](.fig/Perceive.asset/perceive.png)
+
 ### 1.1 全局方法
 
 #### 1.1.1 生成重要性评分方法 `generate_poig_score`
