@@ -1,0 +1,59 @@
+digraph {
+	graph [rankdir=LR];
+	subgraph "cluster_./persona/memory_structures/scratch.py" {
+		graph [label="./persona/memory_structures/scratch.py"];
+		"./persona/memory_structures/scratch.py#get_str_curr_date_str@444:8"	[label=get_str_curr_date_str];
+		"./persona/memory_structures/scratch.py#get_str_iss@383:8"	[label=get_str_iss];
+	}
+	subgraph "cluster_/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/datetime.pyi" {
+		graph [label="/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/datetime.pyi"];
+	}
+	subgraph "cluster_./persona/prompt_template/gpt_structure.py" {
+		graph [label="./persona/prompt_template/gpt_structure.py"];
+		"./persona/prompt_template/gpt_structure.py#get_embedding@294:4"	[label=get_embedding];
+		"./persona/prompt_template/gpt_structure.py#ChatGPT_single_request@24:4"	[label=ChatGPT_single_request];
+	}
+	subgraph "cluster_/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/builtins.pyi" {
+		graph [label="/Users/wenke/.vscode/extensions/ms-python.vscode-pylance-2024.7.1/dist/typeshed-fallback/stdlib/builtins.pyi"];
+	}
+	subgraph "cluster_./persona/cognitive_modules/retrieve.py" {
+		graph [label="./persona/cognitive_modules/retrieve.py"];
+		"./persona/cognitive_modules/retrieve.py#new_retrieve@199:4"	[label=new_retrieve];
+	}
+	subgraph "cluster_./persona/memory_structures/associative_memory.py" {
+		graph [label="./persona/memory_structures/associative_memory.py"];
+		"./persona/memory_structures/associative_memory.py#add_thought@263:8"	[label=add_thought];
+		"./persona/memory_structures/associative_memory.py#ConceptNode@17:6"	[label=ConceptNode];
+	}
+	subgraph "cluster_/Users/wenke/.conda/envs/x/lib/python3.9/datetime.py" {
+		graph [label="/Users/wenke/.conda/envs/x/lib/python3.9/datetime.py"];
+	}
+	subgraph "cluster_./persona/cognitive_modules/plan.py" {
+		graph [label="./persona/cognitive_modules/plan.py"];
+		"./persona/cognitive_modules/plan.py#_long_term_planning@549:4"	[label=_long_term_planning];
+		"./persona/cognitive_modules/plan.py#generate_wake_up_hour@44:4"	[label=generate_wake_up_hour];
+		"./persona/cognitive_modules/plan.py#generate_first_daily_plan@63:4"	[label=generate_first_daily_plan];
+		"./persona/cognitive_modules/plan.py#revise_identity@490:4"	[label=revise_identity];
+		"./persona/cognitive_modules/plan.py#generate_hourly_schedule@94:4"	[label=generate_hourly_schedule];
+	}
+	subgraph "cluster_./persona/prompt_template/run_gpt_prompt.py" {
+		graph [label="./persona/prompt_template/run_gpt_prompt.py"];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_wake_up_hour@50:4"	[label=run_gpt_prompt_wake_up_hour];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_daily_plan@113:4"	[label=run_gpt_prompt_daily_plan];
+		"./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_hourly_schedule@196:4"	[label=run_gpt_prompt_generate_hourly_schedule];
+	}
+	"./persona/memory_structures/associative_memory.py#add_thought@263:8" -> "./persona/memory_structures/associative_memory.py#ConceptNode@17:6";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@549:4" -> "./persona/prompt_template/gpt_structure.py#get_embedding@294:4";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@549:4" -> "./persona/memory_structures/associative_memory.py#add_thought@263:8";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@549:4" -> "./persona/cognitive_modules/plan.py#generate_wake_up_hour@44:4";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@549:4" -> "./persona/cognitive_modules/plan.py#generate_first_daily_plan@63:4";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@549:4" -> "./persona/cognitive_modules/plan.py#revise_identity@490:4";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@549:4" -> "./persona/cognitive_modules/plan.py#generate_hourly_schedule@94:4";
+	"./persona/cognitive_modules/plan.py#generate_wake_up_hour@44:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_wake_up_hour@50:4";
+	"./persona/cognitive_modules/plan.py#generate_first_daily_plan@63:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_daily_plan@113:4";
+	"./persona/cognitive_modules/plan.py#revise_identity@490:4" -> "./persona/memory_structures/scratch.py#get_str_curr_date_str@444:8";
+	"./persona/cognitive_modules/plan.py#revise_identity@490:4" -> "./persona/memory_structures/scratch.py#get_str_iss@383:8";
+	"./persona/cognitive_modules/plan.py#revise_identity@490:4" -> "./persona/prompt_template/gpt_structure.py#ChatGPT_single_request@24:4";
+	"./persona/cognitive_modules/plan.py#revise_identity@490:4" -> "./persona/cognitive_modules/retrieve.py#new_retrieve@199:4";
+	"./persona/cognitive_modules/plan.py#generate_hourly_schedule@94:4" -> "./persona/prompt_template/run_gpt_prompt.py#run_gpt_prompt_generate_hourly_schedule@196:4";
+}

@@ -125,6 +125,122 @@ if __name__ == "__main__":
 ```
 - 主函数用于加载树形结构数据并测试方法，打印树形结构和当前区域中可访问的所有子区域。
 
+### 1.3 Data Demo
+
+```python 
+{
+    "the Ville": {
+        "Hobbs Cafe": {
+            "cafe": [
+                "refrigerator",
+                "cafe customer seating",
+                "cooking area",
+                "kitchen sink",
+                "behind the cafe counter",
+                "piano"
+            ]
+        },
+        "Isabella Rodriguez's apartment": {
+            "main room": [
+                "bed",
+                "desk",
+                "refrigerator",
+                "closet",
+                "shelf"
+            ],
+            "bathroom": [
+                "shower",
+                "bathroom sink",
+                "toilet"
+            ]
+        },
+        "The Rose and Crown Pub": {
+            "pub": [
+                "shelf",
+                "refrigerator",
+                "bar customer seating",
+                "behind the bar counter",
+                "kitchen sink",
+                "cooking area",
+                "microphone"
+            ]
+        },
+        "Harvey Oak Supply Store": {
+            "supply store": [
+                "supply store product shelf",
+                "behind the supply store counter",
+                "supply store counter"
+            ]
+        },
+        "The Willows Market and Pharmacy": {
+            "store": [
+                "behind the pharmacy counter",
+                "pharmacy store shelf",
+                "pharmacy store counter",
+                "grocery store shelf",
+                "behind the grocery counter",
+                "grocery store counter"
+            ]
+        },
+        "Dorm for Oak Hill College": {
+            "garden": [
+                "dorm garden"
+            ],
+            "common room": [
+                "common room sofa",
+                "pool table",
+                "common room table"
+            ]
+        },
+        "Johnson Park": {
+            "park": [
+                "park garden"
+            ]
+        },
+        "Ryan Park's apartment": {
+            "bathroom": [
+                "shower",
+                "bathroom sink",
+                "toilet"
+            ],
+            "main room": [
+                "bed",
+                "cooking area",
+                "kitchen sink",
+                "refrigerator",
+                "closet",
+                "computer desk"
+            ]
+        },
+        "Giorgio Rossi's apartment": {
+            "bathroom": [
+                "shower",
+                "bathroom sink",
+                "toilet"
+            ],
+            "main room": [
+                "bed",
+                "desk",
+                "blackboard",
+                "cooking area",
+                "kitchen sink",
+                "closet",
+                "refrigerator"
+            ]
+        },
+        "Carlos Gomez's apartment": {
+            "main room": [
+                "desk",
+                "bed"
+            ],
+            "bathroom": []
+        }
+    }
+}
+```
+
+
+
 ## 2. 总结
 
 `MemoryTree` 类是生成型代理的空间记忆模块，使用树形结构管理代理的空间记忆。它提供了丰富的方法来打印树形结构、保存和加载数据，以及获取代理可访问的区域和游戏对象的摘要字符串。这个模块在生成型代理的空间定位和行为管理中起着关键作用。

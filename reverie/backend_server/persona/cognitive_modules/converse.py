@@ -28,7 +28,7 @@ from persona.prompt_template.run_gpt_prompt import (
 from utils import debug
 
 
-def generate_agent_chat_summarize_ideas(init_persona, target_persona, retrieved, curr_context):
+def _generate_agent_chat_summarize_ideas(init_persona, target_persona, retrieved, curr_context):
     all_embedding_keys = list()
     for key, val in retrieved.items():
         for i in val:
@@ -46,7 +46,7 @@ def generate_agent_chat_summarize_ideas(init_persona, target_persona, retrieved,
     return summarized_idea
 
 
-def generate_summarize_agent_relationship(init_persona, target_persona, retrieved):
+def _generate_summarize_agent_relationship(init_persona, target_persona, retrieved):
     all_embedding_keys = list()
     for key, val in retrieved.items():
         for i in val:
@@ -61,7 +61,7 @@ def generate_summarize_agent_relationship(init_persona, target_persona, retrieve
     return summarized_relationship
 
 
-def generate_agent_chat(
+def _generate_agent_chat(
     maze, init_persona, target_persona, curr_context, init_summ_idea, target_summ_idea
 ):
     summarized_idea = run_gpt_prompt_agent_chat(
@@ -77,7 +77,7 @@ def generate_agent_chat(
     return summarized_idea
 
 
-def agent_chat_v1(maze, init_persona, target_persona):
+def _agent_chat_v1(maze, init_persona, target_persona):
     # Chat version optimized for speed via batch generation
     curr_context = (
         f"{init_persona.name} "
@@ -97,18 +97,18 @@ def agent_chat_v1(maze, init_persona, target_persona):
     for p_1, p_2 in part_pairs:
         focal_points = [f"{p_2.scratch.name}"]
         retrieved = new_retrieve(p_1, focal_points, 50)
-        relationship = generate_summarize_agent_relationship(p_1, p_2, retrieved)
+        relationship = _generate_summarize_agent_relationship(p_1, p_2, retrieved)
         focal_points = [
             f"{relationship}",
             f"{p_2.scratch.name} is {p_2.scratch.act_description}",
         ]
         retrieved = new_retrieve(p_1, focal_points, 25)
-        summarized_idea = generate_agent_chat_summarize_ideas(
+        summarized_idea = _generate_agent_chat_summarize_ideas(
             p_1, p_2, retrieved, curr_context
         )
         summarized_ideas += [summarized_idea]
 
-    return generate_agent_chat(
+    return _generate_agent_chat(
         maze,
         init_persona,
         target_persona,
@@ -118,7 +118,7 @@ def agent_chat_v1(maze, init_persona, target_persona):
     )
 
 
-def generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_chat):
+def _generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_chat):
     # Chat version optimized for speed via batch generation
     curr_context = (
         f"{init_persona.name} "
@@ -151,7 +151,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
     for i in range(8):
         focal_points = [f"{target_persona.name}"]
         retrieved = new_retrieve(init_persona, focal_points, 50)
-        relationship = generate_summarize_agent_relationship(
+        relationship = _generate_summarize_agent_relationship(
             init_persona, target_persona, retrieved
         )
         print("-------- relationshopadsjfhkalsdjf", relationship)
@@ -170,7 +170,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
                 f"{target_persona.name} is {target_persona.act_description}",
             ]
         retrieved = new_retrieve(init_persona, focal_points, 15)
-        utt, end = generate_one_utterance(
+        utt, end = _generate_one_utterance(
             maze, init_persona, target_persona, retrieved, curr_chat
         )
 
@@ -180,7 +180,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
 
         focal_points = [f"{init_persona.name}"]
         retrieved = new_retrieve(target_persona, focal_points, 50)
-        relationship = generate_summarize_agent_relationship(
+        relationship = _generate_summarize_agent_relationship(
             target_persona, init_persona, retrieved
         )
         print("-------- relationshopadsjfhkalsdjf", relationship)
@@ -199,7 +199,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
                 f"{init_persona.name} is {init_persona.act_description}",
             ]
         retrieved = new_retrieve(target_persona, focal_points, 15)
-        utt, end = generate_one_utterance(
+        utt, end = _generate_one_utterance(
             maze, target_persona, init_persona, retrieved, curr_chat
         )
 
@@ -215,7 +215,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
     return curr_chat
 
 
-def generate_summarize_ideas(persona, nodes, question):
+def _generate_summarize_ideas(persona, nodes, question):
     statements = ""
     for n in nodes:
         statements += f"{n.embedding_key}\n"
@@ -223,7 +223,7 @@ def generate_summarize_ideas(persona, nodes, question):
     return summarized_idea
 
 
-def generate_next_line(persona, interlocutor_desc, curr_convo, summarized_idea):
+def _generate_next_line(persona, interlocutor_desc, curr_convo, summarized_idea):
     # Original chat -- line by line generation
     prev_convo = ""
     for row in curr_convo:
@@ -235,12 +235,12 @@ def generate_next_line(persona, interlocutor_desc, curr_convo, summarized_idea):
     return next_line
 
 
-def generate_inner_thought(persona, whisper):
+def _generate_inner_thought(persona, whisper):
     inner_thought = run_gpt_prompt_generate_whisper_inner_thought(persona, whisper)[0]
     return inner_thought
 
 
-def generate_action_event_triple(act_desp, persona):
+def _generate_action_event_triple(act_desp, persona):
     """TODO
 
     INPUT:
@@ -256,7 +256,7 @@ def generate_action_event_triple(act_desp, persona):
     return run_gpt_prompt_event_triple(act_desp, persona)[0]
 
 
-def generate_poig_score(persona, event_type, description):
+def _generate_poig_score(persona, event_type, description):
     if debug:
         print("GNS FUNCTION: <generate_poig_score>")
 
@@ -276,15 +276,15 @@ def load_history_via_whisper(personas, whispers):
         persona = personas[row[0]]
         whisper = row[1]
 
-        thought = generate_inner_thought(persona, whisper)
+        thought = _generate_inner_thought(persona, whisper)
 
         created = persona.curr_time
         expiration = persona.curr_time + datetime.timedelta(days=30)
-        s, p, o = generate_action_event_triple(thought, persona)
+        s, p, o = _generate_action_event_triple(thought, persona)
         keywords = set([s, p, o])
-        thought_poignancy = generate_poig_score(persona, "event", whisper)
+        thought_poignancy = _generate_poig_score(persona, "event", whisper)
         thought_embedding_pair = (thought, get_embedding(thought))
-        persona.a_mem.add_thought(
+        persona.add_thought(
             created,
             expiration,
             s,
@@ -315,25 +315,25 @@ def open_convo_session(persona, convo_mode):
 
             else:
                 retrieved = new_retrieve(persona, [line], 50)[line]
-                summarized_idea = generate_summarize_ideas(persona, retrieved, line)
+                summarized_idea = _generate_summarize_ideas(persona, retrieved, line)
                 curr_convo += [[interlocutor_desc, line]]
 
-                next_line = generate_next_line(
+                next_line = _generate_next_line(
                     persona, interlocutor_desc, curr_convo, summarized_idea
                 )
                 curr_convo += [[persona.name, next_line]]
 
     elif convo_mode == "whisper":
         whisper = input("Enter Input: ")
-        thought = generate_inner_thought(persona, whisper)
+        thought = _generate_inner_thought(persona, whisper)
 
         created = persona.curr_time
         expiration = persona.curr_time + datetime.timedelta(days=30)
-        s, p, o = generate_action_event_triple(thought, persona)
+        s, p, o = _generate_action_event_triple(thought, persona)
         keywords = set([s, p, o])
-        thought_poignancy = generate_poig_score(persona, "event", whisper)
+        thought_poignancy = _generate_poig_score(persona, "event", whisper)
         thought_embedding_pair = (thought, get_embedding(thought))
-        persona.a_mem.add_thought(
+        persona.add_thought(
             created,
             expiration,
             s,

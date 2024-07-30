@@ -380,7 +380,7 @@ def _generate_decide_to_react(init_persona, target_persona, retrieved):
 
 
 """ _create_react """
-def generate_new_decomp_schedule(
+def _generate_new_decomp_schedule(
     persona, inserted_act, inserted_act_dur, start_hour, end_hour
 ):
     # Step 1: Setting up the core variables for the function.
@@ -560,8 +560,10 @@ def _revise_identity(persona):
 def _long_term_planning(persona, new_day):
     """
     Formulates the persona's daily long-term plan if it is the start of a new
-    day. This basically has two components: first, we create the wake-up hour,
-    and second, we create the hourly schedule based on it.
+    day. This basically has two components:
+        - first, we create the wake-up hour,
+        - second, we create the hourly schedule based on it.
+
     INPUT
       new_day: Indicates whether the current time signals a "First day",
                "New day", or False (for neither). This is important because we
@@ -592,7 +594,7 @@ def _long_term_planning(persona, new_day):
     persona.f_daily_schedule = _generate_hourly_schedule(persona, wake_up_hour)
     persona.f_daily_schedule_hourly_org = persona.f_daily_schedule[:]
 
-    # Adding plan to the memory.
+    # Adding `plan` to the `memory`.
     thought = f"This is {persona.scratch.name}'s plan for {persona.curr_time.strftime('%A %B %d')}:"
     for i in persona.scratch.daily_req:
         thought += f" {i},"
@@ -603,7 +605,7 @@ def _long_term_planning(persona, new_day):
     keywords = set(["plan"])
     thought_poignancy = 5
     thought_embedding_pair = (thought, get_embedding(thought))
-    persona.a_mem.add_thought(
+    persona.add_thought(
         created,
         expiration,
         s,
@@ -634,7 +636,7 @@ def _determine_action(persona, maze):
       maze: Current <Maze> instance.
     """
 
-    def determine_decomp(act_desp, act_dura):
+    def _determine_decomp(act_desp, act_dura):
         """
         Given an action description and its duration, we determine whether we need
         to decompose it. If the action is about the agent sleeping, we generally
@@ -663,7 +665,7 @@ def _determine_action(persona, maze):
     curr_index = persona.scratch.get_f_daily_schedule_index()
     curr_index_60 = persona.scratch.get_f_daily_schedule_index(advance=60)
 
-    # * Decompose *
+    """ 1. Decompose """
     # During the first hour of the day, we need to decompose two hours
     # sequence. We do that here.
     if curr_index == 0:
@@ -672,17 +674,16 @@ def _determine_action(persona, maze):
         if act_dura >= 60:
             # We decompose if the next action is longer than an hour, and fits the
             # criteria described in determine_decomp.
-            if determine_decomp(act_desp, act_dura):
-                persona.f_daily_schedule[curr_index : curr_index + 1] = (
-                    _generate_task_decomp(persona, act_desp, act_dura)
-                )
+            if _determine_decomp(act_desp, act_dura):
+                persona.f_daily_schedule[curr_index : curr_index + 1] = \
+                    (_generate_task_decomp(persona, act_desp, act_dura))
+
         if curr_index_60 + 1 < len(persona.f_daily_schedule):
             act_desp, act_dura = persona.f_daily_schedule[curr_index_60 + 1]
             if act_dura >= 60:
-                if determine_decomp(act_desp, act_dura):
-                    persona.f_daily_schedule[
-                        curr_index_60 + 1 : curr_index_60 + 2
-                    ] = _generate_task_decomp(persona, act_desp, act_dura)
+                if _determine_decomp(act_desp, act_dura):
+                    persona.f_daily_schedule[curr_index_60 + 1 : curr_index_60 + 2] = \
+                        _generate_task_decomp(persona, act_desp, act_dura)
 
     if curr_index_60 < len(persona.f_daily_schedule):
         # If it is not the first hour of the day, this is always invoked (it is
@@ -693,10 +694,9 @@ def _determine_action(persona, maze):
             # And we don't want to decompose after 11 pm.
             act_desp, act_dura = persona.f_daily_schedule[curr_index_60]
             if act_dura >= 60:
-                if determine_decomp(act_desp, act_dura):
-                    persona.f_daily_schedule[
-                        curr_index_60 : curr_index_60 + 1
-                    ] = _generate_task_decomp(persona, act_desp, act_dura)
+                if _determine_decomp(act_desp, act_dura):
+                    persona.f_daily_schedule[curr_index_60 : curr_index_60 + 1] = \
+                        _generate_task_decomp(persona, act_desp, act_dura)
     # * End of Decompose *
 
     # Generate an <Action> instance from the action description and duration. By
@@ -711,7 +711,7 @@ def _determine_action(persona, maze):
     debug_info += "\nname: " + persona.scratch.name
     logger.debug(debug_info)
 
-    # 1440
+    # 1440 = 24 * 60
     x_emergency = 0
     for i in persona.f_daily_schedule:
         x_emergency += i[1]
@@ -730,11 +730,13 @@ def _determine_action(persona, maze):
     act_sector = _generate_action_sector(act_desp, persona, maze)
     act_arena = _generate_action_arena(act_desp, persona, maze, act_world, act_sector)
     act_address = f"{act_world}:{act_sector}:{act_arena}"
+
     act_game_object = _generate_action_game_object(act_desp, act_address, persona, maze)
     new_address = f"{act_world}:{act_sector}:{act_arena}:{act_game_object}"
 
     act_pron = _generate_action_pronunciatio(act_desp, persona)
     act_event = _generate_action_event_triple(act_desp, persona)
+
     # Persona's actions also influence the object states. We set those up here.
     act_obj_desp = _generate_act_obj_desc(act_game_object, act_desp, persona)
     act_obj_pron = _generate_action_pronunciatio(act_obj_desp, persona)
@@ -817,7 +819,7 @@ def _should_react(persona, retrieved, personas):
                 <Persona> instance as values.
     """
 
-    def lets_talk(init_persona, target_persona, retrieved):
+    def _lets_talk(init_persona, target_persona, retrieved):
         if (
             not target_persona.scratch.act_address
             or not target_persona.act_description
@@ -850,7 +852,7 @@ def _should_react(persona, retrieved, personas):
 
         return False
 
-    def lets_react(init_persona, target_persona, retrieved):
+    def _lets_react(init_persona, target_persona, retrieved):
         if (
             not target_persona.scratch.act_address
             or not target_persona.act_description
@@ -905,10 +907,10 @@ def _should_react(persona, retrieved, personas):
 
     if ":" not in curr_event.subject:
         # this is a persona event.
-        if lets_talk(persona, personas[curr_event.subject], retrieved):
+        if _lets_talk(persona, personas[curr_event.subject], retrieved):
             return f"chat with {curr_event.subject}"
 
-        react_mode = lets_react(persona, personas[curr_event.subject], retrieved)
+        react_mode = _lets_react(persona, personas[curr_event.subject], retrieved)
         return react_mode
 
     return False
@@ -933,23 +935,24 @@ def _create_react(
     p = persona
 
     min_sum = 0
-    for i in range(p.scratch.get_f_daily_schedule_hourly_org_index()):
+    schedule_idx = p.scratch.get_f_daily_schedule_hourly_org_index()
+    for i in range(schedule_idx):
         min_sum += p.scratch.f_daily_schedule_hourly_org[i][1]
     start_hour = int(min_sum / 60)
 
-    if (p.scratch.f_daily_schedule_hourly_org[p.scratch.get_f_daily_schedule_hourly_org_index()][1] >= 120):
+    if (p.scratch.f_daily_schedule_hourly_org[schedule_idx][1] >= 120):
         end_hour = (
-            start_hour + p.scratch.f_daily_schedule_hourly_org[p.scratch.get_f_daily_schedule_hourly_org_index()][1] / 60
+            start_hour + p.scratch.f_daily_schedule_hourly_org[schedule_idx][1] / 60
         )
 
     elif (
-        p.scratch.f_daily_schedule_hourly_org[p.scratch.get_f_daily_schedule_hourly_org_index()][1]
-        + p.scratch.f_daily_schedule_hourly_org[p.scratch.get_f_daily_schedule_hourly_org_index() + 1][1]
+        p.scratch.f_daily_schedule_hourly_org[schedule_idx][1]
+        + p.scratch.f_daily_schedule_hourly_org[schedule_idx + 1][1]
     ):
         end_hour = start_hour + (
             (
-                p.scratch.f_daily_schedule_hourly_org[p.scratch.get_f_daily_schedule_hourly_org_index()][1]
-                + p.scratch.f_daily_schedule_hourly_org[p.scratch.get_f_daily_schedule_hourly_org_index() + 1][1]
+                p.scratch.f_daily_schedule_hourly_org[schedule_idx][1]
+                + p.scratch.f_daily_schedule_hourly_org[schedule_idx + 1][1]
             ) / 60
         )
 
@@ -969,7 +972,7 @@ def _create_react(
         dur_sum += dur
         count += 1
 
-    ret = generate_new_decomp_schedule(
+    ret = _generate_new_decomp_schedule(
         p, inserted_act, inserted_act_dur, start_hour, end_hour
     )
     p.scratch.f_daily_schedule[start_index:end_index] = ret

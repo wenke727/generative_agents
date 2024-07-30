@@ -10,6 +10,7 @@ paper.
 """
 
 import sys
+
 sys.path.append("../")
 
 from persona.memory_structures.spatial_memory import MemoryTree
@@ -237,11 +238,11 @@ class Persona:
 
     @property
     def curr_tile(self):
-      return self.scratch.curr_tile
+        return self.scratch.curr_tile
 
     @property
     def vison_r(self):
-      return self.scratch.vison_r
+        return self.scratch.vison_r
 
     @property
     def get_embedding_in_a_men(self):
@@ -254,6 +255,33 @@ class Persona:
     @property
     def f_daily_schedule(self):
         return self.scratch.f_daily_schedule
+
+    def add_thought(
+        self,
+        created,
+        expiration,
+        s,
+        p,
+        o,
+        description,
+        keywords,
+        poignancy,
+        embedding_pair,
+        filling,
+    ):
+        return self.a_mem.add_thought(
+            created,
+            expiration,
+            s,
+            p,
+            o,
+            description,
+            keywords,
+            poignancy,
+            embedding_pair,
+            filling,
+        )
+
 
 
 if __name__ == "__main__":

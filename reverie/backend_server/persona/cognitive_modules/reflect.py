@@ -137,7 +137,7 @@ def run_reflect(persona):
             thought_poignancy = _generate_poig_score(persona, "thought", thought)
             thought_embedding_pair = (thought, get_embedding(thought))
 
-            persona.a_mem.add_thought(
+            persona.add_thought(
                 created,
                 expiration,
                 s,
@@ -249,7 +249,7 @@ def reflect(persona):
             thought_poignancy = _generate_poig_score(persona, "thought", planning_thought)
             thought_embedding_pair = (planning_thought, get_embedding(planning_thought))
 
-            persona.a_mem.add_thought(
+            persona.add_thought(
                 created,
                 expiration,
                 s,
@@ -273,7 +273,7 @@ def reflect(persona):
             thought_poignancy = _generate_poig_score(persona, "thought", memo_thought)
             thought_embedding_pair = (memo_thought, get_embedding(memo_thought))
 
-            persona.a_mem.add_thought(
+            persona.add_thought(
                 created,
                 expiration,
                 s,

@@ -3,10 +3,7 @@
   "att_bandwidth": 8,
   "retention": 8,
   "curr_time": "February 14, 2023, 00:02:20",
-  "curr_tile": [
-    73,
-    14
-  ],
+  "curr_tile": [73, 14],
   "daily_plan_req": "1. Wake up at 6am and complete morning routine (shower, brush teeth, get dressed) by 6:30am. 2. Arrive at Hobbs Cafe by 7:30am to do final preparations for the Valentine's Day party. 3. Welcome and greet customers as they arrive for the party starting at 5pm. 4. Ensure that food and drinks are well-stocked and available throughout the evening. 5. Continuously check on guests and provide excellent customer service during the event. 6. Close the cafe at 8pm and do a final walkthrough to ensure everything is in order before heading home.",
   "name": "Isabella Rodriguez",
   "first_name": "Isabella",
@@ -39,130 +36,44 @@
     "take a long walk after closing the cafe at 8:00 pm"
   ],
   "f_daily_schedule": [
-    [
-      "sleeping",
-      360
-    ],
-    [
-      "waking up and completing her morning routine",
-      60
-    ],
-    [
-      "arriving at Hobbs Cafe to do final preparations for the Valentine's Day party",
-      60
-    ],
-    [
-      "opening Hobbs Cafe and attending to guests",
-      60
-    ],
-    [
-      "having lunch with her staff",
-      60
-    ],
-    [
-      "attending to guests at the cafe",
-      120
-    ],
-    [
-      "having lunch with her staff",
-      60
-    ],
-    [
-      "attending to guests at the cafe",
-      240
-    ],
-    [
-      "welcoming and greeting customers as they arrive for the Valentine's Day party",
-      60
-    ],
-    [
-      "attending to guests at the cafe",
-      120
-    ],
-    [
-      "closing Hobbs Cafe and doing a final walkthrough to ensure everything is in order",
-      60
-    ],
-    [
-      "taking a long walk",
-      120
-    ],
-    [
-      "going to bed",
-      60
-    ]
+    ["sleeping", 360],
+    ["waking up and completing her morning routine", 60],
+    ["arriving at Hobbs Cafe to do final preparations for the Valentine's Day party", 60],
+    ["opening Hobbs Cafe and attending to guests", 60],
+    ["having lunch with her staff", 60],
+    ["attending to guests at the cafe", 120],
+    ["having lunch with her staff", 60],
+    ["attending to guests at the cafe", 240],
+    ["welcoming and greeting customers as they arrive for the Valentine's Day party", 60],
+    ["attending to guests at the cafe", 120],
+    ["closing Hobbs Cafe and doing a final walkthrough to ensure everything is in order", 60],
+    ["taking a long walk", 120],
+    ["going to bed", 60]
   ],
   "f_daily_schedule_hourly_org": [
-    [
-      "sleeping",
-      360
-    ],
-    [
-      "waking up and completing her morning routine",
-      60
-    ],
-    [
-      "arriving at Hobbs Cafe to do final preparations for the Valentine's Day party",
-      60
-    ],
-    [
-      "opening Hobbs Cafe and attending to guests",
-      60
-    ],
-    [
-      "having lunch with her staff",
-      60
-    ],
-    [
-      "attending to guests at the cafe",
-      120
-    ],
-    [
-      "having lunch with her staff",
-      60
-    ],
-    [
-      "attending to guests at the cafe",
-      240
-    ],
-    [
-      "welcoming and greeting customers as they arrive for the Valentine's Day party",
-      60
-    ],
-    [
-      "attending to guests at the cafe",
-      120
-    ],
-    [
-      "closing Hobbs Cafe and doing a final walkthrough to ensure everything is in order",
-      60
-    ],
-    [
-      "taking a long walk",
-      120
-    ],
-    [
-      "going to bed",
-      60
-    ]
+    ["sleeping", 360],
+    ["waking up and completing her morning routine", 60],
+    ["arriving at Hobbs Cafe to do final preparations for the Valentine's Day party", 60],
+    ["opening Hobbs Cafe and attending to guests", 60],
+    ["having lunch with her staff", 60],
+    ["attending to guests at the cafe", 120],
+    ["having lunch with her staff", 60],
+    ["attending to guests at the cafe", 240],
+    [ "welcoming and greeting customers as they arrive for the Valentine's Day party", 60],
+    ["attending to guests at the cafe", 120],
+    ["closing Hobbs Cafe and doing a final walkthrough to ensure everything is in order", 60],
+    ["taking a long walk", 120],
+    ["going to bed", 60]
   ],
   "act_address": "the Ville:Isabella Rodriguez's apartment:main room:bed",
   "act_start_time": "February 13, 2023, 21:11:00",
   "act_duration": 180,
   "act_description": "sleeping",
   "act_pronunciatio": "\ud83d\udca4",
-  "act_event": [
-    "Isabella Rodriguez",
-    "is",
-    "sleep"
-  ],
+  "act_event": ["Isabella Rodriguez", "is", "sleep"],
   "act_obj_description": "being used",
   "act_obj_pronunciatio": "\ud83d\udcbb",
-  "act_obj_event": [
-    "bed",
-    "be",
-    "used"
-  ],
+  "act_obj_event": ["bed", "be", "used"],
   "chatting_with": null,
   "chat": null,
   "chatting_with_buffer": {

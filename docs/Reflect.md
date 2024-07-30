@@ -4,6 +4,8 @@
 
 ## 1. 核心类和方法
 
+<img src="./call_graph/plan_simplified.svg" alt="Example Image" />
+
 ### 1.1 全局方法
 
 #### 1.1.1 生成焦点点方法 `generate_focal_points`
