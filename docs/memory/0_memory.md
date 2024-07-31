@@ -1,6 +1,6 @@
 # Memory
 
-### ConceptNode 类
+### 1. ConceptNode 类
 
 `ConceptNode` 类表示一个记忆节点，节点可以是事件、思考或聊天。每个节点包含：
 
@@ -19,11 +19,32 @@
 - **keywords**：关键词集合
 - **filling**：填充信息
 
-#### 1.1.1 方法
+下面是一个ConceptNode的示例：
 
-- `spo_summary()`: 返回节点的三元组 (SPO) 摘要。
+```python
+{
+  "node_count": 912,
+  "type_count": 146,
+  "type": "thought",
+  "depth": 1,
+  "created": "2023-02-14 00:00:00",
+  "expiration": "2023-03-16 00:00:00",
+  "subject": "Isabella Rodriguez",
+  "predicate": "plan",
+  "object": "Tuesday February 14",
+  "description": "This is Isabella Rodriguez's plan for Tuesday February 14: wake up and complete the morning routine at 6:00 am, open Hobbs Cafe at 8:00 am, have lunch with her staff at 12:00 pm, attend to guests at the cafe from 8:00 am to 8:00 pm, take a long walk after closing the cafe at 8:00 pm.",
+  "embedding_key": "This is Isabella Rodriguez's plan for Tuesday February 14: wake up and complete the morning routine at 6:00 am, open Hobbs Cafe at 8:00 am, have lunch with her staff at 12:00 pm, attend to guests at the cafe from 8:00 am to 8:00 pm, take a long walk after closing the cafe at 8:00 pm.",
+  "poignancy": 5,
+  "keywords": ["plan"],
+  "filling": null
+}
+```
 
-## Scratch Memory Module
+
+
+## 2. Scratch Memory Module
+
+Agent 的短期记忆，包含个人以及世界相关的参数、个人的计划（长期、当天、小时计划）、当前进行的动作、已经规划好的行动路径等，并提供所有参数的修改接口。
 
 | Name                   | Desc                            | 调用                            |
 | ----------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -43,7 +64,7 @@
 | get_str_daily_schedule_summary      | 返回  `f_daily_schedule` 的字符串摘要            | reverie.ReverieServer.open_server              |
 | get_str_daily_schedule_hourly_org_summary | 返回  `f_daily_schedule_hourly_org` 的字符串摘要       | reverie.ReverieServer.open_server              |
 
-## Spatial Memory
+## 3. Spatial Memory
 
 
 | Name         | Desc            | 调用              |
@@ -52,7 +73,11 @@
 | get_str_accessible_sector_arenas  | 返回代理在当前区域中可访问的所有子区域的摘要字符串 | run_gpt_prompt_action_sector<br />run_gpt_prompt_action_arena -> plan._determine_action |
 | get_str_accessible_arena_game_objects | 获取在指定竞技场中可访问的所有游戏对象的字符串列表 | plan._generate_action_game_object<br />run_gpt_prompt_action_game_object |
 
-## Associative Memory
+## 4. Associative Memory
+
+Agent 的联想记忆，其主要功能是维护一个 ConceptNode对象的列表。
+
+ConceptNode节点可以是事件、想法或者对话
 
 | Name      | Desc       | 调用              |
 | ---------------------------- | -------------------------------- | ------------------------------------------------------------ |

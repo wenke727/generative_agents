@@ -138,28 +138,26 @@ def perceive(persona, maze):
     # 遍历感知到的事件，如果谓词不存在，则默认为“is idle”。
     # 构建事件描述，并获取事件的关键词、嵌入和情感评分。
     # 如果事件是新的（未在最近的事件中出现），则将其存储到角色的记忆中，并返回这些事件。
-    # Storing events.
-    # <ret_events> is a list of <ConceptNode> instances from the persona's
-    # associative memory.
+
+    # 3. Storing events.
+    # <ret_events> is a list of <ConceptNode> instances from the persona's associative memory.
     ret_events = []
     for p_event in perceived_events:
         s, p, o, desc = p_event
         if not p:
             # If the object is not present, then we default the event to "idle".
-            p = "is"
-            o = "idle"
-            desc = "idle"
+            p, o, desc = "is", "idle", "idle"
         desc = f"{s.split(':')[-1]} is {desc}"
         p_event = (s, p, o)
 
-        # We retrieve the latest persona.scratch.retention events. If there is
+        # 3.1 We retrieve the latest persona.scratch.retention events. If there is
         # something new that is happening (that is, p_event not in latest_events),
         # then we add that event to the a_mem and return it.
         latest_events = persona.a_mem.get_summarized_latest_events(
             persona.scratch.retention
         )
         if p_event not in latest_events:
-            # We start by managing keywords.
+            # 3.2 We start by managing keywords.
             keywords = set()
             sub = p_event[0]
             obj = p_event[2]
@@ -169,23 +167,20 @@ def perceive(persona, maze):
                 obj = p_event[2].split(":")[-1]
             keywords.update([sub, obj])
 
-            # Get event embedding
+            # 3.3 Get event embedding
             desc_embedding_in = desc
             if "(" in desc:
-                desc_embedding_in = (
-                    desc_embedding_in.split("(")[1].split(")")[0].strip()
-                )
+                desc_embedding_in = (desc_embedding_in.split("(")[1].split(")")[0].strip())
             if desc_embedding_in in persona.a_mem.embeddings:
                 event_embedding = persona.a_mem.embeddings[desc_embedding_in]
             else:
                 event_embedding = get_embedding(desc_embedding_in)
             event_embedding_pair = (desc_embedding_in, event_embedding)
 
-            # Get event poignancy.
+            # 3.4 Get event poignancy.
             event_poignancy = _generate_poig_score(persona, "event", desc_embedding_in)
 
-            # If we observe the persona's self chat, we include that in the memory
-            # of the persona here.
+            # 3.5 If we observe the persona's self chat, we include that in the memory of the persona here.
             chat_node_ids = []
             if p_event[0] == f"{persona.name}" and p_event[1] == "chat with":
                 curr_event = persona.scratch.act_event
@@ -210,7 +205,7 @@ def perceive(persona, maze):
                 )
                 chat_node_ids = [chat_node.node_id]
 
-            # Finally, we add the current event to the agent's memory.
+            # 3.6 Finally, we add the current event to the agent's memory.
             ret_events += [
                 persona.a_mem.add_event(
                     persona.curr_time,

@@ -6,43 +6,58 @@
 
 ## 1. 核心类和方法
 
-**Call Graph**
+`plan` 函数是生成型代理的规划模块，用于根据感知和记忆信息生成代理角色的日常计划和短期行动计划。以下是函数的详细步骤和调用顺序：
 
-plan
+### 主要步骤
+1. **长远规划 (Long-Term Planning)**
+    - 如果是新的一天，调用 `_long_term_planning` 生成代理角色的每日计划。
 
-- _long_term_planning
-  - _generate_wake_up_hour
-  - _generate_first_daily_plan
-  - _revise_identity
-  - _generate_hourly_schedule
-- _determine_action
-  - _determine_decomp
-  - _generate_task_decomp: 任务分解
-  - _generate_action_sector
-  - _generate_action_arena
-  - _generate_action_game_object
-  - _generate_action_pronunciatio
-  - _generate_action_event_triple
-  - _generate_act_obj_desc
-  - _generate_act_obj_event_triple
+2. **确定行动 (Determine Action)**
+    - 如果当前行动已经完成，调用 `_determine_action` 生成代理角色的下一个行动。
 
-- _choose_retrieved
+3. **处理感知事件 (Handle Perceived Events)**
+    - 从检索到的记忆中选择一个事件进行关注，并决定是否需要对该事件进行反应。
 
-- _should_react
-  - _lets_talk / _generate_decide_to_talk
+4. **聊天相关状态清理 (Chat-Related State Cleanup)**
+    - 清理聊天相关的状态，确保代理角色不会无限循环地进行对话。
 
-  - _lets_react / _generate_decide_to_react
+### 函数调用顺序
+1. **plan**
+    - 调用 `_long_term_planning` 生成长期计划
+      - **_generate_wake_up_hour**: 生成角色的起床时间
+      - **_generate_first_daily_plan**: 生成角色的第一天的日常计划
+      - **_revise_identity**: 修正角色的身份
+      - **_generate_hourly_schedule**: 生成每小时的计划
 
-- _chat_react
-  - _generate_convo
+    - 调用 `_determine_action` 生成短期行动
+      - **_determine_decomp**: 确定是否需要分解任务
+      - **_generate_task_decomp**: 任务分解
+      - **_generate_action_sector**: 生成行动区域
+      - **_generate_action_arena**: 生成行动竞技场
+      - **_generate_action_game_object**: 生成行动的游戏对象
+      - **_generate_action_pronunciatio**: 生成行动的描述
+      - **_generate_action_event_triple**: 生成行动事件三元组
+      - **_generate_act_obj_desc**: 生成对象描述
+      - **_generate_act_obj_event_triple**: 生成对象事件三元组
 
-  - _generate_convo_summary
+    - 调用 `_choose_retrieved` 选择检索到的事件
 
-  - _create_react
-    - _generate_new_decomp_schedule
+    - 调用 `_should_react` 决定是否需要反应
+      - **_lets_talk / _generate_decide_to_talk**: 决定是否进行对话
+      - **_lets_react / _generate_decide_to_react**: 决定是否进行反应
 
-- _wait_react
-  - _create_react
+    - 如果需要对话，调用 `_chat_react` 生成对话
+      - **_generate_convo**: 生成对话
+      - **_generate_convo_summary**: 生成对话总结
+      - **_create_react**: 创建反应
+        - **_generate_new_decomp_schedule**: 生成新的分解计划
+
+    - 如果需要等待，调用 `_wait_react` 进行等待
+      - **_create_react**: 创建反应
+
+
+
+
 
 ![image-25670730132155618](.fig/Plan.asset/plan.png)
 
@@ -75,288 +90,7 @@ plan
 | `_wait_react`                    | 处理等待反应，并调用之前定义的函数生成等待的反应             | `persona` ，<br />`reaction_mode` (字符串)                   | 无                                             |
 | `plan`                           | 主要的认知函数，用于根据检索到的记忆和感知、迷宫以及初始状态来进行长期和短期的计划 | `persona` ，<br />`maze` (Maze 类实例)，<br />`personas` (字典)，<br />`new_day` (布尔值或字符串)，<br />`retrieved` (字典) | 一个字符串，表示目标行动地址                   |
 
-### 1.1 生成相关的方法
-
-#### 1.1.1 生成起床时间 `generate_wake_up_hour`
-
-```python
-def generate_wake_up_hour(persona):
-    """
-    生成代理的起床时间。
-
-    输入：
-      persona: 代理实例。
-
-    输出：
-      起床时间（小时）。
-    """
-```
-
-- **功能**：生成代理的起床时间。
-- **输入参数**：`persona` 当前代理实例。
-- **输出**：返回代理的起床时间（小时）。
-
-#### 1.1.2 生成每日计划 `generate_first_daily_plan`
-
-```python
-def generate_first_daily_plan(persona, wake_up_hour):
-    """
-    生成代理的每日计划。
-
-    输入：
-      persona: 代理实例。
-      wake_up_hour: 起床时间。
-
-    输出：
-      每日计划列表。
-    """
-```
-
-- **功能**：生成代理的每日计划。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `wake_up_hour`：起床时间。
-- **输出**：返回每日计划列表。
-
-#### 1.1.3 生成每小时计划 `generate_hourly_schedule`
-
-```python
-def generate_hourly_schedule(persona, wake_up_hour):
-    """
-    基于每日计划生成每小时的活动计划。
-
-    输入：
-      persona: 代理实例。
-      wake_up_hour: 起床时间。
-
-    输出：
-      每小时计划列表。
-    """
-```
-
-- **功能**：生成代理的每小时计划。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `wake_up_hour`：起床时间。
-- **输出**：返回每小时计划列表。
-
-#### 1.1.4 生成任务分解 `generate_task_decomp`
-
-```python
-def generate_task_decomp(persona, task, duration):
-    """
-    将任务分解为更小的子任务。
-
-    输入：
-      persona: 代理实例。
-      task: 任务描述。
-      duration: 任务持续时间。
-
-    输出：
-      子任务列表。
-    """
-```
-
-- **功能**：将任务分解为更小的子任务。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `task`：任务描述。
-  - `duration`：任务持续时间。
-- **输出**：返回子任务列表。
-
-#### 1.1.5 生成行动部门 `generate_action_sector`
-
-```python
-def generate_action_sector(act_desp, persona, maze):
-    """
-    根据任务描述生成行动部门。
-
-    输入：
-      act_desp: 任务描述。
-      persona: 代理实例。
-      maze: 当前迷宫实例。
-
-    输出：
-      行动部门。
-    """
-```
-
-- **功能**：根据任务描述生成行动部门。
-- **输入参数**：
-  - `act_desp`：任务描述。
-  - `persona`：当前代理实例。
-  - `maze`：当前迷宫实例。
-- **输出**：返回行动部门。
-
-#### 1.1.6 生成行动场景 `generate_action_arena`
-
-```python
-def generate_action_arena(act_desp, persona, maze, act_world, act_sector):
-    """
-    根据任务描述生成行动场景。
-
-    输入：
-      act_desp: 任务描述。
-      persona: 代理实例。
-      maze: 当前迷宫实例。
-      act_world: 行动世界。
-      act_sector: 行动部门。
-
-    输出：
-      行动场景。
-    """
-```
-
-- **功能**：根据任务描述生成行动场景。
-- **输入参数**：
-  - `act_desp`：任务描述。
-  - `persona`：当前代理实例。
-  - `maze`：当前迷宫实例。
-  - `act_world`：行动世界。
-  - `act_sector`：行动部门。
-- **输出**：返回行动场景。
-
-#### 1.1.7 生成行动对象 `generate_action_game_object`
-
-```python
-def generate_action_game_object(act_desp, act_address, persona, maze):
-    """
-    根据任务描述生成行动对象。
-
-    输入：
-      act_desp: 任务描述。
-      act_address: 行动地址。
-      persona: 代理实例。
-      maze: 当前迷宫实例。
-
-    输出：
-      行动对象。
-    """
-```
-
-- **功能**：根据任务描述生成行动对象。
-- **输入参数**：
-  - `act_desp`：任务描述。
-  - `act_address`：行动地址。
-  - `persona`：当前代理实例。
-  - `maze`：当前迷宫实例。
-- **输出**：返回行动对象。
-
-#### 1.1.8 生成行动描述 `generate_act_obj_desc`
-
-```python
-def generate_act_obj_desc(act_game_object, act_desp, persona):
-    """
-    生成行动对象描述。
-
-    输入：
-      act_game_object: 行动对象。
-      act_desp: 任务描述。
-      persona: 代理实例。
-
-    输出：
-      行动对象描述。
-    """
-```
-
-- **功能**：生成行动对象描述。
-- **输入参数**：
-  - `act_game_object`：行动对象。
-  - `act_desp`：任务描述。
-  - `persona`：当前代理实例。
-- **输出**：返回行动对象描述。
-
-### 1.2 计划模块方法
-
-#### 1.2.1 计划主方法 `plan`
-
-```python
-def plan(persona, maze, personas, new_day, retrieved):
-    """
-    主计划方法，根据检索到的信息生成代理的短期和长期计划。
-
-    输入：
-      persona: 当前代理实例。
-      maze: 当前迷宫实例。
-      personas: 代理字典。
-      new_day: 新的一天。
-      retrieved: 检索到的记忆和感知信息。
-
-    输出：
-      目标行动地址。
-    """
-```
-
-- **功能**：生成代理的短期和长期计划。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `maze`：当前迷宫实例。
-  - `personas`：代理字典。
-  - `new_day`：新的一天。
-  - `retrieved`：检索到的记忆和感知信息。
-- **输出**：返回目标行动地址。
-
-#### 1.2.2 长期计划方法 `_long_term_planning`
-
-```python
-def _long_term_planning(persona, new_day):
-    """
-    为代理生成长期计划。
-
-    输入：
-      persona: 当前代理实例。
-      new_day: 新的一天。
-
-    输出：
-      None
-    """
-```
-
-- **功能**：为代理生成长期计划。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `new_day`：新的一天。
-
-#### 1.2.3 短期计划方法 `_determine_action`
-
-```python
-def _determine_action(persona, maze):
-    """
-    生成代理的下一步行动计划。
-
-    输入：
-      persona: 当前代理实例。
-      maze: 当前迷宫实例
-
-
-    输出：
-      None
-    """
-```
-
-- **功能**：生成代理的下一步行动计划。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `maze`：当前迷宫实例。
-
-## 2. 示例代码
-
-```python
-if __name__ == "__main__":
-    from persona import Persona
-    from maze import Maze
-
-    persona = Persona("example_persona")
-    maze = Maze()
-    personas = {"example_persona": persona}
-
-    new_day = "First day"
-    retrieved = {}  # 示例的检索数据
-
-    plan(persona, maze, personas, new_day, retrieved)
-```
-
-
 ## 4. 总结
 
 `plan.py` 脚本定义了生成型代理的计划模块，通过生成每日活动计划和反应计划，使代理能够在虚拟世界中智能地进行长短期决策和行动。该模块与 GPT-3 模型交互生成计划，并根据代理的感知和检索信息调整计划，从而提升代理的智能性和适应性。
+

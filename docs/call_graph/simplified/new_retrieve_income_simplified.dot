@@ -1,0 +1,43 @@
+digraph {
+	graph [rankdir=LR];
+	subgraph "cluster_./persona/cognitive_modules/plan.py" {
+		graph [label="./persona/cognitive_modules/plan.py"];
+		"./persona/cognitive_modules/plan.py#_revise_identity@493:4"	[label=_revise_identity];
+		"./persona/cognitive_modules/plan.py#_generate_convo@338:4"	[label=_generate_convo];
+		"./persona/cognitive_modules/plan.py#_chat_react@995:4"	[label=_chat_react];
+		"./persona/cognitive_modules/plan.py#_long_term_planning@559:4"	[label=_long_term_planning];
+		"./persona/cognitive_modules/plan.py#plan@1102:4"	[label=plan];
+	}
+	subgraph "cluster_./persona/persona.py" {
+		graph [label="./persona/persona.py"];
+		"./persona/persona.py#open_convo_session@227:8"	[label=open_convo_session];
+		"./persona/persona.py#reflect@167:8"	[label=reflect];
+	}
+	subgraph "cluster_./persona/cognitive_modules/reflect.py" {
+		graph [label="./persona/cognitive_modules/reflect.py"];
+		"./persona/cognitive_modules/reflect.py#run_reflect@107:4"	[label=run_reflect];
+		"./persona/cognitive_modules/reflect.py#reflect@195:4"	[label=reflect];
+	}
+	subgraph "cluster_./persona/cognitive_modules/converse.py" {
+		graph [label="./persona/cognitive_modules/converse.py"];
+		"./persona/cognitive_modules/converse.py#_agent_chat_v1@80:4"	[label=_agent_chat_v1];
+		"./persona/cognitive_modules/converse.py#agent_chat_v2@148:4"	[label=agent_chat_v2];
+		"./persona/cognitive_modules/converse.py#open_convo_session@302:4"	[label=open_convo_session];
+	}
+	subgraph "cluster_./persona/cognitive_modules/retrieve.py" {
+		graph [label="./persona/cognitive_modules/retrieve.py"];
+		"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4"	[label=new_retrieve];
+	}
+	"./persona/cognitive_modules/reflect.py#run_reflect@107:4" -> "./persona/cognitive_modules/reflect.py#reflect@195:4";
+	"./persona/cognitive_modules/reflect.py#reflect@195:4" -> "./persona/persona.py#reflect@167:8";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/reflect.py#run_reflect@107:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/converse.py#_agent_chat_v1@80:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/converse.py#agent_chat_v2@148:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/converse.py#open_convo_session@302:4";
+	"./persona/cognitive_modules/retrieve.py#new_retrieve@200:4" -> "./persona/cognitive_modules/plan.py#_revise_identity@493:4";
+	"./persona/cognitive_modules/converse.py#agent_chat_v2@148:4" -> "./persona/cognitive_modules/plan.py#_generate_convo@338:4";
+	"./persona/cognitive_modules/converse.py#open_convo_session@302:4" -> "./persona/persona.py#open_convo_session@227:8";
+	"./persona/cognitive_modules/plan.py#_revise_identity@493:4" -> "./persona/cognitive_modules/plan.py#_long_term_planning@559:4";
+	"./persona/cognitive_modules/plan.py#_generate_convo@338:4" -> "./persona/cognitive_modules/plan.py#_chat_react@995:4";
+	"./persona/cognitive_modules/plan.py#_long_term_planning@559:4" -> "./persona/cognitive_modules/plan.py#plan@1102:4";
+}

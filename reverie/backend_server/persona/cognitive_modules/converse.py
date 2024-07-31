@@ -28,6 +28,7 @@ from persona.prompt_template.run_gpt_prompt import (
 from utils import debug
 
 
+""" decrapted """
 def _generate_agent_chat_summarize_ideas(init_persona, target_persona, retrieved, curr_context):
     all_embedding_keys = list()
     for key, val in retrieved.items():
@@ -118,6 +119,7 @@ def _agent_chat_v1(maze, init_persona, target_persona):
     )
 
 
+""" new """
 def _generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_chat):
     # Chat version optimized for speed via batch generation
     curr_context = (
