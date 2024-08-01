@@ -74,8 +74,7 @@ def _perceive_events(persona, maze, nearby_tiles):
         _type_: _description_
     """
     # 2. PERCEIVE EVENTS.
-    # We will perceive events that take place in the same arena as the
-    # persona's current arena.
+    # We will perceive events that take place in the same arena as the persona's current arena.
     curr_arena_path = maze.get_tile_path(persona.curr_tile, "arena")
     # We do not perceive the same event twice (this can happen if an object is
     # extended across multiple tiles).
@@ -167,7 +166,7 @@ def perceive(persona, maze):
                 obj = p_event[2].split(":")[-1]
             keywords.update([sub, obj])
 
-            # 3.3 Get event embedding
+            # 3.3 Get event `embedding`
             desc_embedding_in = desc
             if "(" in desc:
                 desc_embedding_in = (desc_embedding_in.split("(")[1].split(")")[0].strip())
@@ -177,7 +176,7 @@ def perceive(persona, maze):
                 event_embedding = get_embedding(desc_embedding_in)
             event_embedding_pair = (desc_embedding_in, event_embedding)
 
-            # 3.4 Get event poignancy.
+            # 3.4 Get event `poignancy`.
             event_poignancy = _generate_poig_score(persona, "event", desc_embedding_in)
 
             # 3.5 If we observe the persona's self chat, we include that in the memory of the persona here.

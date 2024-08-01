@@ -27,7 +27,7 @@ def retrieve(persona, perceived):
                 are controlled by the att_bandwidth and retention
                 hyper-parameters.
     OUTPUT:
-      retrieved: a dictionary of dictionary. The first layer specifies an event,
+      retrieved: a dictionary of dictionary. The first layer specifies an `event`,
                  while the latter layer specifies the "curr_event", "events",
                  and "thoughts" that are relevant.
     """

@@ -16,16 +16,15 @@ from global_methods import check_if_file_exists
 
 class Scratch:
     def __init__(self, f_saved):
-        # PERSONA HYPERPARAMETERS
-        # <vision_r> denotes the number of tiles that the persona can see around
-        # them.
+        """ PERSONA HYPERPARAMETERS """
+        # <vision_r> denotes the number of tiles that the persona can see around them.
         self.vision_r = 4
         # <att_bandwidth> TODO
         self.att_bandwidth = 3
         # <retention> TODO
         self.retention = 5
 
-        # WORLD INFORMATION
+        """ WORLD INFORMATION """
         # Perceived world time.
         self.curr_time = None
         # Current x,y tile coordinate of the persona.
@@ -33,7 +32,7 @@ class Scratch:
         # Perceived world daily requirement.
         self.daily_plan_req = None
 
-        # THE CORE IDENTITY OF THE PERSONA
+        """ THE CORE IDENTITY OF THE PERSONA """
         # Base information about the persona.
         self.name = None
         self.first_name = None
@@ -48,7 +47,7 @@ class Scratch:
         self.lifestyle = None
         self.living_area = None
 
-        # REFLECTION VARIABLES
+        """ REFLECTION VARIABLES """
         self.concept_forget = 100
         self.daily_reflection_time = 60 * 3
         self.daily_reflection_size = 5
@@ -56,7 +55,7 @@ class Scratch:
         self.kw_strg_event_reflect_th = 4
         self.kw_strg_thought_reflect_th = 4
 
-        # New reflection variables
+        """ New reflection variables """
         self.recency_w = 1
         self.relevance_w = 1
         self.importance_w = 1
@@ -66,9 +65,8 @@ class Scratch:
         self.importance_ele_n = 0
         self.thought_count = 5
 
-        # PERSONA PLANNING
-        # <daily_req> is a list of various goals the persona is aiming to achieve
-        # today.
+        """ PERSONA PLANNING """
+        # <daily_req> is a list of various goals the persona is aiming to achieve today.
         # e.g., ['Work on her paintings for her upcoming show',
         #        'Take a break to watch some TV',
         #        'Make lunch for herself',
@@ -108,11 +106,10 @@ class Scratch:
         #        ['working on her painting', 240], ... ['going to bed', 60]]
         self.f_daily_schedule_hourly_org = []
 
-        # CURR ACTION
+        """ CURR ACTION """
         # <address> is literally the string address of where the action is taking
-        # place.  It comes in the form of
-        # "{world}:{sector}:{arena}:{game_objects}". It is important that you
-        # access this without doing negative indexing (e.g., [-1]) because the
+        # place.  It comes in the form of `{world}:{sector}:{arena}:{game_objects}`.
+        # It is important that you access this without doing negative indexing (e.g., [-1]) because the
         # latter address elements may not be present in some cases.
         # e.g., "dolores double studio:double studio:bedroom 1:bed"
         self.act_address = None
@@ -507,6 +504,8 @@ class Scratch:
 
         self.chatting_with = chatting_with
         self.chat = chat
+
+        # 维护了一种缓冲机制，使得角色在与同一个目标角色对话一次后需要等待一段时间才能再次进行对话
         if chatting_with_buffer:
             self.chatting_with_buffer.update(chatting_with_buffer)
         self.chatting_end_time = chatting_end_time

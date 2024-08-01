@@ -26,7 +26,7 @@
     - 调用 `_long_term_planning` 生成长期计划
       - **_generate_wake_up_hour**: 生成角色的起床时间
       - **_generate_first_daily_plan**: 生成角色的第一天的日常计划
-      - **_revise_identity**: 修正角色的身份
+      - **_revise_identity**: 获取角色的身份信息， stable identify set
       - **_generate_hourly_schedule**: 生成每小时的计划
 
     - 调用 `_determine_action` 生成短期行动
@@ -40,7 +40,7 @@
       - **_generate_act_obj_desc**: 生成对象描述
       - **_generate_act_obj_event_triple**: 生成对象事件三元组
 
-    - 调用 `_choose_retrieved` 选择检索到的事件
+    - 调用 `_choose_retrieved` 选择检索到的事件 / 执行过滤条件后，随机挑选
 
     - 调用 `_should_react` 决定是否需要反应
       - **_lets_talk / _generate_decide_to_talk**: 决定是否进行对话
@@ -56,6 +56,96 @@
       - **_create_react**: 创建反应
 
 
+
+当然可以。以下是 `plan` 函数的总体逻辑梳理：
+
+## plan 函数总体逻辑
+
+### 输入参数
+- `persona`: 当前的 Persona 实例。
+- `maze`: 当前的 Maze 实例，表示世界的状态。
+- `personas`: 包含所有 Persona 名称作为键和 Persona 实例作为值的字典。
+- `new_day`: 表示当前时间是否为新的一天，有三种可能的值：`False`（不是新的一天）、`"First day"`（模拟的第一天）、`"New day"`（新的一天）。
+- `retrieved`: 一个字典，包含检索到的事件，形式为 `dictionary[event.description] = {"curr_event": <ConceptNode>, "events": [<ConceptNode>, ...], "thoughts": [<ConceptNode>, ...]}`。
+
+### 输出
+- 返回 Persona 的目标行为地址 `persona.scratch.act_address`。
+
+### 函数流程
+
+#### 第一步：生成小时计划（如果是新的一天）
+```python
+if new_day:
+    _long_term_planning(persona, new_day)
+```
+- 如果是新的一天，调用 `_long_term_planning` 函数生成一天的计划。
+  - `_generate_wake_up_hour`：生成起床时间。
+  - `_generate_first_daily_plan` 或 `_revise_identity`：生成或修订每日计划。
+  - `_generate_hourly_schedule`：生成每小时的计划。
+
+#### 第二步：如果当前行为已结束，创建新计划
+
+```python
+if persona.scratch.act_check_finished():
+    _determine_action(persona, maze)
+```
+- 如果当前行为已结束，调用 `_determine_action` 函数创建新的行为序列。
+  - `_generate_task_decomp`：任务分解。
+  - `_generate_action_sector`：生成行动的区域。
+  - `_generate_action_arena`：生成行动的场所。
+  - `_generate_action_game_object`：生成行动的游戏对象。
+  - `_generate_action_pronunciatio`：生成行动的描述。
+  - `_generate_action_event_triple`：生成行动的事件三元组。
+  - `_generate_act_obj_desc`：生成对象的描述。
+  - `_generate_act_obj_event_triple`：生成对象的事件三元组。
+
+#### 第三步：处理感知到的事件并决定是否需要响应
+```python
+focused_event = False
+if retrieved.keys():
+    focused_event = _choose_retrieved(persona, retrieved)
+```
+- 如果有感知到的事件，选择一个事件进行处理。
+  - `_choose_retrieved`：选择一个需要关注的事件。
+
+```python
+if focused_event:
+    reaction_mode = _should_react(persona, focused_event, personas)
+    if reaction_mode:
+        if reaction_mode[:9] == "chat with":
+            _chat_react(maze, persona, focused_event, reaction_mode, personas)
+        elif reaction_mode[:4] == "wait":
+            _wait_react(persona, reaction_mode)
+```
+- 如果选择了一个事件，判断是否需要对该事件做出反应。
+  - `_should_react`：确定反应的形式（聊天、等待或不反应）。
+    - `_lets_talk`：判断是否需要聊天。
+    - `_lets_react`：判断是否需要其他反应。
+
+- 根据反应模式调用相应的函数：
+  - `_chat_react`：生成对话并更新行为计划。
+  - `_wait_react`：生成等待行为并更新行为计划。
+
+#### 第四步：清理聊天相关状态
+```python
+if persona.scratch.act_event[1] != "chat with":
+    persona.scratch.chatting_with = None
+    persona.scratch.chat = None
+    persona.scratch.chatting_end_time = None
+```
+- 如果当前行为不是聊天，清理聊天相关状态。
+
+#### 第五步：维护聊天缓冲机制
+```python
+curr_persona_chat_buffer = persona.scratch.chatting_with_buffer
+for persona_name, buffer_count in curr_persona_chat_buffer.items():
+    if persona_name != persona.scratch.chatting_with:
+        persona.scratch.chatting_with_buffer[persona_name] -= 1
+```
+- 维护聊天缓冲机制，确保角色不会立即与同一个目标角色再次进行对话。
+
+### 总结
+`plan` 函数是 Persona 的主要认知函数，它结合了长期和短期的计划，通过感知和记忆信息来决定角色的下一步行动，并确保角色之间的互动不会陷入无限循环。
 
 
 

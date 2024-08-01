@@ -195,29 +195,27 @@ class Persona:
             writing her next novel (editing her novel)
             @ double studio:double studio:common room:sofa
         """
-        # Updating persona's scratch memory with <curr_tile>.
+        # 1. Updating persona's scratch memory with <curr_tile>.
         self.scratch.curr_tile = curr_tile
 
-        # We figure out whether the persona started a new day, and if it is a new
+        # 2. We figure out whether the persona started a `new day`, and if it is a new
         # day, whether it is the very first day of the simulation. This is
         # important because we set up the persona's long term plan at the start of
         # a new day.
         new_day = False
         if not self.scratch.curr_time:
             new_day = "First day"
-        elif self.scratch.curr_time.strftime("%A %B %d") != curr_time.strftime(
-            "%A %B %d"
-        ):
+        elif self.scratch.curr_time.strftime("%A %B %d") != curr_time.strftime("%A %B %d"):
             new_day = "New day"
         self.scratch.curr_time = curr_time
 
-        # Main cognitive sequence begins here.
+        # 3. `Main cognitive sequence` begins here.
         perceived = self.perceive(maze)
         retrieved = self.retrieve(perceived)
-        plan = self.plan(maze, personas, new_day, retrieved)
+        plan = self.plan(maze, personas, new_day, retrieved) # output: persona.scratch.act_address
         self.reflect()
 
-        # <execution> is a triple set that contains the following components:
+        # 4. <execution> is a triple set that contains the following components:
         # <next_tile> is a x,y coordinate. e.g., (58, 9)
         # <pronunciatio> is an emoji. e.g., "\ud83d\udca4"
         # <description> is a string description of the movement. e.g.,

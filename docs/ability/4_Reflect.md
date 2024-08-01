@@ -2,231 +2,76 @@
 
 该脚本定义了生成型代理（generative agents）的 "Reflect" 模块，用于代理进行反思。反思模块生成焦点点（focal points），检索相关记忆，生成新的思考和洞见，并将这些信息保存到代理的记忆中，帮助代理在未来的决策中参考这些反思。
 
+## 背景
+
+### Challenge
+
+当只有原始的观察记忆时，很难进行概括或推断。
+
+考虑这样一个场景:
+
+- 用户问克劳斯·穆勒:“如果你必须在你认识的人中选择一个人共度一小时，你会选择谁?”
+  - 由于只能观察记忆，代理只需选择和克劳斯在一起的人交往最频繁的是他大学宿舍的邻居沃尔夫冈。
+  - 不幸的是，沃尔夫冈和克劳斯只是偶尔见面，并没有**深入的互动**。
+
+### Method: 反思记忆与生成机制
+
+引入了第二种类型的内存，我们称之为**反思**。反思是由主体产生的**更高层次、更抽象的思想**。
+
+**反思的特点**
+
+- **反思是一种记忆**，因此当检索发生时，它们与其他观察结果一起包含。
+- **反思是周期性产生的**；在我们的实现中，当代理感知到的**最新事件的重要性得分总和超过某个阈值**时，我们生成反思。
+- 在实践中，我们的代理人**每天大约反思两到三次**。
+
+**反思的生成过程**
+
+1. **确定反思内容** / _generate_focal_points
+   
+   - 智能体根据最近的经历提出问题。我们用智能体记忆流中**最近的100条记录查询大型语言模型**。
+   
+   - 示例记录包括：“克劳斯·穆勒正在阅读一本关于中产阶级化的书”，“克劳斯·穆勒正在与图书管理员谈论他的研究项目”，“图书馆的桌子目前无人使用”。
+
+   - 提示语言模型：“**仅根据上述信息，我们可以回答关于语句中主题的3个最突出的==高级问题==是什么**?”
+   
+   - 模型的反应产生候选问题，例如：
+   
+     - 克劳斯·穆勒对什么话题感兴趣？
+   
+     - 克劳斯和马丽亚之间的关系是什么？
+   
+       <img src="https://pic4.zhimg.com/80/v2-53dcae2f3bd7ef944c56eb672aa239c3_720w.webp" style="zoom:60%;" />
+   
+2. **检索相关记忆**
+   
+   - 使用生成的问题作为检索的查询（注意：用到了上面的记忆流检索功能），并收集每个问题的相关记忆（包括其他反思）。
+   
+3. **提取见解** / generate_insights_and_evidence
+   
+   - 提示 LLM 提取见解，并引用作为见解证据的特定记录。
+   
+   - 生成诸如“克劳斯·穆勒致力于他对中产阶级化的研究的陈述（因为1,2,8,15）”的反思。
+   
+   - 解析语句并将其作为反思存储在内存流中，包括指向引用的内存对象的指针。
+   
+     <img src="https://pic2.zhimg.com/80/v2-84e7588aace7e63300be85a49db04471_720w.webp" style="zoom:60%;" />
+
+**反思的层次结构**
+
+- **反思树**：反思明确地允许行为人不仅对自己的观察进行反思，而且对其他的反思进行更深层次的反思。树的叶子节点代表基本观察，而非叶子节点代表更抽象和更高层次的思想。
+- 例如，上面关于克劳斯·穆勒的第二个陈述是克劳斯之前的反思，而不是来自他的环境的观察。
+
+![reflection_tree.png](.fig/4_Reflect.asset/reflection_tree.png)
+
+通过这种机制，智能体能够生成一系列连贯且层次化的反思，从而更好地理解和处理自身的记忆和观察。
+
+
+
 ## 1. 核心类和方法
 
 ![image-25670730132349998](.fig/Reflect.asset/reflect.png)
 
-### 1.1 全局方法
 
-#### 1.1.1 生成焦点点方法 `generate_focal_points`
-
-```python
-def generate_focal_points(persona, n=3):
-    """
-    生成反思的焦点点。
-
-    输入：
-      persona: 当前代理实例。
-      n: 生成的焦点点数量。
-
-    输出：
-      ret: 焦点点列表。
-    """
-```
-- **功能**：生成反思的焦点点，作为反思过程中的主要关注点。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `n`：生成的焦点点数量。
-- **输出**：返回焦点点列表。
-
-#### 1.1.2 生成洞见和证据方法 `generate_insights_and_evidence`
-
-```python
-def generate_insights_and_evidence(persona, nodes, n=5):
-    """
-    生成反思过程中的洞见和相关证据。
-
-    输入：
-      persona: 当前代理实例。
-      nodes: 相关的节点列表。
-      n: 生成的洞见数量。
-
-    输出：
-      ret: 包含洞见和证据的字典。
-    """
-```
-- **功能**：生成反思过程中的洞见和相关证据，并将证据节点的 ID 关联到洞见中。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `nodes`：相关的节点列表。
-  - `n`：生成的洞见数量。
-- **输出**：返回包含洞见和证据的字典。
-
-#### 1.1.3 生成行动事件三元组方法 `generate_action_event_triple`
-
-```python
-def generate_action_event_triple(act_desp, persona):
-    """
-    生成行动事件三元组。
-
-    输入：
-      act_desp: 行动描述。
-      persona: 当前代理实例。
-
-    输出：
-      事件三元组。
-    """
-```
-- **功能**：生成行动事件的三元组（subject, predicate, object）。
-- **输入参数**：
-  - `act_desp`：行动描述。
-  - `persona`：当前代理实例。
-- **输出**：返回事件三元组。
-
-#### 1.1.4 生成情感评分方法 `generate_poig_score`
-
-```python
-def generate_poig_score(persona, event_type, description):
-    """
-    生成事件或思考的情感评分。
-
-    输入：
-      persona: 当前代理实例。
-      event_type: 事件类型（"event", "thought", "chat"）。
-      description: 事件描述。
-
-    输出：
-      情感评分。
-    """
-```
-- **功能**：生成事件或思考的情感评分（poignancy score），用于衡量事件或思考的重要性。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `event_type`：事件类型（"event" 或 "thought" 或 "chat"）。
-  - `description`：事件描述。
-- **输出**：返回情感评分。
-
-#### 1.1.5 生成对话规划思考方法 `generate_planning_thought_on_convo`
-
-```python
-def generate_planning_thought_on_convo(persona, all_utt):
-    """
-    生成对话的规划思考。
-
-    输入：
-      persona: 当前代理实例。
-      all_utt: 所有对话内容。
-
-    输出：
-      规划思考。
-    """
-```
-- **功能**：生成对话的规划思考，用于代理在未来决策中参考。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `all_utt`：所有对话内容。
-- **输出**：返回规划思考。
-
-#### 1.1.6 生成对话备忘方法 `generate_memo_on_convo`
-
-```python
-def generate_memo_on_convo(persona, all_utt):
-    """
-    生成对话的备忘录。
-
-    输入：
-      persona: 当前代理实例。
-      all_utt: 所有对话内容。
-
-    输出：
-      备忘录思考。
-    """
-```
-- **功能**：生成对话的备忘录，用于记录和参考对话内容。
-- **输入参数**：
-  - `persona`：当前代理实例。
-  - `all_utt`：所有对话内容。
-- **输出**：返回备忘录思考。
-
-### 1.2 反思模块方法
-
-#### 1.2.1 运行反思方法 `run_reflect`
-
-```python
-def run_reflect(persona):
-    """
-    执行反思过程，生成焦点点，检索相关节点，生成思考和洞见。
-
-    输入：
-      persona: 当前代理实例。
-
-    输出：
-      None
-    """
-```
-- **功能**：执行反思过程，生成焦点点，检索相关节点，生成新的思考和洞见，并将这些信息保存到代理的记忆中。
-- **输入参数**：
-  - `persona`：当前代理实例。
-
-#### 1.2.2 反思触发方法 `reflection_trigger`
-
-```python
-def reflection_trigger(persona):
-    """
-    判断是否需要触发反思过程。
-
-    输入：
-      persona: 当前代理实例。
-
-    输出：
-      True 如果需要触发反思，否则返回 False。
-    """
-```
-- **功能**：根据当前代理的状态，判断是否需要触发反思过程。
-- **输入参数**：
-  - `persona`：当前代理实例。
-- **输出**：如果需要触发反思返回 True，否则返回 False。
-
-#### 1.2.3 重置反思计数器方法 `reset_reflection_counter`
-
-```python
-def reset_reflection_counter(persona):
-    """
-    重置用于触发反思的计数器。
-
-    输入：
-      persona: 当前代理实例。
-
-    输出：
-      None
-    """
-```
-- **功能**：重置用于触发反思的计数器。
-- **输入参数**：
-  - `persona`：当前代理实例。
-
-#### 1.2.4 主反思方法 `reflect`
-
-```python
-def reflect(persona):
-    """
-    主反思模块，检查触发条件，执行反思并重置计数器。
-
-    输入：
-      persona: 当前代理实例。
-
-    输出：
-      None
-    """
-```
-- **功能**：主反思模块，首先检查触发条件，如果满足条件则执行反思并重置相关计数器。
-- **输入参数**：
-  - `persona`：当前代理实例。
-
-## 2. 示例代码
-
-```python
-if __name__ == "__main__":
-    from persona import Persona
-
-    persona = Persona("example_persona")
-
-    if reflection_trigger(persona):
-        run_reflect(persona)
-        reset_reflection_counter(persona)
-
-    reflect(persona)
-```
 
 ## 3. 总结
 

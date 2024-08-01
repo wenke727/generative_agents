@@ -56,9 +56,9 @@ save(self, out_json)
 #### 1.2.4 信息检索方法
 
 - `retrieve_relevant_thoughts(self, s_content, p_content, o_content)`:
-    根据关键词检索相关的思考节点。
+    根据`关键词检索`相关的思考节点。
 - `retrieve_relevant_events(self, s_content, p_content, o_content)`:
-    根据关键词检索相关的事件节点。
+    根据`关键词检索`相关的事件节点。
 - `get_last_chat(self, target_persona_name)`:
     获取与指定人物的最后一次聊天记录。
 

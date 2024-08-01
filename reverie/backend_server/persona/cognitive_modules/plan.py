@@ -773,6 +773,7 @@ def _choose_retrieved(persona, retrieved):
                     ["events"] = [<ConceptNode>, ...],
                     ["thoughts"] = [<ConceptNode>, ...] }
     """
+    # TODO 在一定的过滤条件后，随机选择
     # Once we are done with the reflection, we might want to build a more
     # complex structure here.
 
@@ -819,6 +820,8 @@ def _should_react(persona, retrieved, personas):
                 <Persona> instance as values.
     """
 
+    # TODO 返回仅有三种情况：1）chat with xxx；2）wait: {wait_utils}; 3) False
+
     def _lets_talk(init_persona, target_persona, retrieved):
         if (
             not target_persona.scratch.act_address
@@ -853,6 +856,7 @@ def _should_react(persona, retrieved, personas):
         return False
 
     def _lets_react(init_persona, target_persona, retrieved):
+        # TODO react 怎么理解
         if (
             not target_persona.scratch.act_address
             or not target_persona.act_description
@@ -873,6 +877,7 @@ def _should_react(persona, retrieved, personas):
 
         if "waiting" in target_persona.act_description:
             return False
+
         if init_persona.scratch.planned_path == []:
             return False
 
@@ -972,9 +977,7 @@ def _create_react(
         dur_sum += dur
         count += 1
 
-    ret = _generate_new_decomp_schedule(
-        p, inserted_act, inserted_act_dur, start_hour, end_hour
-    )
+    ret = _generate_new_decomp_schedule(p, inserted_act, inserted_act_dur, start_hour, end_hour)
     p.scratch.f_daily_schedule[start_index:end_index] = ret
     p.scratch.add_new_action(
         act_address,
@@ -1116,7 +1119,7 @@ def plan(persona, maze: Maze, personas, new_day, retrieved: dict):
         2) <String> "First day" -- It is literally the start of a simulation,
            so not only is it a new day, but also it is the first day.
         2) <String> "New day" -- It is a new day.
-      retrieved: dictionary of dictionary. The first layer specifies an event,
+      retrieved: dictionary of dictionary. The first layer specifies an `event`,
                  while the latter layer specifies the "curr_event", "events",
                  and "thoughts" that are relevant.
     OUTPUT
@@ -1147,7 +1150,7 @@ def plan(persona, maze: Maze, personas, new_day, retrieved: dict):
     #         persona will take any actions for the perceived event. There are
     #         three possible modes of reaction returned by _should_react.
     #         a) "chat with {target_persona.name}"
-    #         b) "react"
+    #         b) "react" (wait {wait_util}) # FIXME
     #         c) False
     if focused_event:
         reaction_mode = _should_react(persona, focused_event, personas)
@@ -1168,6 +1171,7 @@ def plan(persona, maze: Maze, personas, new_day, retrieved: dict):
         persona.scratch.chat = None
         persona.scratch.chatting_end_time = None
 
+    # 维护了一种缓冲机制，使得角色在与同一个目标角色对话一次后需要等待一段时间才能再次进行对话
     # We want to make sure that the persona does not keep conversing with each
     # other in an infinite loop. So, chatting_with_buffer maintains a form of
     # buffer that makes the persona wait from talking to the same target
