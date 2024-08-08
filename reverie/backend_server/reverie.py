@@ -105,7 +105,7 @@ class ReverieServer:
         # This dictionary is meant to keep track of all personas who are part of
         # the Reverie instance.
         # e.g., ["Isabella Rodriguez"] = Persona("Isabella Rodriguezs")
-        self.personas = defaultdict(Persona())
+        self.personas = dict()
         # <personas_tile> is a dictionary that contains the tile location of
         # the personas (!-> NOT px tile, but the actual tile coordinate).
         # The tile take the form of a set, (row, col).

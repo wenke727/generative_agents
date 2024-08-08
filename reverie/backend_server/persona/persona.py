@@ -239,8 +239,8 @@ class Persona:
         return self.scratch.curr_tile
 
     @property
-    def vison_r(self):
-        return self.scratch.vison_r
+    def vision_r(self):
+        return self.scratch.vision_r
 
     @property
     def get_embedding_in_a_men(self):
