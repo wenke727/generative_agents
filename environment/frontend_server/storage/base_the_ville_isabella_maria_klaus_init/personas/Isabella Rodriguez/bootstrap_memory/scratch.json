@@ -1,0 +1,213 @@
+{
+  "vision_r": 8,
+  "att_bandwidth": 8,
+  "retention": 8,
+  "curr_time": "February 13, 2023, 05:59:50",
+  "curr_tile": [
+    72,
+    14
+  ],
+  "daily_plan_req": "Isabella Rodriguez opens Hobbs Cafe at 8am everyday, and works at the counter until 8pm, at which point she closes the cafe.",
+  "name": "Isabella Rodriguez",
+  "first_name": "Isabella",
+  "last_name": "Rodriguez",
+  "age": 34,
+  "innate": "friendly, outgoing, hospitable",
+  "learned": "Isabella Rodriguez is a cafe owner of Hobbs Cafe who loves to make people feel welcome. She is always looking for ways to make the cafe a place where people can come to relax and enjoy themselves.",
+  "currently": "Isabella Rodriguez is planning on having a Valentine's Day party at Hobbs Cafe with her customers on February 14th, 2023 at 5pm. She is gathering party material, and is telling everyone to join the party at Hobbs Cafe on February 14th, 2023, from 5pm to 7pm.",
+  "lifestyle": "Isabella Rodriguez goes to bed around 11pm, awakes up around 6am.",
+  "living_area": "the Ville:Isabella Rodriguez's apartment:main room",
+  "concept_forget": 100,
+  "daily_reflection_time": 180,
+  "daily_reflection_size": 5,
+  "overlap_reflect_th": 4,
+  "kw_strg_event_reflect_th": 10,
+  "kw_strg_thought_reflect_th": 9,
+  "recency_w": 1,
+  "relevance_w": 1,
+  "importance_w": 1,
+  "recency_decay": 0.995,
+  "importance_trigger_max": 150,
+  "importance_trigger_curr": 144,
+  "importance_ele_n": 6,
+  "thought_count": 5,
+  "daily_req": [
+    "wake up and complete the morning routine at 6:00 am",
+    "open Hobbs Cafe at 8am",
+    "work at the cafe until 2pm",
+    "take a break and have lunch at 2pm",
+    "return to work at the cafe from 3pm to 8pm",
+    "close the cafe at 8pm"
+  ],
+  "f_daily_schedule": [
+    [
+      "sleeping",
+      360
+    ],
+    [
+      "waking up and completing her morning routine (waking up and stretching)",
+      5
+    ],
+    [
+      "waking up and completing her morning routine (brushing her teeth)",
+      5
+    ],
+    [
+      "waking up and completing her morning routine (washing her face)",
+      5
+    ],
+    [
+      "waking up and completing her morning routine (getting dressed)",
+      10
+    ],
+    [
+      "waking up and completing her morning routine (making breakfast)",
+      15
+    ],
+    [
+      "waking up and completing her morning routine (eating breakfast)",
+      10
+    ],
+    [
+      "waking up and completing her morning routine (checking her schedule for the day)",
+      5
+    ],
+    [
+      "waking up and completing her morning routine (gathering her things for work)",
+      5
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (waking up and stretching)",
+      5
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (brushing her teeth and washing her face)",
+      10
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (getting dressed in her cafe uniform)",
+      5
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (checking her phone for any urgent messages or emails)",
+      5
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (making herself a cup of coffee to start her day)",
+      5
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (reviewing the cafe's inventory and making a list of items to restock)",
+      10
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (setting up the cafe's outdoor seating area)",
+      10
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (turning on the lights and music in the cafe)",
+      5
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day (opening the doors to welcome the first customers of the day)",
+      5
+    ],
+    [
+      "working at Hobbs Cafe",
+      300
+    ],
+    [
+      "having lunch at Hobbs Cafe",
+      60
+    ],
+    [
+      "returning to work at Hobbs Cafe",
+      60
+    ],
+    [
+      "working at Hobbs Cafe",
+      180
+    ],
+    [
+      "closing Hobbs Cafe and heading home",
+      60
+    ],
+    [
+      "heading home from Hobbs Cafe",
+      180
+    ],
+    [
+      "heading to bed to get a good night's rest for the next day",
+      120
+    ],
+    [
+      "sleeping",
+      0
+    ]
+  ],
+  "f_daily_schedule_hourly_org": [
+    [
+      "sleeping",
+      360
+    ],
+    [
+      "waking up and completing her morning routine",
+      60
+    ],
+    [
+      "opening Hobbs Cafe and starting her work day",
+      60
+    ],
+    [
+      "working at Hobbs Cafe",
+      300
+    ],
+    [
+      "having lunch at Hobbs Cafe",
+      60
+    ],
+    [
+      "returning to work at Hobbs Cafe",
+      60
+    ],
+    [
+      "working at Hobbs Cafe",
+      180
+    ],
+    [
+      "closing Hobbs Cafe and heading home",
+      60
+    ],
+    [
+      "heading home from Hobbs Cafe",
+      180
+    ],
+    [
+      "heading to bed to get a good night's rest for the next day",
+      120
+    ]
+  ],
+  "act_address": "the Ville:Isabella Rodriguez's apartment:main room:bed",
+  "act_start_time": "February 13, 2023, 05:59:50",
+  "act_duration": 360,
+  "act_description": "sleeping",
+  "act_pronunciatio": "\ud83d\ude34",
+  "act_event": [
+    "Isabella Rodriguez",
+    "sleep",
+    ""
+  ],
+  "act_obj_description": "being occupied",
+  "act_obj_pronunciatio": "\ud83d\udee0\ufe0f",
+  "act_obj_event": [
+    "bed",
+    "occupy",
+    "being"
+  ],
+  "chatting_with": null,
+  "chat": null,
+  "chatting_with_buffer": {},
+  "chatting_end_time": null,
+  "act_path_set": true,
+  "planned_path": []
+}

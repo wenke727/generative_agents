@@ -262,7 +262,7 @@ def new_retrieve(persona, focal_points, n_count=30):
                 persona.scratch.importance_w * importance_out[key] * 1,
             )
             info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
-            logger.debig(info)
+            logger.debug(info)
 
         # Extracting the highest x values.
         # <master_out> has the key of node.id and value of float. Once we get the

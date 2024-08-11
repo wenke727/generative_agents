@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv(".env", verbose=True)
 
 GPT_35_TURBO = os.environ.get("BASE_MODEL", "gpt-35-turbo")
-LOG_FILE = 'function_calls_log.csv'
+LOG_FILE = 'openai_api_calls_log.csv'
 
 
 def get_caller_function_name(pattern):
@@ -26,14 +26,14 @@ def get_caller_function_name(pattern):
     frame = inspect.currentframe()
     while frame:
         code = frame.f_code
-        if re.match(pattern, code.co_name):
+        if re.search(pattern, code.co_name):
             return code.co_name
         frame = frame.f_back
 
     return None
 
 
-def log_function_call(func, pattern=r"run_gpt.*"):
+def log_function_call(func, pattern = r"(?i)(run_gpt|ChatGPT_safe)"):
     """
     A decorator that logs the function call details including timestamp, caller function name,
     input arguments, and output result, and saves them to a CSV file.
@@ -47,7 +47,9 @@ def log_function_call(func, pattern=r"run_gpt.*"):
     @wraps(func)
     def wrapper(*args, **kwargs):
         caller = get_caller_function_name(pattern)
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        # ms
+        timestamp = f"{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))}.{int(time.time() * 1000) % 1000:03d}"
+
         input_data = {"args": args, "kwargs": kwargs}
         result = func(*args, **kwargs)
         output_data = result
@@ -58,7 +60,7 @@ def log_function_call(func, pattern=r"run_gpt.*"):
             "input": input_data,
             "output": output_data
         }
-        print(log_entry)  # Here you can replace this with actual logging to a file or database
+        # print(log_entry)  # Here you can replace this with actual logging to a file or database
 
         # Save log entry to CSV file
         with open(LOG_FILE, 'a', newline='') as csvfile:
@@ -108,7 +110,7 @@ def initialize_openai_client():
 
     # Wrap chat and embeddings with logging
     chat = log_function_call(chat)
-    embeddings = log_function_call(embeddings)
+    # embeddings = log_function_call(embeddings)
 
     return client, chat, embeddings
 

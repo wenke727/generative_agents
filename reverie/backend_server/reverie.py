@@ -27,6 +27,7 @@ import os
 import shutil
 import traceback
 from pathlib import Path
+from loguru import logger
 from collections import defaultdict
 
 from maze import Maze
@@ -328,6 +329,7 @@ class ReverieServer:
             # the content of this for loop. Otherwise, we just wait.
             curr_env_file = f"{sim_folder}/environment/{self.step}.json"
             if check_if_file_exists(curr_env_file):
+                logger.info(f"Cur time: {self.curr_time}")
                 # If we have an environment file, it means we have a new perception
                 # input to our personas. So we first retrieve it.
                 try:
@@ -425,7 +427,10 @@ class ReverieServer:
                     int_counter -= 1
 
             # Sleep so we don't burn our machines.
-            logger.warning("Machine is sleeping")
+            logger.error(
+                f"Check the file `{sim_folder}/environment/{self.step}.json` exist or not. "
+                f"If not exist, copy the `{self.step - 1}.csv` to `{self.step}.csv`"
+            )
             time.sleep(self.server_sleep)
 
     def open_server(self):
@@ -626,8 +631,13 @@ if __name__ == "__main__":
     #                    "July1_the_ville_isabella_maria_klaus-step-3-1")
     # rs = ReverieServer("July1_the_ville_isabella_maria_klaus-step-3-20",
     #                    "July1_the_ville_isabella_maria_klaus-step-3-21")
-    rs = ReverieServer("base_the_ville_isabella_maria_klaus",
-                       "test-simulation")
+
+    # 仓库自带 base
+    # rs = ReverieServer("base_the_ville_isabella_maria_klaus", "test-simulation")
+    # 仓库自带 base 的基础上，run 1 step to initial.
+    rs = ReverieServer("base_the_ville_isabella_maria_klaus_init", "test-simulation")
+
+
     rs.open_server()
 
     # origin = input("Enter the name of the forked simulation: ").strip()

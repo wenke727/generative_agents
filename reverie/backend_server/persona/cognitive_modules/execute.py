@@ -165,6 +165,6 @@ def execute(persona, maze:Maze, personas:list, plan):
     description += f" @ {persona.scratch.act_address}"
 
     execution = ret, persona.scratch.act_pronunciatio, description
-    logger.warning(f"{execution}")
+    logger.debug(f"{persona.name}: {execution}")
 
     return execution

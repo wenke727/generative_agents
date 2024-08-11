@@ -135,25 +135,19 @@ def ChatGPT_safe_generate_response(
     func_clean_up=None,
     verbose=False,
 ):
-    prompt = 'GPT-3 Prompt:\n"""\n' + prompt + '\n"""\n'
-    prompt = '"""\n' + prompt + '\n"""\n'
-    prompt += (
-        f"Output the response to the prompt above in json. {special_instruction}\n"
-    )
-    prompt += "Example output json:\n"
-    prompt += '{"output": "' + str(example_output) + '"}'
+    # prompt = '"""\n' + prompt + '\n"""\n'
+    # prompt += (
+    #     f"Output the response to the prompt above in json. {special_instruction}\n"
+    # )
+    # prompt += "Example output json:\n"
+    # prompt += '{"output": "' + str(example_output) + '"}'
 
-#     prompt = f"""----
-# {prompt}
-# ----
-# Output the response to the prompt above in json. {special_instruction}
-# Example output json:
-# {"output": "' + str(example_output) + '"}
-# """
-
-    if verbose:
-        # print("CHAT GPT PROMPT")
-        logger.debug(f"prompt: \n{prompt}")
+    prompt = f'''{prompt}
+----
+Output the response to the prompt above in json. {special_instruction}
+Example output json:
+{{"output": "{str(example_output)}"}}
+'''
 
     for i in range(repeat):
         try:
@@ -168,7 +162,7 @@ def ChatGPT_safe_generate_response(
 
             if verbose:
                 # print("---- repeat count: \n", i, curr_gpt_response)
-                logger.debug(f"curr_gpt_response: {curr_gpt_response}")
+                logger.debug(f"prompt : {prompt}, \ngpt_response: {curr_gpt_response}")
                 # print(curr_gpt_response)
                 # print("~~~~")
 

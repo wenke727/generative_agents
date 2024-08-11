@@ -57,6 +57,11 @@ class ConceptNode:
     def spo_summary(self):
         return (self.subject, self.predicate, self.object)
 
+    def __repr__(self):
+        return (f"ConceptNode(node_id={self.node_id}, type={self.type}, "
+                f"spo=({self.subject}, {self.predicate}, {self.object}), "
+                f"desc={self.description}, created={self.created}")
+
 
 class AssociativeMemory:
     def __init__(self, f_saved):
@@ -401,7 +406,7 @@ class AssociativeMemory:
     def get_str_seq_chats(self):
         ret_str = ""
         for count, event in enumerate(self.seq_chat):
-            ret_str += f"with {event.object.content} ({event.description})\n"
+            ret_str += f"with {event.object} ({event.description})\n"
             ret_str += f'{event.created.strftime("%B %d, %Y, %H:%M:%S")}\n'
             for row in event.filling:
                 ret_str += f"{row[0]}: {row[1]}\n"
@@ -434,3 +439,7 @@ class AssociativeMemory:
             return self.kw_to_chat[target_persona_name.lower()][0]
         else:
             return False
+
+    def __repr__(self):
+        return (f"AssociativeMemory(num_events={len(self.seq_event)}, "
+                f"num_thoughts={len(self.seq_thought)}, num_chats={len(self.seq_chat)})")

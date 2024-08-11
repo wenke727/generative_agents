@@ -1,3 +1,6 @@
+home
+
+simulator_home: http://localhost:8000/simulator_home
 
 demo: http://localhost:8000/demo/July1_the_ville_isabella_maria_klaus-step-3-20/1/3/
 

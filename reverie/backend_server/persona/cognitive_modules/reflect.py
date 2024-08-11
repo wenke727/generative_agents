@@ -175,7 +175,7 @@ def _reflection_trigger(persona):
         logger.warning(info)
         return True
 
-    logger.debug(info)
+    # logger.debug(info)
     return False
 
 

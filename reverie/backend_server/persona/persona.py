@@ -254,6 +254,18 @@ class Persona:
     def f_daily_schedule(self):
         return self.scratch.f_daily_schedule
 
+    @f_daily_schedule.setter
+    def f_daily_schedule(self, value):
+        self.scratch.f_daily_schedule = value
+
+    @property
+    def f_daily_schedule_hourly_org(self):
+        return self.scratch.f_daily_schedule_hourly_org
+
+    @f_daily_schedule_hourly_org.setter
+    def f_daily_schedule_hourly_org(self, value):
+        self.scratch.f_daily_schedule_hourly_org = value
+
     def add_thought(
         self,
         created,
