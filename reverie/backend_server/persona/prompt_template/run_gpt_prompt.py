@@ -27,6 +27,8 @@ from persona.prompt_template.openai_helper import GPT_35_TURBO
 from utils import debug
 
 
+# TODO prompt print template
+
 def get_random_alphanumeric(i=6, j=6):
     """
     Returns a random alpha numeric strength that has the length of somewhere
@@ -496,9 +498,10 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
     output = ret
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        # print_run_prompts(
+            # prompt_template, persona, gpt_param, prompt_input, prompt, output
+        # )
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -625,9 +628,10 @@ def run_gpt_prompt_action_sector(
     print("DEBUG", random.choice(x), "------", output)
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        # print_run_prompts(
+            # prompt_template, persona, gpt_param, prompt_input, prompt, output
+        # )
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -731,9 +735,10 @@ def run_gpt_prompt_action_arena(
     #   output = random.choice(x)
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        # print_run_prompts(
+        #     prompt_template, persona, gpt_param, prompt_input, prompt, output
+        # )
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -796,9 +801,10 @@ def run_gpt_prompt_action_game_object(
         output = random.choice(x)
 
     if debug or verbose:
-        print_run_prompts(
-            prompt_template, persona, gpt_param, prompt_input, prompt, output
-        )
+        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        # print_run_prompts(
+        #     prompt_template, persona, gpt_param, prompt_input, prompt, output
+        # )
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -975,7 +981,8 @@ def run_gpt_prompt_event_triple(action_description, persona, verbose=False):
     output = (persona.name, output[0], output[1])
 
     if debug or verbose:
-        print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
+        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        # print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 

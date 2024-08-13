@@ -2,7 +2,7 @@
   "vision_r": 8,
   "att_bandwidth": 8,
   "retention": 8,
-  "curr_time": "February 13, 2023, 05:59:50",
+  "curr_time": "February 13, 2023, 00:00:00",
   "curr_tile": [
     126,
     46
@@ -34,12 +34,11 @@
   "daily_req": [
     "wake up and complete the morning routine at 7:00 am",
     "go to the library at Oak Hill College at 8:00 am",
-    "work on his research paper on gentrification until 12:00 pm",
-    "have lunch at Hobbs Cafe at 12:30 pm",
-    "continue working on his research paper until 4:00 pm",
-    "take a break and go for a walk around the campus at 4:30 pm",
-    "return to the library and work on his research paper until 7:00 pm",
-    "have dinner at 7:30 pm"
+    "spend the day researching and writing his research paper on gentrification",
+    "have lunch at Hobbs Cafe at 12:00 pm",
+    "continue working on his paper until 5:00 pm",
+    "have dinner at 5:30 pm",
+    "continue working on his paper until 9:00 pm"
   ],
   "f_daily_schedule": [
     [
@@ -83,11 +82,7 @@
       60
     ],
     [
-      "working on his research paper on the effects of gentrification in low-income communities",
-      60
-    ],
-    [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
+      "researching and writing his research paper on the effects of gentrification in low-income communities",
       180
     ],
     [
@@ -95,24 +90,16 @@
       60
     ],
     [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
-      180
+      "continuing to research and write his research paper on the effects of gentrification in low-income communities",
+      360
     ],
     [
-      "taking a break and going for a walk around the campus",
+      "having dinner",
       60
     ],
     [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
-      120
-    ],
-    [
-      "having dinner at Hobbs Cafe",
-      60
-    ],
-    [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
-      180
+      "continuing to research and write his research paper on the effects of gentrification in low-income communities",
+      240
     ],
     [
       "sleeping",
@@ -133,11 +120,7 @@
       60
     ],
     [
-      "working on his research paper on the effects of gentrification in low-income communities",
-      60
-    ],
-    [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
+      "researching and writing his research paper on the effects of gentrification in low-income communities",
       180
     ],
     [
@@ -145,35 +128,27 @@
       60
     ],
     [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
-      180
+      "continuing to research and write his research paper on the effects of gentrification in low-income communities",
+      360
     ],
     [
-      "taking a break and going for a walk around the campus",
+      "having dinner",
       60
     ],
     [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
-      120
-    ],
-    [
-      "having dinner at Hobbs Cafe",
-      60
-    ],
-    [
-      "continuing to work on his research paper on the effects of gentrification in low-income communities",
-      180
+      "continuing to research and write his research paper on the effects of gentrification in low-income communities",
+      240
     ]
   ],
   "act_address": "the Ville:Dorm for Oak Hill College:Klaus Mueller's room:bed",
-  "act_start_time": "February 13, 2023, 05:59:50",
+  "act_start_time": "February 13, 2023, 00:00:00",
   "act_duration": 420,
   "act_description": "sleeping",
   "act_pronunciatio": "\ud83d\ude34",
   "act_event": [
     "Klaus Mueller",
-    "sleep",
-    ""
+    "Klaus Mueller",
+    "is"
   ],
   "act_obj_description": "being slept on",
   "act_obj_pronunciatio": "\ud83d\ude34",

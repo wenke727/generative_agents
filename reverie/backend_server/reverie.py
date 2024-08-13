@@ -36,10 +36,16 @@ from persona.cognitive_modules.converse import load_history_via_whisper
 from global_methods import check_if_file_exists, copyanything, read_file_to_list
 from utils import fs_temp_storage, fs_storage, maze_assets_loc
 from misc.logger_helper import configure_loguru_integration
+from persona.prompt_template.openai_helper import set_openai_api_log_file
 
-logger = configure_loguru_integration(
-    './', 'agents.log', mode = 'w', console = True,
-    filter_packages = ['httpcore', 'httpx', 'openai', 'urllib3'])
+def adjust_time(curr_time, sec_per_step=10):
+    hour = curr_time.hour
+    if 0 <= hour < 6:
+        curr_time = curr_time.replace(hour=6, minute=0, second=0, microsecond=0)
+    else:
+        curr_time += datetime.timedelta(seconds=sec_per_step)
+
+    return curr_time
 
 
 class ReverieServer:
@@ -306,6 +312,7 @@ class ReverieServer:
         """
         # <sim_folder> points to the current simulation folder.
         sim_folder = f"{fs_storage}/{self.sim_code}"
+        OPENAI_LOG_FILE = f"{fs_storage}/{self.sim_code}/openai_api_log.csv"
 
         # When a persona arrives at a game object, we give a unique event
         # to that object.
@@ -422,7 +429,8 @@ class ReverieServer:
                     # After this cycle, the world takes one step forward, and the
                     # current time moves by <sec_per_step> amount.
                     self.step += 1
-                    self.curr_time += datetime.timedelta(seconds=self.sec_per_step)
+                    # self.curr_time += datetime.timedelta(seconds=self.sec_per_step)
+                    self.curr_time = adjust_time(self.curr_time, self.sec_per_step)
 
                     int_counter -= 1
 
@@ -486,9 +494,8 @@ class ReverieServer:
                     # Runs the number of steps specified in the prompt.
                     # Example: run 1000
                     int_count = int(sim_command.split()[-1])
-                    logger.info(f"run {int_count}")
                     rs.start_server(int_count)
-                    logger.warning(f"run {int_count} finished")
+                    # logger.warning(f"run {int_count} finished")
 
 
                 elif "print persona schedule" in sim_command[:22].lower():
@@ -627,15 +634,22 @@ class ReverieServer:
 
 
 if __name__ == "__main__":
+    sim_name = "test-simulation"
+    logger = configure_loguru_integration(
+        f'./', 'agents.log', mode = 'w', console = True, #
+        filter_packages = ['httpcore', 'httpx', 'openai', 'urllib3']
+    )
+    set_openai_api_log_file(f'./openai_api_log.csv')
+
     # rs = ReverieServer("base_the_ville_isabella_maria_klaus",
     #                    "July1_the_ville_isabella_maria_klaus-step-3-1")
     # rs = ReverieServer("July1_the_ville_isabella_maria_klaus-step-3-20",
     #                    "July1_the_ville_isabella_maria_klaus-step-3-21")
 
     # 仓库自带 base
-    # rs = ReverieServer("base_the_ville_isabella_maria_klaus", "test-simulation")
+    rs = ReverieServer("base_the_ville_isabella_maria_klaus", sim_name)
     # 仓库自带 base 的基础上，run 1 step to initial.
-    rs = ReverieServer("base_the_ville_isabella_maria_klaus_init", "test-simulation")
+    # rs = ReverieServer("base_the_ville_isabella_maria_klaus_init", sim_name)
 
 
     rs.open_server()

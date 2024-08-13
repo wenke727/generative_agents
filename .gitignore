@@ -1,4 +1,4 @@
-openai_api_calls_log.csv
+openai_api_log.csv
 test-simulation/
 
 frontend_server/settings/local.py

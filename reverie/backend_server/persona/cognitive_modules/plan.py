@@ -249,9 +249,7 @@ def _generate_action_arena(act_desp, persona, maze, act_world, act_sector):
     """
     if debug:
         print("GNS FUNCTION: <generate_action_arena>")
-    return run_gpt_prompt_action_arena(act_desp, persona, maze, act_world, act_sector)[
-        0
-    ]
+    return run_gpt_prompt_action_arena(act_desp, persona, maze, act_world, act_sector)[0]
 
 
 def _generate_action_game_object(act_desp, act_address, persona, maze):
@@ -742,6 +740,8 @@ def _determine_action(persona, maze):
     act_obj_pron = _generate_action_pronunciatio(act_obj_desp, persona)
     act_obj_event = _generate_act_obj_event_triple(act_game_object, act_obj_desp, persona)
 
+    logger.debug(f"{persona.name}: {act_pron}, \nact_desp: {act_desp}\nact_event: {act_event}")
+    logger.debug(f"{act_obj_pron}: {act_obj_pron}, \act_obj_desp: {act_obj_desp}\act_obj_event: {act_obj_event}")
     # Adding the action to persona's queue.
     persona.scratch.add_new_action(
         new_address,

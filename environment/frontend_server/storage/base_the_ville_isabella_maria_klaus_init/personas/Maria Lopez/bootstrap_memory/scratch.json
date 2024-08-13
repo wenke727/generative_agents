@@ -2,7 +2,7 @@
   "vision_r": 8,
   "att_bandwidth": 8,
   "retention": 8,
-  "curr_time": "February 13, 2023, 05:59:50",
+  "curr_time": "February 13, 2023, 00:00:00",
   "curr_tile": [
     123,
     57
@@ -33,12 +33,12 @@
   "thought_count": 5,
   "daily_req": [
     "wake up and complete the morning routine at 9:00 am",
-    "go to Oak Hill College for classes from 10:00 am to 2:00 pm",
-    "have lunch at 2:30 pm",
-    "study at Hobbs Cafe from 3:00 pm to 5:30 pm",
-    "go home and relax for a bit",
-    "start Twitch streaming or gaming at 8:00 pm and continue until 11:00 pm",
-    "have dinner at 11:30 pm"
+    "have breakfast at 9:30 am",
+    "study for physics class at Oak Hill College from 10:30 am to 1:30 pm",
+    "have lunch at Hobbs Cafe at 2:00 pm",
+    "stream games on Twitch from 3:00 pm to 6:00 pm",
+    "have dinner at 6:30 pm",
+    "continue streaming games on Twitch from 7:00 pm to 9:00 pm"
   ],
   "f_daily_schedule": [
     [
@@ -50,10 +50,6 @@
       5
     ],
     [
-      "waking up and completing her morning routine (checking her phone for any important notifications)",
-      5
-    ],
-    [
       "waking up and completing her morning routine (brushing her teeth)",
       5
     ],
@@ -62,7 +58,7 @@
       5
     ],
     [
-      "waking up and completing her morning routine (getting dressed for the day)",
+      "waking up and completing her morning routine (getting dressed)",
       10
     ],
     [
@@ -74,32 +70,36 @@
       10
     ],
     [
-      "waking up and completing her morning routine (packing her bag for classes)",
+      "waking up and completing her morning routine (packing her bag for studying)",
       5
     ],
     [
-      "attending classes at Oak Hill College",
-      240
+      "waking up and completing her morning routine (grabbing her keys and heading out the door)",
+      5
     ],
     [
-      "having lunch",
-      60
-    ],
-    [
-      "studying at Hobbs Cafe",
-      240
-    ],
-    [
-      "relaxing at home",
-      60
-    ],
-    [
-      "starting her Twitch streaming or gaming session",
+      "studying for physics class at Oak Hill College",
       180
     ],
     [
-      "having dinner",
+      "having lunch at Hobbs Cafe",
       60
+    ],
+    [
+      "studying for physics class at Oak Hill College",
+      60
+    ],
+    [
+      "streaming games on Twitch",
+      180
+    ],
+    [
+      "having dinner at 6:30 pm",
+      60
+    ],
+    [
+      "continuing to stream games on Twitch",
+      300
     ],
     [
       "sleeping",
@@ -116,32 +116,32 @@
       60
     ],
     [
-      "attending classes at Oak Hill College",
-      240
-    ],
-    [
-      "having lunch",
-      60
-    ],
-    [
-      "studying at Hobbs Cafe",
-      240
-    ],
-    [
-      "relaxing at home",
-      60
-    ],
-    [
-      "starting her Twitch streaming or gaming session",
+      "studying for physics class at Oak Hill College",
       180
     ],
     [
-      "having dinner",
+      "having lunch at Hobbs Cafe",
       60
+    ],
+    [
+      "studying for physics class at Oak Hill College",
+      60
+    ],
+    [
+      "streaming games on Twitch",
+      180
+    ],
+    [
+      "having dinner at 6:30 pm",
+      60
+    ],
+    [
+      "continuing to stream games on Twitch",
+      300
     ]
   ],
   "act_address": "the Ville:Dorm for Oak Hill College:Maria Lopez's room:bed",
-  "act_start_time": "February 13, 2023, 05:59:50",
+  "act_start_time": "February 13, 2023, 00:00:00",
   "act_duration": 540,
   "act_description": "sleeping",
   "act_pronunciatio": "\ud83d\ude34",
@@ -150,8 +150,8 @@
     "sleep",
     ""
   ],
-  "act_obj_description": "being slept in",
-  "act_obj_pronunciatio": "\ud83d\ude34",
+  "act_obj_description": "being slept on",
+  "act_obj_pronunciatio": "\ud83d\udca4",
   "act_obj_event": [
     "bed",
     "sleep",

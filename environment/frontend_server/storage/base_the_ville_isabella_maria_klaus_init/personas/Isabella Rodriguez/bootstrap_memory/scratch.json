@@ -2,7 +2,7 @@
   "vision_r": 8,
   "att_bandwidth": 8,
   "retention": 8,
-  "curr_time": "February 13, 2023, 05:59:50",
+  "curr_time": "February 13, 2023, 00:00:00",
   "curr_tile": [
     72,
     14
@@ -33,11 +33,10 @@
   "thought_count": 5,
   "daily_req": [
     "wake up and complete the morning routine at 6:00 am",
-    "open Hobbs Cafe at 8am",
-    "work at the cafe until 2pm",
-    "take a break and have lunch at 2pm",
-    "return to work at the cafe from 3pm to 8pm",
-    "close the cafe at 8pm"
+    "open Hobbs Cafe at 8:00 am and start serving customers",
+    "take a break and have lunch at 12:00 pm",
+    "continue working at the cafe until closing time at 8:00 pm",
+    "prepare for the Valentine's Day party tomorrow, including gathering party material and spreading the word to customers"
   ],
   "f_daily_schedule": [
     [
@@ -69,76 +68,36 @@
       10
     ],
     [
-      "waking up and completing her morning routine (checking her schedule for the day)",
+      "waking up and completing her morning routine (checking her phone for any important messages)",
       5
     ],
     [
-      "waking up and completing her morning routine (gathering her things for work)",
+      "waking up and completing her morning routine (grabbing her keys and heading out the door)",
       5
     ],
     [
-      "opening Hobbs Cafe and starting her work day (waking up and stretching)",
-      5
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (brushing her teeth and washing her face)",
-      10
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (getting dressed in her cafe uniform)",
-      5
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (checking her phone for any urgent messages or emails)",
-      5
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (making herself a cup of coffee to start her day)",
-      5
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (reviewing the cafe's inventory and making a list of items to restock)",
-      10
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (setting up the cafe's outdoor seating area)",
-      10
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (turning on the lights and music in the cafe)",
-      5
-    ],
-    [
-      "opening Hobbs Cafe and starting her work day (opening the doors to welcome the first customers of the day)",
-      5
-    ],
-    [
-      "working at Hobbs Cafe",
-      300
-    ],
-    [
-      "having lunch at Hobbs Cafe",
+      "opening Hobbs Cafe and starting to serve customers",
       60
     ],
     [
-      "returning to work at Hobbs Cafe",
+      "continuing to serve customers at Hobbs Cafe",
+      240
+    ],
+    [
+      "taking a break and having lunch",
       60
     ],
     [
-      "working at Hobbs Cafe",
+      "continuing to serve customers at Hobbs Cafe",
+      420
+    ],
+    [
+      "continuing to serve customers at Hobbs Cafe and preparing for the Valentine's Day party tomorrow",
+      60
+    ],
+    [
+      "continuing to serve customers at Hobbs Cafe and preparing for the Valentine's Day party tomorrow. She is gathering party material and telling everyone to join the party at Hobbs Cafe on February 14th, 2023, from 5pm to",
       180
-    ],
-    [
-      "closing Hobbs Cafe and heading home",
-      60
-    ],
-    [
-      "heading home from Hobbs Cafe",
-      180
-    ],
-    [
-      "heading to bed to get a good night's rest for the next day",
-      120
     ],
     [
       "sleeping",
@@ -155,40 +114,32 @@
       60
     ],
     [
-      "opening Hobbs Cafe and starting her work day",
+      "opening Hobbs Cafe and starting to serve customers",
       60
     ],
     [
-      "working at Hobbs Cafe",
-      300
+      "continuing to serve customers at Hobbs Cafe",
+      240
     ],
     [
-      "having lunch at Hobbs Cafe",
+      "taking a break and having lunch",
       60
     ],
     [
-      "returning to work at Hobbs Cafe",
+      "continuing to serve customers at Hobbs Cafe",
+      420
+    ],
+    [
+      "continuing to serve customers at Hobbs Cafe and preparing for the Valentine's Day party tomorrow",
       60
     ],
     [
-      "working at Hobbs Cafe",
+      "continuing to serve customers at Hobbs Cafe and preparing for the Valentine's Day party tomorrow. She is gathering party material and telling everyone to join the party at Hobbs Cafe on February 14th, 2023, from 5pm to",
       180
-    ],
-    [
-      "closing Hobbs Cafe and heading home",
-      60
-    ],
-    [
-      "heading home from Hobbs Cafe",
-      180
-    ],
-    [
-      "heading to bed to get a good night's rest for the next day",
-      120
     ]
   ],
   "act_address": "the Ville:Isabella Rodriguez's apartment:main room:bed",
-  "act_start_time": "February 13, 2023, 05:59:50",
+  "act_start_time": "February 13, 2023, 00:00:00",
   "act_duration": 360,
   "act_description": "sleeping",
   "act_pronunciatio": "\ud83d\ude34",
@@ -197,11 +148,11 @@
     "sleep",
     ""
   ],
-  "act_obj_description": "being occupied",
-  "act_obj_pronunciatio": "\ud83d\udee0\ufe0f",
+  "act_obj_description": "being slept on",
+  "act_obj_pronunciatio": "\ud83d\ude34",
   "act_obj_event": [
     "bed",
-    "occupy",
+    "sleep",
     "being"
   ],
   "chatting_with": null,

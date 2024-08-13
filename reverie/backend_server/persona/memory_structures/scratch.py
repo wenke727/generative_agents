@@ -8,6 +8,7 @@ Description: Defines the short-term memory module for generative agents.
 import datetime
 import json
 import sys
+from loguru import logger
 
 sys.path.append("../../")
 
@@ -554,6 +555,8 @@ class Scratch:
                 x = x + datetime.timedelta(minutes=1)
             end_time = x + datetime.timedelta(minutes=self.act_duration)
 
+        logger.info(f'{self.name}, act_start_time: {self.act_start_time}, act_duration: {self.act_duration}')
+        logger.warning(f'{self.name}, cur: {self.curr_time.strftime("%H:%M:%S")}, end: {end_time.strftime("%H:%M:%S")}')
         if end_time.strftime("%H:%M:%S") == self.curr_time.strftime("%H:%M:%S"):
             return True
         return False

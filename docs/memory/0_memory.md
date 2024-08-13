@@ -2,22 +2,30 @@
 
 ### 1. ConceptNode 类
 
-`ConceptNode` 类表示一个记忆节点，节点可以是事件、思考或聊天。每个节点包含：
+> `ConceptNode` 类表示一个记忆节点，节点可以是事件、思考或聊天。每个节点包含：
 
-- **node_id**：节点唯一标识符
-- **node_count**：节点总数
-- **type_count**：节点类型计数
-- **type**：节点类型（thought/event/chat）
-- **depth**：节点深度
-- **created**：节点创建时间
-- **expiration**：节点过期时间
-- **last_accessed**：最后访问时间
-- **subject**、**predicate**、**object**：三元组 (SPO)
-- **description**：节点描述
-- **embedding_key**：嵌入键
-- **poignancy**：节点的重要性
-- **keywords**：关键词集合
-- **filling**：填充信息
+| 字段名      | 描述                | Desc                            |
+| ----------------- | ------------------------------------ | ------------------------------------------------------------ |
+| **node_id**   | 节点唯一标识符           |                               |
+| **node_count**  | 节点总数              | 整体编号                          |
+| **type_count**  | 节点类型计数            | 对应节点类型的编码                     |
+| **type**     | 节点类型（`thought`/`event`/`chat`） |                               |
+| **depth**    | 节点深度              | 仅 thought 有深度，从 1 开始递增；chat 和 event 默认为 0  |
+| **created**   | 节点创建时间            |                               |
+| **expiration**  | 节点过期时间            | 仅 thought 有过期时间                    |
+| **last_accessed** | 最后访问时间            | retrieve.new_retrieve 更新<br />用于计算 `recency`     |
+| **subject**   | 三元组 (SPO)            |                      |
+| **predicate**  | 三元组 (SPO)            |                      |
+| **object**    | 三元组 (SPO)            |                      |
+| **description** | 节点描述              | retrieve.retrieve -> retrieved(dict)<br />*The first layer specifies an event,         while the latter layer specifies the "**curr_event**", "**events**", and "**thoughts**" that are relevant* |
+| **embedding_key** | 嵌入键               | 1. 和 `description` 几乎一致，除部分时候移除了主语<br />2. 使用 Text Embedding 编码，new_retrieve 召回相关记录 |
+| **poignancy**  | 节点的重要性            | 使用 LLM 生成打分: 1 ~ 10                  |
+| **keywords**   | 关键词集合             | 几种形式：(s,p,o), (s,p), ‘plan’;<br />但并没有使用     |
+| **filling**   | 填充信息              | 1. 引用； 2. conv 详细对话                 |
+
+```python
+add_(event|chat|thought)
+```
 
 下面是一个ConceptNode的示例：
 

@@ -90,14 +90,10 @@ class AssociativeMemory:
             node_type = node_details["type"]
             depth = node_details["depth"]
 
-            created = datetime.datetime.strptime(
-                node_details["created"], "%Y-%m-%d %H:%M:%S"
-            )
+            created = datetime.datetime.strptime(node_details["created"], "%Y-%m-%d %H:%M:%S")
             expiration = None
             if node_details["expiration"]:
-                expiration = datetime.datetime.strptime(
-                    node_details["expiration"], "%Y-%m-%d %H:%M:%S"
-                )
+                expiration = datetime.datetime.strptime(node_details["expiration"], "%Y-%m-%d %H:%M:%S")
 
             s = node_details["subject"]
             p = node_details["predicate"]
@@ -153,10 +149,8 @@ class AssociativeMemory:
                 )
 
         kw_strength_load = json.load(open(f_saved + "/kw_strength.json"))
-        if kw_strength_load["kw_strength_event"]:
-            self.kw_strength_event = kw_strength_load["kw_strength_event"]
-        if kw_strength_load["kw_strength_thought"]:
-            self.kw_strength_thought = kw_strength_load["kw_strength_thought"]
+        self.kw_strength_event = kw_strength_load.get("kw_strength_event", {})
+        self.kw_strength_thought = kw_strength_load.get("kw_strength_thought", {})
 
     def save(self, out_json):
         r = dict()
@@ -381,6 +375,53 @@ class AssociativeMemory:
                 self.kw_to_chat[kw] = [node]
         self.id_to_node[node_id] = node
 
+        self.embeddings[embedding_pair[0]] = embedding_pair[1]
+
+        return node
+
+    def add_node(
+        self,
+        node_type,
+        created,
+        expiration,
+        s,
+        p,
+        o,
+        description,
+        keywords,
+        poignancy,
+        embedding_pair,
+        filling,
+    ):
+        node_count = len(self.id_to_node) + 1
+        type_count = len(self.seq_event) + 1 if node_type == "event"\
+                        else len(self.seq_thought) + 1 if node_type == "thought" \
+                            else len(self.seq_chat) + 1
+        node_id = f"node_{node_count}"
+        depth = 1 if node_type == "thought" else 0
+
+        if node_type == "thought" and filling:
+            depth += max(self.id_to_node[i].depth for i in filling)
+
+        node = ConceptNode(
+            node_id, node_count, type_count, node_type, depth,
+            created, expiration, s, p, o, description,
+            embedding_pair[0], poignancy, keywords, filling
+        )
+
+        if node_type == "event":
+            self.seq_event.insert(0, node)
+            self._update_kw_cache(self.kw_to_event, keywords, node)
+            self._update_kw_strength(self.kw_strength_event, keywords, f"{p} {o}")
+        elif node_type == "thought":
+            self.seq_thought.insert(0, node)
+            self._update_kw_cache(self.kw_to_thought, keywords, node)
+            self._update_kw_strength(self.kw_strength_thought, keywords, f"{p} {o}")
+        elif node_type == "chat":
+            self.seq_chat.insert(0, node)
+            self._update_kw_cache(self.kw_to_chat, keywords, node)
+
+        self.id_to_node[node_id] = node
         self.embeddings[embedding_pair[0]] = embedding_pair[1]
 
         return node

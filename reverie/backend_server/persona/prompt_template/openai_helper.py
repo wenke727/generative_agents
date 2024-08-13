@@ -10,8 +10,14 @@ from dotenv import load_dotenv
 load_dotenv(".env", verbose=True)
 
 GPT_35_TURBO = os.environ.get("BASE_MODEL", "gpt-35-turbo")
-LOG_FILE = 'openai_api_calls_log.csv'
+OPENAI_LOG_FILE = 'openai_api_log.csv'
 
+
+def set_openai_api_log_file(fn):
+    global OPENAI_LOG_FILE
+    OPENAI_LOG_FILE = fn
+
+    return True
 
 def get_caller_function_name(pattern):
     """
@@ -63,7 +69,7 @@ def log_function_call(func, pattern = r"(?i)(run_gpt|ChatGPT_safe)"):
         # print(log_entry)  # Here you can replace this with actual logging to a file or database
 
         # Save log entry to CSV file
-        with open(LOG_FILE, 'a', newline='') as csvfile:
+        with open(OPENAI_LOG_FILE, 'a', newline='') as csvfile:
             fieldnames = ['timestamp', 'caller', 'input', 'output']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
