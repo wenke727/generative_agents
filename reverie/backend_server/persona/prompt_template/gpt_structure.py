@@ -16,6 +16,7 @@ from persona.prompt_template.openai_helper import initialize_openai_client, GPT_
 
 
 client, chat, embeddings = initialize_openai_client()
+formatted_llm_respond = "\n### Prompt ###:\n{prompt}\n\n### GPT Output ###:\n{output}"
 
 
 def _temp_sleep(seconds=0.15):
@@ -156,15 +157,8 @@ Example output json:
             curr_gpt_response = curr_gpt_response[:end_index]
             curr_gpt_response = json.loads(curr_gpt_response)["output"]
 
-            # print ("---ashdfaf")
-            # print (curr_gpt_response)
-            # print ("000asdfhia")
-
             if verbose:
-                # print("---- repeat count: \n", i, curr_gpt_response)
-                logger.debug(f"prompt : {prompt}, \ngpt_response: {curr_gpt_response}")
-                # print(curr_gpt_response)
-                # print("~~~~")
+                logger.debug(formatted_llm_respond.format(output=curr_gpt_response, prompt=prompt))
 
             if func_validate(curr_gpt_response, prompt=prompt):
                 return func_clean_up(curr_gpt_response, prompt=prompt)

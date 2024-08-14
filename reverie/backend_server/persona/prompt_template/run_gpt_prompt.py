@@ -21,13 +21,12 @@ from persona.prompt_template.gpt_structure import (
     ChatGPT_safe_generate_response_OLD,
     generate_prompt,
     safe_generate_response,
+    formatted_llm_respond
 )
 from persona.prompt_template.print_prompt import print_run_prompts
 from persona.prompt_template.openai_helper import GPT_35_TURBO
 from utils import debug
 
-
-# TODO prompt print template
 
 def get_random_alphanumeric(i=6, j=6):
     """
@@ -328,8 +327,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
 
         curr_time_range = ""
 
-        logger.debug(f"persona.f_daily_schedule_hourly_org:\n{persona.f_daily_schedule_hourly_org}")
-        logger.debug(f"all_indices: {all_indices}")
+        logger.debug(f"persona.f_daily_schedule_hourly_org:\n{persona.f_daily_schedule_hourly_org}\nall_indices: {all_indices}")
 
         summ_str = f'Today is {persona.curr_time.strftime("%B %d, %Y")}. '
         summ_str += f"From "
@@ -363,7 +361,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
         return prompt_input
 
     def __func_clean_up(gpt_response, prompt=""):
-        logger.info(f"TOODOOOOOO: \n{gpt_response}")
+        # logger.info(f"TOODOOOOOO: \n{gpt_response}")
 
 
         # TODO SOMETHING HERE sometimes fails... See screenshot
@@ -452,7 +450,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
     fail_safe = get_fail_safe()
 
     # print("?????")
-    logger.debug(f"task decomp:\n{prompt}")
+    # logger.debug(f"task decomp:\n{prompt}")
     output = safe_generate_response(
         prompt, gpt_param, 5, get_fail_safe(), __func_validate, __func_clean_up
     )
@@ -498,7 +496,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
     output = ret
 
     if debug or verbose:
-        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        logger.debug(formatted_llm_respond.format(output=output, prompt=prompt))
         # print_run_prompts(
             # prompt_template, persona, gpt_param, prompt_input, prompt, output
         # )
@@ -506,9 +504,7 @@ def run_gpt_prompt_task_decomp(persona, task, duration, test_input=None, verbose
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
-def run_gpt_prompt_action_sector(
-    action_description, persona, maze, test_input=None, verbose=False
-):
+def run_gpt_prompt_action_sector(action_description, persona, maze, test_input=None, verbose=False):
     def create_prompt_input(action_description, persona, maze, test_input=None):
         act_world = f"{maze.access_tile(persona.curr_tile)['world']}"
 
@@ -625,10 +621,12 @@ def run_gpt_prompt_action_sector(
         # output = random.choice(x)
         output = persona.scratch.living_area.split(":")[1]
 
-    print("DEBUG", random.choice(x), "------", output)
+    logger.debug(f'Random choice:{random.choice(x)}, Output: {output}')
 
     if debug or verbose:
-        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        logger.debug(formatted_llm_respond.format(output=output, prompt=prompt))
+
+
         # print_run_prompts(
             # prompt_template, persona, gpt_param, prompt_input, prompt, output
         # )
@@ -728,17 +726,14 @@ def run_gpt_prompt_action_arena(
     output = safe_generate_response(
         prompt, gpt_param, 5, fail_safe, __func_validate, __func_clean_up
     )
-    print(output)
+    # print(output)
     # y = f"{act_world}:{act_sector}"
     # x = [i.strip() for i in persona.s_mem.get_str_accessible_sector_arenas(y).split(",")]
     # if output not in x:
     #   output = random.choice(x)
 
     if debug or verbose:
-        logger.debug(f"output: {output}, prompt: {prompt_input}")
-        # print_run_prompts(
-        #     prompt_template, persona, gpt_param, prompt_input, prompt, output
-        # )
+        logger.debug(formatted_llm_respond.format(output=output, prompt=prompt))
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -801,10 +796,8 @@ def run_gpt_prompt_action_game_object(
         output = random.choice(x)
 
     if debug or verbose:
-        logger.debug(f"output: {output}, prompt: {prompt_input}")
-        # print_run_prompts(
-        #     prompt_template, persona, gpt_param, prompt_input, prompt, output
-        # )
+        logger.debug(formatted_llm_respond.format(output=output, prompt=prompt))
+
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
@@ -850,9 +843,7 @@ def run_gpt_prompt_pronunciatio(action_description, persona, verbose=False):
         except:
             return False
         return True
-        return True
 
-    print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 4")  ########
     gpt_param = {
         "engine": GPT_35_TURBO,
         "max_tokens": 15,
@@ -883,6 +874,7 @@ def run_gpt_prompt_pronunciatio(action_description, persona, verbose=False):
         __chat_func_clean_up,
         True,
     )
+    logger.debug(f"{action_description} / {prompt_input} -> {output}")
     if output != False:
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================
@@ -981,7 +973,8 @@ def run_gpt_prompt_event_triple(action_description, persona, verbose=False):
     output = (persona.name, output[0], output[1])
 
     if debug or verbose:
-        logger.debug(f"output: {output}, prompt: {prompt_input}")
+        logger.debug(formatted_llm_respond.format(output=output, prompt=prompt))
+
         # print_run_prompts(prompt_template, persona, gpt_param, prompt_input, prompt, output)
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
@@ -1029,7 +1022,6 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
             return False
         return True
 
-    print("asdhfapsh8p9hfaiafdsi;ldfj as DEBUG 6")  ########
     gpt_param = {
         "engine": GPT_35_TURBO,
         "max_tokens": 15,
@@ -1059,7 +1051,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
         True,
     )
 
-    # logger.error(f"`run_gpt_prompt_act_obj_desc` prompt: \n{prompt}, \nprompt_input:\n{prompt_input}")
+    logger.debug(f"{persona.name}, desp: {act_desp}, object: {act_game_object} -> {output}")
     if output != False:
         return output, [output, prompt, gpt_param, prompt_input, fail_safe]
     # ChatGPT Plugin ===========================================================

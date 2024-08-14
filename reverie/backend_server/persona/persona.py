@@ -262,6 +262,10 @@ class Persona:
     def f_daily_schedule_hourly_org(self):
         return self.scratch.f_daily_schedule_hourly_org
 
+    @property
+    def act_details(self):
+        return self.scratch.get_act_description()
+
     @f_daily_schedule_hourly_org.setter
     def f_daily_schedule_hourly_org(self, value):
         self.scratch.f_daily_schedule_hourly_org = value

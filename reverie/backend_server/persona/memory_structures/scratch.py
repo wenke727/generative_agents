@@ -555,8 +555,8 @@ class Scratch:
                 x = x + datetime.timedelta(minutes=1)
             end_time = x + datetime.timedelta(minutes=self.act_duration)
 
-        logger.info(f'{self.name}, act_start_time: {self.act_start_time}, act_duration: {self.act_duration}')
-        logger.warning(f'{self.name}, cur: {self.curr_time.strftime("%H:%M:%S")}, end: {end_time.strftime("%H:%M:%S")}')
+        logger.info(f'{self.name}, time: [{self.act_start_time}, {end_time.strftime("%H:%M:%S")}]'
+                    f', act_duration: {self.act_duration} mins')
         if end_time.strftime("%H:%M:%S") == self.curr_time.strftime("%H:%M:%S"):
             return True
         return False
@@ -615,3 +615,37 @@ class Scratch:
             minute = curr_min_sum % 60
             ret += f"{hour:02}:{minute:02} || {row[0]}\n"
         return ret
+
+    def get_act_description(self):
+        """
+        获取当前行动的描述，用于打印日志。
+        描述中包含人名，时间，地点，和行动的描述。
+        若某个数值为 None，则不包含在描述中。
+        """
+        description_parts = []
+
+        # 人名
+        if self.name:
+            description_parts.append(f"Name: {self.name}")
+
+        # 当前时间
+        if self.act_start_time:
+            description_parts.append(f"Time: {self.act_start_time.strftime('%H:%M:%S')}")
+
+        if self.act_duration:
+            description_parts.append(f"Duration: {self.act_duration} mins")
+
+        # 行动描述
+        if self.act_description:
+            description_parts.append(f"Action: {self.act_description}")
+
+        # 地点
+        if self.act_address:
+            description_parts.append(f"Location: {self.act_address}")
+
+        # 如果 description_parts 为空，说明没有任何有效信息
+        if not description_parts:
+            return "No current action available."
+
+        return " | ".join(description_parts)
+

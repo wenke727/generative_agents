@@ -647,9 +647,9 @@ if __name__ == "__main__":
     #                    "July1_the_ville_isabella_maria_klaus-step-3-21")
 
     # 仓库自带 base
-    rs = ReverieServer("base_the_ville_isabella_maria_klaus", sim_name)
+    # rs = ReverieServer("base_the_ville_isabella_maria_klaus", sim_name)
     # 仓库自带 base 的基础上，run 1 step to initial.
-    # rs = ReverieServer("base_the_ville_isabella_maria_klaus_init", sim_name)
+    rs = ReverieServer("base_the_ville_isabella_maria_klaus_init", sim_name)
 
 
     rs.open_server()

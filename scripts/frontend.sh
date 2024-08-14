@@ -1,2 +1,1 @@
-cd environment/frontend_server
-python manage.py runserver
+cd environment/frontend_server; python manage.py runserver

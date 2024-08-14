@@ -55,8 +55,8 @@ def _generate_wake_up_hour(persona):
     EXAMPLE OUTPUT:
       8
     """
-    if debug:
-        print("GNS FUNCTION: <generate_wake_up_hour>")
+    # if debug:
+    #     print("GNS FUNCTION: <generate_wake_up_hour>")
     return int(run_gpt_prompt_wake_up_hour(persona)[0])
 
 
@@ -86,8 +86,8 @@ def _generate_first_daily_plan(persona, wake_up_hour):
        'work on painting project from 4:00 pm to 6:00 pm',
        'have dinner at 6:00 pm', 'watch TV from 7:00 pm to 8:00 pm']
     """
-    if debug:
-        print("GNS FUNCTION: <generate_first_daily_plan>")
+    # if debug:
+    #     print("GNS FUNCTION: <generate_first_daily_plan>")
     return run_gpt_prompt_daily_plan(persona, wake_up_hour)[0]
 
 
@@ -110,8 +110,8 @@ def _generate_hourly_schedule(persona, wake_up_hour):
       [['sleeping', 360], ['waking up and starting her morning routine', 60],
        ['eating breakfast', 60],..
     """
-    if debug:
-        print("GNS FUNCTION: <generate_hourly_schedule>")
+    # if debug:
+    #     print("GNS FUNCTION: <generate_hourly_schedule>")
 
     hour_str = [
         "00:00 AM",
@@ -228,8 +228,8 @@ def _generate_action_sector(act_desp, persona, maze):
     EXAMPLE OUTPUT:
       "bedroom 2"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_sector>")
+    # if debug:
+    #     print("GNS FUNCTION: <generate_action_sector>")
     return run_gpt_prompt_action_sector(act_desp, persona, maze)[0]
 
 
@@ -269,8 +269,6 @@ def _generate_action_game_object(act_desp, act_address, persona, maze):
     EXAMPLE OUTPUT:
       "bed"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_game_object>")
     if not persona.s_mem.get_str_accessible_arena_game_objects(act_address):
         return "<random>"
     return run_gpt_prompt_action_game_object(act_desp, persona, maze, act_address)[0]
@@ -291,8 +289,6 @@ def _generate_action_pronunciatio(act_desp, persona):
     EXAMPLE OUTPUT:
       "🧈🍞"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_pronunciatio>")
     try:
         x = run_gpt_prompt_pronunciatio(act_desp, persona)[0]
     except:
@@ -314,23 +310,15 @@ def _generate_action_event_triple(act_desp, persona):
     EXAMPLE OUTPUT:
       "🧈🍞"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_event_triple>")
     return run_gpt_prompt_event_triple(act_desp, persona)[0]
 
 
 def _generate_act_obj_desc(act_game_object, act_desp, persona):
-    if debug:
-        print("GNS FUNCTION: <generate_act_obj_desc>")
     return run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona)[0]
 
 
 def _generate_act_obj_event_triple(act_game_object, act_obj_desc, persona):
-    if debug:
-        print("GNS FUNCTION: <generate_act_obj_event_triple>")
-    return run_gpt_prompt_act_obj_event_triple(act_game_object, act_obj_desc, persona)[
-        0
-    ]
+    return run_gpt_prompt_act_obj_event_triple(act_game_object, act_obj_desc, persona)[0]
 
 
 """ _chat_react """
@@ -655,11 +643,9 @@ def _determine_action(persona, maze):
                 return False
         return True
 
-    # The goal of this function is to get us the action associated with
-    # <curr_index>. As a part of this, we may need to decompose some large
-    # chunk actions.
-    # Importantly, we try to decompose at least two hours worth of schedule at
-    # any given point.
+    # The goal of this function is to get us the action associated with <curr_index>.
+    # As a part of this, we may need to decompose some large chunk actions.
+    # Importantly, we try to decompose at least two hours worth of schedule at any given point.
     curr_index = persona.scratch.get_f_daily_schedule_index()
     curr_index_60 = persona.scratch.get_f_daily_schedule_index(advance=60)
 
@@ -700,13 +686,12 @@ def _determine_action(persona, maze):
     # Generate an <Action> instance from the action description and duration. By
     # this point, we assume that all the relevant actions are decomposed and
     # ready in f_daily_schedule.
-    debug_info = ""
-    debug_info += "\n" + "DEBUG LJSDLFSKJF"
+    debug_info = "f_daily_schedule"
+    debug_info += "\nname: " + persona.scratch.name
+    debug_info += "\ncurr index: " + str(curr_index)
+    debug_info += ", length: " + str(len(persona.f_daily_schedule))
     for i in persona.f_daily_schedule:
         debug_info += "\n" + str(i)
-    debug_info += "\ncurr index: " + str(curr_index)
-    debug_info += "\nlength: " + str(len(persona.f_daily_schedule))
-    debug_info += "\nname: " + persona.scratch.name
     logger.debug(debug_info)
 
     # 1440 = 24 * 60
@@ -716,7 +701,7 @@ def _determine_action(persona, maze):
     # print ("x_emergency", x_emergency)
 
     if 1440 - x_emergency > 0:
-        print("x_emergency__AAA", x_emergency)
+        logger.warning("x_emergency__AAA", x_emergency)
     persona.f_daily_schedule += [["sleeping", 1440 - x_emergency]]
 
     act_desp, act_dura = persona.f_daily_schedule[curr_index]
@@ -740,8 +725,10 @@ def _determine_action(persona, maze):
     act_obj_pron = _generate_action_pronunciatio(act_obj_desp, persona)
     act_obj_event = _generate_act_obj_event_triple(act_game_object, act_obj_desp, persona)
 
-    logger.debug(f"{persona.name}: {act_pron}, \nact_desp: {act_desp}\nact_event: {act_event}")
-    logger.debug(f"{act_obj_pron}: {act_obj_pron}, \act_obj_desp: {act_obj_desp}\act_obj_event: {act_obj_event}")
+    logger.debug(f"{persona.name}: {act_pron} | act_desp | {act_desp}\nact_event: {act_event}")
+    logger.debug(f"{persona.name}: {act_obj_pron}, act_obj_desp: {act_obj_desp}, act_obj_event: {act_obj_event}")
+    logger.info(f"Act details: {persona.act_details}")
+
     # Adding the action to persona's queue.
     persona.scratch.add_new_action(
         new_address,
@@ -856,7 +843,6 @@ def _should_react(persona, retrieved, personas):
         return False
 
     def _lets_react(init_persona, target_persona, retrieved):
-        # TODO react 怎么理解
         if (
             not target_persona.scratch.act_address
             or not target_persona.act_description
