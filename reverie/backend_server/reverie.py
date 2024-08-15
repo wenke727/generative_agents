@@ -429,16 +429,16 @@ class ReverieServer:
                     # After this cycle, the world takes one step forward, and the
                     # current time moves by <sec_per_step> amount.
                     self.step += 1
-                    # self.curr_time += datetime.timedelta(seconds=self.sec_per_step)
                     self.curr_time = adjust_time(self.curr_time, self.sec_per_step)
 
                     int_counter -= 1
 
             # Sleep so we don't burn our machines.
-            logger.error(
-                f"Check the file `{sim_folder}/environment/{self.step}.json` exist or not. "
-                f"If not exist, copy the `{self.step - 1}.csv` to `{self.step}.csv`"
-            )
+            # logger.error(
+            #     f"Check the file `{sim_folder}/environment/{self.step}.json` exist or not. "
+            #     f"If not exist, copy the `{self.step - 1}.csv` to `{self.step}.csv`"
+            # )
+            logger.warning("Open http://localhost:8000/simulator_home to refresh environment.")
             time.sleep(self.server_sleep)
 
     def open_server(self):
@@ -634,12 +634,15 @@ class ReverieServer:
 
 
 if __name__ == "__main__":
+    fork_sim = "base_the_ville_isabella_maria_klaus_init"
     sim_name = "test-simulation"
+    sim_folder = f"{fs_storage}/{sim_name}"
+
     logger = configure_loguru_integration(
         f'./', 'agents.log', mode = 'w', console = True, #
         filter_packages = ['httpcore', 'httpx', 'openai', 'urllib3']
     )
-    set_openai_api_log_file(f'./openai_api_log.csv')
+    set_openai_api_log_file(f'{sim_folder}/openai_api_log.csv')
 
     # rs = ReverieServer("base_the_ville_isabella_maria_klaus",
     #                    "July1_the_ville_isabella_maria_klaus-step-3-1")
@@ -649,7 +652,7 @@ if __name__ == "__main__":
     # 仓库自带 base
     # rs = ReverieServer("base_the_ville_isabella_maria_klaus", sim_name)
     # 仓库自带 base 的基础上，run 1 step to initial.
-    rs = ReverieServer("base_the_ville_isabella_maria_klaus_init", sim_name)
+    rs = ReverieServer(fork_sim, sim_name)
 
 
     rs.open_server()

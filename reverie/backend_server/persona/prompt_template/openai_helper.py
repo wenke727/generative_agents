@@ -121,7 +121,8 @@ def initialize_openai_client():
     return client, chat, embeddings
 
 
-# Example usage:
-# client, chat, embeddings = initialize_openai_client()
-# response = chat(model="gpt-3.5-turbo", messages=[{"role": "user", "content": "Hello, world!"}])
-# embedding = embeddings(input="Hello, world!")
+if __name__ == "__main__":
+    # Example usage:
+    client, chat, embeddings = initialize_openai_client()
+    response = chat(model="gpt-3.5-turbo", messages=[{"role": "user", "content": "Hello, world!"}])
+    embedding = embeddings(input="Hello, world!")

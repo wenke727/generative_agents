@@ -86,8 +86,6 @@ def _generate_first_daily_plan(persona, wake_up_hour):
        'work on painting project from 4:00 pm to 6:00 pm',
        'have dinner at 6:00 pm', 'watch TV from 7:00 pm to 8:00 pm']
     """
-    # if debug:
-    #     print("GNS FUNCTION: <generate_first_daily_plan>")
     return run_gpt_prompt_daily_plan(persona, wake_up_hour)[0]
 
 
@@ -110,9 +108,6 @@ def _generate_hourly_schedule(persona, wake_up_hour):
       [['sleeping', 360], ['waking up and starting her morning routine', 60],
        ['eating breakfast', 60],..
     """
-    # if debug:
-    #     print("GNS FUNCTION: <generate_hourly_schedule>")
-
     hour_str = [
         "00:00 AM",
         "01:00 AM",
@@ -209,8 +204,6 @@ def _generate_task_decomp(persona, task, duration):
        ['starting to work on her painting', 15]]
 
     """
-    if debug:
-        print("GNS FUNCTION: <generate_task_decomp>")
     return run_gpt_prompt_task_decomp(persona, task, duration)[0]
 
 
@@ -228,8 +221,6 @@ def _generate_action_sector(act_desp, persona, maze):
     EXAMPLE OUTPUT:
       "bedroom 2"
     """
-    # if debug:
-    #     print("GNS FUNCTION: <generate_action_sector>")
     return run_gpt_prompt_action_sector(act_desp, persona, maze)[0]
 
 
@@ -247,8 +238,6 @@ def _generate_action_arena(act_desp, persona, maze, act_world, act_sector):
     EXAMPLE OUTPUT:
       "bedroom 2"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_arena>")
     return run_gpt_prompt_action_arena(act_desp, persona, maze, act_world, act_sector)[0]
 
 
@@ -489,26 +478,19 @@ def _revise_identity(persona):
     statements = "[Statements]\n"
     for key, val in retrieved.items():
         for i in val:
-            statements += (
-                f"{i.created.strftime('%A %B %d -- %H:%M %p')}: {i.embedding_key}\n"
-            )
+            statements += (f"{i.created.strftime('%A %B %d -- %H:%M %p')}: {i.embedding_key}\n")
 
-    # print (";adjhfno;asdjao;idfjo;af", p_name)
     plan_prompt = statements + "\n"
     plan_prompt += f"Given the statements above, is there anything that {p_name} should remember as they plan for"
     plan_prompt += f" *{persona.curr_time.strftime('%A %B %d')}*? "
     plan_prompt += f"If there is any scheduling information, be as specific as possible (include date, time, and location if stated in the statement)\n\n"
     plan_prompt += f"Write the response from {p_name}'s perspective."
     plan_note = ChatGPT_single_request(plan_prompt)
-    logger.debug(f"plan_prompt: \n{plan_prompt}")
-    logger.debug(f"plan_note: \n{plan_note}")
 
     thought_prompt = statements + "\n"
     thought_prompt += f"Given the statements above, how might we summarize {p_name}'s feelings about their days up to now?\n\n"
     thought_prompt += f"Write the response from {p_name}'s perspective."
     thought_note = ChatGPT_single_request(thought_prompt)
-    logger.debug(f"thought_prompt: \n{thought_prompt}")
-    logger.debug(f"thought_note: \n{thought_note}")
 
     currently_prompt = f"{p_name}'s status from {(persona.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}:\n"
     currently_prompt += f"{persona.scratch.currently}\n\n"
@@ -517,15 +499,7 @@ def _revise_identity(persona):
     currently_prompt += f"It is now {persona.curr_time.strftime('%A %B %d')}. Given the above, write {p_name}'s status for {persona.curr_time.strftime('%A %B %d')} that reflects {p_name}'s thoughts at the end of {(persona.curr_time - datetime.timedelta(days=1)).strftime('%A %B %d')}. Write this in third-person talking about {p_name}."
     currently_prompt += f"If there is any scheduling information, be as specific as possible (include date, time, and location if stated in the statement).\n\n"
     currently_prompt += "Follow this format below:\nStatus: <new status>"
-    # print ("DEBUG ;adjhfno;asdjao;asdfsidfjo;af", p_name)
-    # print (currently_prompt)
     new_currently = ChatGPT_single_request(currently_prompt)
-    logger.debug(f"currently_prompt: \n{currently_prompt}")
-    logger.debug(f"new_currently: \n{new_currently}")
-
-    # print (new_currently)
-    # print (new_currently[10:])
-
     persona.scratch.currently = new_currently
 
     daily_req_prompt = persona.iss + "\n"
@@ -536,11 +510,20 @@ def _revise_identity(persona):
     daily_req_prompt += f"1. wake up and complete the morning routine at <time>, 2. ..."
 
     new_daily_req = ChatGPT_single_request(daily_req_prompt)
-    logger.debug(f"daily_req_prompt: \n{daily_req_prompt}")
-    logger.debug(f"new_daily_req: \n{new_daily_req}")
 
     new_daily_req = new_daily_req.replace("\n", " ")
     persona.scratch.daily_plan_req = new_daily_req
+
+    logger.debug(
+        f"\nplan_prompt: \n{plan_prompt}\n"
+        f"plan_note: \n{plan_note}\n"
+        f"thought_prompt: \n{thought_prompt}\n"
+        f"thought_note: \n{thought_note}\n"
+        f"currently_prompt: \n{currently_prompt}\n"
+        f"new_currently: \n{new_currently}\n"
+        f"daily_req_prompt: \n{daily_req_prompt}\n"
+        f"new_daily_req: \n{new_daily_req}"
+    )
 
 
 def _long_term_planning(persona, new_day):
@@ -686,12 +669,12 @@ def _determine_action(persona, maze):
     # Generate an <Action> instance from the action description and duration. By
     # this point, we assume that all the relevant actions are decomposed and
     # ready in f_daily_schedule.
-    debug_info = "f_daily_schedule"
-    debug_info += "\nname: " + persona.scratch.name
-    debug_info += "\ncurr index: " + str(curr_index)
+    debug_info = "\nf_daily_schedule"
+    debug_info += "\n\tname: " + persona.scratch.name
+    debug_info += "\n\tcurr index: " + str(curr_index)
     debug_info += ", length: " + str(len(persona.f_daily_schedule))
     for i in persona.f_daily_schedule:
-        debug_info += "\n" + str(i)
+        debug_info += "\n\t" + str(i)
     logger.debug(debug_info)
 
     # 1440 = 24 * 60
@@ -725,10 +708,6 @@ def _determine_action(persona, maze):
     act_obj_pron = _generate_action_pronunciatio(act_obj_desp, persona)
     act_obj_event = _generate_act_obj_event_triple(act_game_object, act_obj_desp, persona)
 
-    logger.debug(f"{persona.name}: {act_pron} | act_desp | {act_desp}\nact_event: {act_event}")
-    logger.debug(f"{persona.name}: {act_obj_pron}, act_obj_desp: {act_obj_desp}, act_obj_event: {act_obj_event}")
-    logger.info(f"Act details: {persona.act_details}")
-
     # Adding the action to persona's queue.
     persona.scratch.add_new_action(
         new_address,
@@ -744,6 +723,9 @@ def _determine_action(persona, maze):
         act_obj_pron,
         act_obj_event,
     )
+
+    logger.debug(f"Act_obj: desp = {act_obj_desp}, pron = {act_obj_pron}, event = {act_obj_event}")
+    logger.info(f"Act details: {persona.scratch.get_act_description()}")
 
 
 def _choose_retrieved(persona, retrieved):

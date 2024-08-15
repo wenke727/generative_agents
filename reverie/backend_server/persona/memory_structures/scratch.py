@@ -555,8 +555,7 @@ class Scratch:
                 x = x + datetime.timedelta(minutes=1)
             end_time = x + datetime.timedelta(minutes=self.act_duration)
 
-        logger.info(f'{self.name}, time: [{self.act_start_time}, {end_time.strftime("%H:%M:%S")}]'
-                    f', act_duration: {self.act_duration} mins')
+        logger.debug(f'{self.name}, {self.act_description}, time: [{self.act_start_time.strftime("%H:%M:%S")}, {end_time.strftime("%H:%M:%S")}]')
         if end_time.strftime("%H:%M:%S") == self.curr_time.strftime("%H:%M:%S"):
             return True
         return False

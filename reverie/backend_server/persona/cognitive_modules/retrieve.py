@@ -254,6 +254,7 @@ def new_retrieve(persona, focal_points, n_count=30):
                 + persona.scratch.importance_w * importance_out[key] * gw[2]
             )
 
+        info_lst = []
         master_out = _top_highest_x_values(master_out, len(master_out.keys()))
         for key, val in master_out.items():
             scores = (
@@ -262,7 +263,9 @@ def new_retrieve(persona, focal_points, n_count=30):
                 persona.scratch.importance_w * importance_out[key] * 1,
             )
             info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
-            logger.debug(info)
+            info_lst.append(info)
+        _str = '\n'.join(info_lst)
+        logger.debug(f"retrieve:\n {_str}")
 
         # Extracting the highest x values.
         # <master_out> has the key of node.id and value of float. Once we get the

@@ -49,7 +49,8 @@ def _GPT4_request(prompt):
 
     try:
         completion = chat(
-            model="gpt-4", messages=[{"role": "user", "content": prompt}]
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
 
@@ -321,51 +322,5 @@ def _test_case_0():
     logger.info(output)
 
 
-def _test_case_1():
-    prompt_lib_file = "./v3_ChatGPT/generate_obj_event_v1.txt"
-
-    prompt_input = ['bed', 'Isabella Rodriguez', 'sleeping', 'bed', 'bed']
-    prompt = generate_prompt(prompt_input, (prompt_lib_file))
-    example_output = "being fixed"  ########
-    special_instruction = "The output should ONLY contain the phrase that should go in <fill in>."  ########
-
-    def get_fail_safe(act_game_object):
-        fs = f"{act_game_object} is idle"
-        return fs
-
-    # ChatGPT Plugin ===========================================================
-    def __chat_func_clean_up(gpt_response, prompt=""):  ############
-        cr = gpt_response.strip()
-        if cr[-1] == ".":
-            cr = cr[:-1]
-        return cr
-
-    def __func_clean_up(gpt_response, prompt):
-        cleaned_response = gpt_response.strip()
-        return cleaned_response
-
-    def __chat_func_validate(gpt_response, prompt=""):  ############
-        try:
-            gpt_response = __func_clean_up(gpt_response, prompt="")
-        except:
-            return False
-        return True
-
-
-    # fail_safe = get_fail_safe(act_game_object)  ########
-    output = ChatGPT_safe_generate_response(
-        prompt,
-        example_output,
-        special_instruction,
-        3,
-        "None",
-        __chat_func_validate,
-        __chat_func_clean_up,
-        True,
-    )
-    logger.info(output)
-
-
 if __name__ == "__main__":
     _test_case_0()
-    _test_case_1()

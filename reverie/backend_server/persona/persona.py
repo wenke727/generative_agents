@@ -227,6 +227,10 @@ class Persona:
         open_convo_session(self, convo_mode)
 
     @property
+    def act_details(self):
+        return self.scratch.get_act_description()
+
+    @property
     def curr_time(self):
         return self.scratch.curr_time
 
@@ -261,10 +265,6 @@ class Persona:
     @property
     def f_daily_schedule_hourly_org(self):
         return self.scratch.f_daily_schedule_hourly_org
-
-    @property
-    def act_details(self):
-        return self.scratch.get_act_description()
 
     @f_daily_schedule_hourly_org.setter
     def f_daily_schedule_hourly_org(self, value):
