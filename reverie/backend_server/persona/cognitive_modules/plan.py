@@ -666,11 +666,9 @@ def _determine_action(persona, maze):
                         _generate_task_decomp(persona, act_desp, act_dura)
     # * End of Decompose *
 
-    # Generate an <Action> instance from the action description and duration. By
-    # this point, we assume that all the relevant actions are decomposed and
-    # ready in f_daily_schedule.
-    debug_info = "\nf_daily_schedule"
-    debug_info += "\n\tname: " + persona.scratch.name
+    # Generate an <Action> instance from the action description and duration.
+    # By this point, we assume that all the relevant actions are decomposed and ready in f_daily_schedule.
+    debug_info = f"\n{persona.scratch.name}'s f_daily_schedule"
     debug_info += "\n\tcurr index: " + str(curr_index)
     debug_info += ", length: " + str(len(persona.f_daily_schedule))
     for i in persona.f_daily_schedule:

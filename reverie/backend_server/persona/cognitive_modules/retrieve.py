@@ -198,7 +198,7 @@ def _extract_relevance(persona, nodes, focal_pt):
     return relevance_out
 
 
-def new_retrieve(persona, focal_points, n_count=30):
+def new_retrieve(persona, focal_points, n_count=30, verbose=True):
     """
     Given the current persona and focal points (focal points are events or
     thoughts for which we are retrieving), we retrieve a set of nodes for each
@@ -220,9 +220,10 @@ def new_retrieve(persona, focal_points, n_count=30):
     # <retrieved> is the main dictionary that we are returning
     retrieved = dict()
     for focal_pt in focal_points:
-        # Getting all nodes from the agent's memory (both thoughts and events) and
+        # 1. Getting all nodes from the agent's memory (both thoughts and events) and
         # sorting them by the datetime of creation.
         # You could also imagine getting the raw conversation, but for now.
+        # TODO 模式修改 -> 粗搜，精排
         nodes = [
             [i.last_accessed, i]
                 for i in persona.a_mem.seq_event + persona.a_mem.seq_thought
@@ -231,7 +232,7 @@ def new_retrieve(persona, focal_points, n_count=30):
         nodes = sorted(nodes, key=lambda x: x[0])
         nodes = [i for created, i in nodes]
 
-        # Calculating the component dictionaries and normalizing them.
+        # 2. Calculating the component dictionaries and normalizing them.
         recency_out = _extract_recency(persona, nodes)
         recency_out = _normalize_dict_floats(recency_out, 0, 1)
         importance_out = _extract_importance(persona, nodes)
@@ -239,7 +240,7 @@ def new_retrieve(persona, focal_points, n_count=30):
         relevance_out = _extract_relevance(persona, nodes, focal_pt)
         relevance_out = _normalize_dict_floats(relevance_out, 0, 1)
 
-        # Computing the final scores that combines the component values.
+        # 3. Computing the final scores that combines the component values.
         # Note to self: test out different weights. [1, 1, 1] tends to work
         # decently, but in the future, these weights should likely be learned,
         # perhaps through an RL-like process.
@@ -254,20 +255,7 @@ def new_retrieve(persona, focal_points, n_count=30):
                 + persona.scratch.importance_w * importance_out[key] * gw[2]
             )
 
-        info_lst = []
-        master_out = _top_highest_x_values(master_out, len(master_out.keys()))
-        for key, val in master_out.items():
-            scores = (
-                persona.scratch.recency_w * recency_out[key] * 1,
-                persona.scratch.relevance_w * relevance_out[key] * 1,
-                persona.scratch.importance_w * importance_out[key] * 1,
-            )
-            info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
-            info_lst.append(info)
-        _str = '\n'.join(info_lst)
-        logger.debug(f"retrieve:\n {_str}")
-
-        # Extracting the highest x values.
+        # 4. Extracting the highest x values.
         # <master_out> has the key of node.id and value of float. Once we get the
         # highest x values, we want to translate the node.id into nodes and return
         # the list of nodes.
@@ -280,5 +268,19 @@ def new_retrieve(persona, focal_points, n_count=30):
             n.last_accessed = persona.curr_time
 
         retrieved[focal_pt] = master_nodes
+
+        # log
+        if verbose:
+            info_lst = []
+            for key, val in master_out.items():
+                scores = (
+                    persona.scratch.recency_w * recency_out[key] * 1,
+                    persona.scratch.relevance_w * relevance_out[key] * 1,
+                    persona.scratch.importance_w * importance_out[key] * 1,
+                )
+                info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
+                info_lst.append(info)
+            _str = '\n\t'.join(info_lst)
+            logger.debug(f"\n{persona.name}, focal_pt: {focal_pt}\n Retrieve:\n {_str}")
 
     return retrieved

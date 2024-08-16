@@ -450,8 +450,8 @@ class Scratch:
     def get_str_curr_date_str(self):
         return self.curr_time.strftime("%A %B %d")
 
-    """ 获取当前事件和描述 """
     def get_curr_event(self):
+        """ 获取当前事件和描述 """
         if not self.act_address:
             return (self.name, None, None)
         else:
@@ -555,8 +555,8 @@ class Scratch:
                 x = x + datetime.timedelta(minutes=1)
             end_time = x + datetime.timedelta(minutes=self.act_duration)
 
-        logger.debug(f'{self.name}, {self.act_description}, time: [{self.act_start_time.strftime("%H:%M:%S")}, {end_time.strftime("%H:%M:%S")}]')
         if end_time.strftime("%H:%M:%S") == self.curr_time.strftime("%H:%M:%S"):
+            logger.debug(f'{self.name} finished `{self.act_description}` task, time intvl: [{self.act_start_time.strftime("%H:%M:%S")}, {end_time.strftime("%H:%M:%S")}]')
             return True
         return False
 

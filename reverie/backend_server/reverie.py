@@ -38,6 +38,7 @@ from utils import fs_temp_storage, fs_storage, maze_assets_loc
 from misc.logger_helper import configure_loguru_integration
 from persona.prompt_template.openai_helper import set_openai_api_log_file
 
+
 def adjust_time(curr_time, sec_per_step=10):
     hour = curr_time.hour
     if 0 <= hour < 6:
@@ -46,6 +47,52 @@ def adjust_time(curr_time, sec_per_step=10):
         curr_time += datetime.timedelta(seconds=sec_per_step)
 
     return curr_time
+
+
+
+def process_personas_movement(personas, maze, personas_tile, curr_time, sim_folder, step):
+    """
+    Processes the movement of each persona in the simulation, records the movements,
+    and writes the output to a JSON file.
+
+    Parameters:
+    personas (dict): A dictionary containing all personas involved in the simulation.
+    maze (object): The maze or environment in which the personas are moving.
+    personas_tile (dict): A dictionary mapping persona names to their current tile positions.
+    curr_time (datetime): The current simulation time.
+    sim_folder (str): The folder path where the movement JSON file will be saved.
+    step (int): The current step of the simulation.
+
+    Returns:
+    str: The path to the JSON file containing the movement data.
+    """
+    movements = {"persona": dict(), "meta": dict()}
+
+    for persona_name, persona in personas.items():
+        # Calculate the next movement, pronunciation, and description for each persona.
+        next_tile, pronunciatio, description = persona.move(
+            maze,
+            personas,
+            personas_tile[persona_name],
+            curr_time,
+        )
+        # Store the movement data in the movements dictionary.
+        movements["persona"][persona_name] = {
+            "movement": next_tile,
+            "pronunciatio": pronunciatio,
+            "description": description,
+            "chat": persona.scratch.chat,
+        }
+
+    # Include the meta information about the current stage in the movements dictionary.
+    movements["meta"]["curr_time"] = curr_time.strftime("%B %d, %Y, %H:%M:%S")
+
+    # Write the movements data to a JSON file.
+    curr_move_file = f"{sim_folder}/movement/{step}.json"
+    with open(curr_move_file, "w") as outfile:
+        json.dump(movements, outfile, indent=2)
+
+    return curr_move_file
 
 
 class ReverieServer:
@@ -305,23 +352,18 @@ class ReverieServer:
         decisions based on the world state, and saves their moves at certain step
         intervals.
         INPUT
-          int_counter: Integer value for the number of steps left for us to take
-                       in this iteration.
+          int_counter: Integer value for the number of steps left for us to take in this iteration.
         OUTPUT
           None
         """
         # <sim_folder> points to the current simulation folder.
         sim_folder = f"{fs_storage}/{self.sim_code}"
-        OPENAI_LOG_FILE = f"{fs_storage}/{self.sim_code}/openai_api_log.csv"
 
-        # When a persona arrives at a game object, we give a unique event
-        # to that object.
+        # When a persona arrives at a game object, we give a unique event to that object.
         # e.g., ('double studio[...]:bed', 'is', 'unmade', 'unmade')
-        # Later on, before this cycle ends, we need to return that to its
-        # initial state, like this:
+        # Later on, before this cycle ends, we need to return that to its initial state, like this:
         # e.g., ('double studio[...]:bed', None, None, None)
-        # So we need to keep track of which event we added.
-        # <game_obj_cleanup> is used for that.
+        # So we need to keep track of which event we added. <game_obj_cleanup> is used for that.
         game_obj_cleanup = dict()
 
         # The main while loop of Reverie.
@@ -335,21 +377,22 @@ class ReverieServer:
             # new environment file that matches our step count. That's when we run
             # the content of this for loop. Otherwise, we just wait.
             curr_env_file = f"{sim_folder}/environment/{self.step}.json"
+            warning_flag = False
             if check_if_file_exists(curr_env_file):
                 logger.info(f"Cur time: {self.curr_time}")
-                # If we have an environment file, it means we have a new perception
-                # input to our personas. So we first retrieve it.
+                # If we have an environment file, it means we have a new perception input to our personas.
+                # So we first retrieve it.
                 try:
                     # Try and save block for robustness of the while loop.
                     with open(curr_env_file) as json_file:
                         new_env = json.load(json_file)
                         env_retrieved = True
                 except:
+                    warning_flag = True
                     pass
 
                 if env_retrieved:
-                    # This is where we go through <game_obj_cleanup> to clean up all
-                    # object actions that were used in this cylce.
+                    # This is where we go through <game_obj_cleanup> to clean up all object actions that were used in this cylce.
                     for key, val in game_obj_cleanup.items():
                         # We turn all object actions to their blank form (with None).
                         self.maze.turn_event_from_tile_idle(key, val)
@@ -390,56 +433,20 @@ class ReverieServer:
                             blank = (cur[0], None, None, None,)
                             self.maze.remove_event_from_tile(blank, new_tile)
 
-                    # Then we need to actually have each of the personas perceive and
-                    # move. The movement for each of the personas comes in the form of
-                    # x y coordinates where the persona will move towards. e.g., (50, 34)
+                    # Then we need to actually have each of the personas perceive and move.
                     # This is where the core brains of the personas are invoked.
-                    movements = {"persona": dict(), "meta": dict()}
-                    for persona_name, persona in self.personas.items():
-                        # <next_tile> is a x,y coordinate. e.g., (58, 9)
-                        # <pronunciatio> is an emoji. e.g., "\ud83d\udca4"
-                        # <description> is a string description of the movement. e.g.,
-                        #   writing her next novel (editing her novel)
-                        #   @ double studio:double studio:common room:sofa
-                        next_tile, pronunciatio, description = persona.move(
-                            self.maze,
-                            self.personas,
-                            self.personas_tile[persona_name],
-                            self.curr_time,
-                        )
-                        movements["persona"][persona_name] = {}
-                        movements["persona"][persona_name]["movement"] = next_tile
-                        movements["persona"][persona_name]["pronunciatio"] = pronunciatio
-                        movements["persona"][persona_name]["description"] = description
-                        movements["persona"][persona_name]["chat"] = persona.scratch.chat
+                    process_personas_movement(self.personas, self.maze, self.personas_tile, self.curr_time, sim_folder, self.step)
 
-                    # Include the meta information about the current stage in the movements dictionary.
-                    movements["meta"]["curr_time"] = self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
-
-                    # We then write the personas' movements to a file that will be sent
-                    # to the frontend server.
-                    # Example json output:
-                    # {"persona": {"Maria Lopez": {"movement": [58, 9]}},
-                    #  "persona": {"Klaus Mueller": {"movement": [38, 12]}},
-                    #  "meta": {curr_time: <datetime>}}
-                    curr_move_file = f"{sim_folder}/movement/{self.step}.json"
-                    with open(curr_move_file, "w") as outfile:
-                        outfile.write(json.dumps(movements, indent=2))
-
-                    # After this cycle, the world takes one step forward, and the
-                    # current time moves by <sec_per_step> amount.
+                    # After this cycle, the world takes one step forward, and the current time moves by <sec_per_step> amount.
                     self.step += 1
                     self.curr_time = adjust_time(self.curr_time, self.sec_per_step)
-
                     int_counter -= 1
 
             # Sleep so we don't burn our machines.
-            # logger.error(
-            #     f"Check the file `{sim_folder}/environment/{self.step}.json` exist or not. "
-            #     f"If not exist, copy the `{self.step - 1}.csv` to `{self.step}.csv`"
-            # )
-            logger.warning("Open http://localhost:8000/simulator_home to refresh environment.")
             time.sleep(self.server_sleep)
+            if not check_if_file_exists(curr_env_file) and warning_flag:
+                logger.warning("Open http://localhost:8000/simulator_home to refresh environment.")
+                warning_flag = False
 
     def open_server(self):
         """
