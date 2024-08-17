@@ -278,7 +278,7 @@ def new_retrieve(persona, focal_points, n_count=30, verbose=True):
                     persona.scratch.relevance_w * relevance_out[key] * 1,
                     persona.scratch.importance_w * importance_out[key] * 1,
                 )
-                info = f"{persona.a_mem.id_to_node[key].embedding_key}, {val}, scores: {scores}"
+                info = f"{val:.3f}, {persona.a_mem.id_to_node[key].embedding_key}, scores: {scores}"
                 info_lst.append(info)
             _str = '\n\t'.join(info_lst)
             logger.debug(f"\n{persona.name}, focal_pt: {focal_pt}\n Retrieve:\n {_str}")

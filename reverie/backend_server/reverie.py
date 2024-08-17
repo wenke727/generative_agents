@@ -28,15 +28,16 @@ import shutil
 import traceback
 from pathlib import Path
 from loguru import logger
-from collections import defaultdict
+from dotenv import load_dotenv
+load_dotenv('./.env', verbose=True)
 
 from maze import Maze
 from persona.persona import Persona
 from persona.cognitive_modules.converse import load_history_via_whisper
+from persona.prompt_template.openai_helper import set_openai_api_log_file
 from global_methods import check_if_file_exists, copyanything, read_file_to_list
 from utils import fs_temp_storage, fs_storage, maze_assets_loc
 from misc.logger_helper import configure_loguru_integration
-from persona.prompt_template.openai_helper import set_openai_api_log_file
 
 
 def adjust_time(curr_time, sec_per_step=10):
@@ -47,7 +48,6 @@ def adjust_time(curr_time, sec_per_step=10):
         curr_time += datetime.timedelta(seconds=sec_per_step)
 
     return curr_time
-
 
 
 def process_personas_movement(personas, maze, personas_tile, curr_time, sim_folder, step):
@@ -109,8 +109,6 @@ class ReverieServer:
         # reverie/meta/json's fork variable.
         self.sim_code = sim_code
         sim_folder = f"{fs_storage}/{self.sim_code}"
-        # movement_folder = Path(sim_folder) / 'movement'
-        # movement_folder.mkdir(parents=True, exist_ok=True)
         copyanything(fork_folder, sim_folder)
 
         movement_folder = Path(sim_folder) / 'movement'
@@ -347,10 +345,8 @@ class ReverieServer:
     def start_server(self, int_counter):
         """
         The main backend server of Reverie.
-        This function retrieves the environment file from the frontend to
-        understand the state of the world, calls on each personas to make
-        decisions based on the world state, and saves their moves at certain step
-        intervals.
+        This function retrieves the environment file from the frontend to understand the state of the world, calls on
+        each personas to make decisions based on the world state, and saves their moves at certain step intervals.
         INPUT
           int_counter: Integer value for the number of steps left for us to take in this iteration.
         OUTPUT
@@ -367,8 +363,8 @@ class ReverieServer:
         game_obj_cleanup = dict()
 
         # The main while loop of Reverie.
+        warning_flag = True
         while True:
-            # Done with this iteration if <int_counter> reaches 0.
             if int_counter == 0:
                 break
 
@@ -377,7 +373,6 @@ class ReverieServer:
             # new environment file that matches our step count. That's when we run
             # the content of this for loop. Otherwise, we just wait.
             curr_env_file = f"{sim_folder}/environment/{self.step}.json"
-            warning_flag = False
             if check_if_file_exists(curr_env_file):
                 logger.info(f"Cur time: {self.curr_time}")
                 # If we have an environment file, it means we have a new perception input to our personas.
@@ -399,26 +394,15 @@ class ReverieServer:
                     # Then we initialize game_obj_cleanup for this cycle.
                     game_obj_cleanup = dict()
 
-                    # We first move our personas in the backend environment to match
-                    # the frontend environment.
+                    # We first move our personas in the backend environment to match the frontend environment.
                     for persona_name, persona in self.personas.items():
-                        # <curr_tile> is the tile that the persona was at previously.
                         curr_tile = self.personas_tile[persona_name]
-                        # <new_tile> is the tile that the persona will move to right now,
-                        # during this cycle.
-                        new_tile = (
-                            new_env[persona_name]["x"],
-                            new_env[persona_name]["y"],
-                        )
+                        new_tile = (new_env[persona_name]["x"], new_env[persona_name]["y"],)
 
                         # We actually move the persona on the backend tile map here.
                         self.personas_tile[persona_name] = new_tile
-                        self.maze.remove_subject_events_from_tile(
-                            persona.name, curr_tile
-                        )
-                        self.maze.add_event_from_tile(
-                            persona.scratch.get_curr_event_and_desc(), new_tile
-                        )
+                        self.maze.remove_subject_events_from_tile(persona.name, curr_tile)
+                        self.maze.add_event_from_tile(persona.scratch.get_curr_event_and_desc(), new_tile)
 
                         # Now, the persona will travel to get to their destination. *Once*
                         # the persona gets there, we activate the object action.
@@ -428,8 +412,7 @@ class ReverieServer:
                             cur = persona.scratch.get_curr_obj_event_and_desc()
                             game_obj_cleanup[cur] = new_tile
                             self.maze.add_event_from_tile(cur, new_tile)
-                            # We also need to remove the temporary blank action for the
-                            # object that is currently taking the action.
+                            # We also need to remove the temporary blank action for the object that is currently taking the action.
                             blank = (cur[0], None, None, None,)
                             self.maze.remove_event_from_tile(blank, new_tile)
 
@@ -439,14 +422,16 @@ class ReverieServer:
 
                     # After this cycle, the world takes one step forward, and the current time moves by <sec_per_step> amount.
                     self.step += 1
-                    self.curr_time = adjust_time(self.curr_time, self.sec_per_step)
                     int_counter -= 1
+                    warning_flag = True
+                    self.curr_time = adjust_time(self.curr_time, self.sec_per_step)
 
             # Sleep so we don't burn our machines.
             time.sleep(self.server_sleep)
-            if not check_if_file_exists(curr_env_file) and warning_flag:
-                logger.warning("Open http://localhost:8000/simulator_home to refresh environment.")
-                warning_flag = False
+            if not check_if_file_exists(curr_env_file):
+                if warning_flag:
+                    logger.warning("Open http://localhost:8000/simulator_home to refresh environment.")
+                    warning_flag = False
 
     def open_server(self):
         """
@@ -641,8 +626,8 @@ class ReverieServer:
 
 
 if __name__ == "__main__":
-    fork_sim = "base_the_ville_isabella_maria_klaus_init"
-    sim_name = "test-simulation"
+    fork_sim = os.environ.get("FORK_SIM", "base_the_ville_isabella_maria_klaus_init")
+    sim_name = os.environ.get("SIM_NAME", "test-simulation")
     sim_folder = f"{fs_storage}/{sim_name}"
 
     logger = configure_loguru_integration(
@@ -651,17 +636,8 @@ if __name__ == "__main__":
     )
     set_openai_api_log_file(f'{sim_folder}/openai_api_log.csv')
 
-    # rs = ReverieServer("base_the_ville_isabella_maria_klaus",
-    #                    "July1_the_ville_isabella_maria_klaus-step-3-1")
-    # rs = ReverieServer("July1_the_ville_isabella_maria_klaus-step-3-20",
-    #                    "July1_the_ville_isabella_maria_klaus-step-3-21")
 
-    # 仓库自带 base
-    # rs = ReverieServer("base_the_ville_isabella_maria_klaus", sim_name)
-    # 仓库自带 base 的基础上，run 1 step to initial.
     rs = ReverieServer(fork_sim, sim_name)
-
-
     rs.open_server()
 
     # origin = input("Enter the name of the forked simulation: ").strip()
