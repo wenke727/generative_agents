@@ -272,15 +272,15 @@ def new_retrieve(persona, focal_points, n_count=30, verbose=True):
         # log
         if verbose:
             info_lst = []
-            for key, val in master_out.items():
+            for i, (key, val) in enumerate(master_out.items()):
                 scores = (
                     persona.scratch.recency_w * recency_out[key] * 1,
                     persona.scratch.relevance_w * relevance_out[key] * 1,
                     persona.scratch.importance_w * importance_out[key] * 1,
                 )
-                info = f"{val:.3f}, {persona.a_mem.id_to_node[key].embedding_key}, scores: {scores}"
+                info = f"{i:3d}, {val:.3f}, {persona.a_mem.id_to_node[key].embedding_key}, scores: {scores}"
                 info_lst.append(info)
             _str = '\n\t'.join(info_lst)
-            logger.debug(f"\n{persona.name}, focal_pt: {focal_pt}\n Retrieve:\n {_str}")
+            logger.debug(f"\n{persona.name}, focal_pt: {focal_pt}\n\nRetrieve:\n\t{_str}")
 
     return retrieved

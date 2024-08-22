@@ -631,17 +631,10 @@ if __name__ == "__main__":
     sim_folder = f"{fs_storage}/{sim_name}"
 
     logger = configure_loguru_integration(
-        f'./', 'agents.log', mode = 'w', console = True, #
+        f'./logs', f'{sim_name}.log', mode = 'w', console = True,
         filter_packages = ['httpcore', 'httpx', 'openai', 'urllib3']
     )
     set_openai_api_log_file(f'{sim_folder}/openai_api_log.csv')
 
-
     rs = ReverieServer(fork_sim, sim_name)
     rs.open_server()
-
-    # origin = input("Enter the name of the forked simulation: ").strip()
-    # target = input("Enter the name of the new simulation: ").strip()
-
-    # rs = ReverieServer(origin, target)
-    # rs.open_server()

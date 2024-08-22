@@ -120,6 +120,12 @@ def initialize_openai_client():
 
     return client, chat, embeddings
 
+def get_embedding(text, model="text-embedding-ada-002"):
+    text = text.replace("\n", " ")
+    if not text:
+        text = "this is blank"
+    return embeddings(input=[text], model=model).data[0].embedding
+
 
 if __name__ == "__main__":
     # Example usage:

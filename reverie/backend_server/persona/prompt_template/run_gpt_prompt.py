@@ -709,7 +709,7 @@ def run_gpt_prompt_action_arena(
     gpt_param = {
         "engine": GPT_35_TURBO,
         "max_tokens": 15,
-        "temperature": 0,
+        "temperature": 0.1,
         "top_p": 1,
         "stream": False,
         "frequency_penalty": 0,
