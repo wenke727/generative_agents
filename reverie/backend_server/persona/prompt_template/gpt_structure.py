@@ -101,12 +101,7 @@ def _GPT4_safe_generate_response(
     prompt += "Example output json:\n"
     prompt += '{"output": "' + str(example_output) + '"}'
 
-    if verbose:
-        print("CHAT GPT PROMPT")
-        print(prompt)
-
     for i in range(repeat):
-
         try:
             curr_gpt_response = _GPT4_request(prompt).strip()
             end_index = curr_gpt_response.rfind("}") + 1
@@ -117,9 +112,7 @@ def _GPT4_safe_generate_response(
                 return func_clean_up(curr_gpt_response, prompt=prompt)
 
             if verbose:
-                print("---- repeat count: \n", i, curr_gpt_response)
-                print(curr_gpt_response)
-                print("~~~~")
+                logger.debug(formatted_llm_respond.format(output=curr_gpt_response, prompt=prompt))
 
         except:
             pass
@@ -178,23 +171,19 @@ def ChatGPT_safe_generate_response_OLD(
     func_clean_up=None,
     verbose=False,
 ):
-    if verbose:
-        print("CHAT GPT PROMPT")
-        print(prompt)
 
     for i in range(repeat):
         try:
             curr_gpt_response = _ChatGPT_request(prompt).strip()
             if func_validate(curr_gpt_response, prompt=prompt):
                 return func_clean_up(curr_gpt_response, prompt=prompt)
+
             if verbose:
-                print(f"---- repeat count: {i}")
-                print(curr_gpt_response)
-                print("~~~~")
+                logger.debug(formatted_llm_respond.format(output=curr_gpt_response, prompt=prompt))
 
         except:
             pass
-    print("FAIL SAFE TRIGGERED")
+
     return fail_safe_response
 
 

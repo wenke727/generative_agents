@@ -55,8 +55,6 @@ def _generate_wake_up_hour(persona):
     EXAMPLE OUTPUT:
       8
     """
-    # if debug:
-    #     print("GNS FUNCTION: <generate_wake_up_hour>")
     return int(run_gpt_prompt_wake_up_hour(persona)[0])
 
 
@@ -326,8 +324,6 @@ def _generate_convo(maze, init_persona, target_persona):
 
     convo_length = math.ceil(int(len(all_utt) / 8) / 30)
 
-    if debug:
-        print("GNS FUNCTION: <generate_convo>")
     return convo, convo_length
 
 
@@ -339,8 +335,6 @@ def _generate_convo_summary(persona, convo):
 """ _should_react """
 def _generate_decide_to_talk(init_persona, target_persona, retrieved):
     x = run_gpt_prompt_decide_to_talk(init_persona, target_persona, retrieved)[0]
-    if debug:
-        print("GNS FUNCTION: <generate_decide_to_talk>")
 
     if x == "yes":
         return True
@@ -349,8 +343,6 @@ def _generate_decide_to_talk(init_persona, target_persona, retrieved):
 
 
 def _generate_decide_to_react(init_persona, target_persona, retrieved):
-    if debug:
-        print("GNS FUNCTION: <generate_decide_to_react>")
     return run_gpt_prompt_decide_to_react(init_persona, target_persona, retrieved)[0]
 
 
@@ -398,7 +390,6 @@ def _generate_new_decomp_schedule(
     count = 0  # enumerate count
     truncated_fin = False
 
-    print("DEBUG::: ", persona.scratch.name)
     for act, dur in p.scratch.f_daily_schedule:
         if (dur_sum >= start_hour * 60) and (dur_sum < end_hour * 60):
             main_act_dur += [[act, dur]]
@@ -407,14 +398,12 @@ def _generate_new_decomp_schedule(
             elif dur_sum > today_min_pass and not truncated_fin:
                 # We need to insert that last act, duration list like this one:
                 # e.g., ['wakes up and completes her morning routine (wakes up...)', 2]
-                truncated_act_dur += [
-                    [p.scratch.f_daily_schedule[count][0], dur_sum - today_min_pass]
-                ]
-                truncated_act_dur[-1][-1] -= (
-                    dur_sum - today_min_pass
-                )  ######## DEC 7 DEBUG;.. is the +1 the right thing to do???
-                # truncated_act_dur[-1][-1] -= (dur_sum - today_min_pass + 1) ######## DEC 7 DEBUG;.. is the +1 the right thing to do???
-                print("DEBUG::: ", truncated_act_dur)
+                truncated_act_dur += [[p.scratch.f_daily_schedule[count][0], dur_sum - today_min_pass]]
+                truncated_act_dur[-1][-1] -= (dur_sum - today_min_pass)
+                ######## DEC 7 DEBUG;.. is the +1 the right thing to do???
+                # truncated_act_dur[-1][-1] -= (dur_sum - today_min_pass + 1)
+                ######## DEC 7 DEBUG;.. is the +1 the right thing to do???
+                # print("DEBUG::: ", truncated_act_dur)
 
                 # truncated_act_dur[-1][-1] -= (dur_sum - today_min_pass) ######## DEC 7 DEBUG;.. is the +1 the right thing to do???
                 truncated_fin = True
@@ -448,8 +437,6 @@ def _generate_new_decomp_schedule(
         hours=end_hour
     )
 
-    if debug:
-        print("GNS FUNCTION: <generate_new_decomp_schedule>")
     return run_gpt_prompt_new_decomp_schedule(
         persona,
         main_act_dur,
@@ -668,9 +655,7 @@ def _determine_action(persona, maze):
 
     # Generate an <Action> instance from the action description and duration.
     # By this point, we assume that all the relevant actions are decomposed and ready in f_daily_schedule.
-    debug_info = f"\n{persona.scratch.name}'s f_daily_schedule"
-    debug_info += "\n\tcurr index: " + str(curr_index)
-    debug_info += ", length: " + str(len(persona.f_daily_schedule))
+    debug_info = f"\n{persona.scratch.name}'s f_daily_schedule, curr index: {curr_index} / {len(persona.f_daily_schedule)}"
     for i in persona.f_daily_schedule:
         debug_info += "\n\t" + str(i)
     logger.debug(debug_info)
@@ -679,7 +664,6 @@ def _determine_action(persona, maze):
     x_emergency = 0
     for i in persona.f_daily_schedule:
         x_emergency += i[1]
-    # print ("x_emergency", x_emergency)
 
     if 1440 - x_emergency > 0:
         logger.warning("x_emergency__AAA", x_emergency)

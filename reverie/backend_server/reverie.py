@@ -443,10 +443,13 @@ class ReverieServer:
         OUTPUT
           None
         """
-        print("Note: The agents in this simulation package are computational")
-        print("constructs powered by generative agents architecture and LLM. We")
-        print("clarify that these agents lack human-like agency, consciousness,")
-        print("and independent decision-making.\n---")
+        print(
+            "Note: The agents in this simulation package are computational"
+            "constructs powered by generative agents architecture and LLM. We"
+            "clarify that these agents lack human-like agency, consciousness,"
+            "and independent decision-making.\n"
+            "Keep the page at http://localhost:8000/simulator_home open in front to refresh the environment.\n\n"
+        )
 
         # <sim_folder> points to the current simulation folder.
         sim_folder = f"{fs_storage}/{self.sim_code}"
@@ -617,24 +620,23 @@ class ReverieServer:
 
                     load_history_via_whisper(self.personas, clean_whispers)
 
-                print(ret_str)
+                logger.info(ret_str)
 
             except:
                 traceback.print_exc()
-                print("Error.")
+                logger.error("Error.")
                 pass
 
 
 if __name__ == "__main__":
     fork_sim = os.environ.get("FORK_SIM", "base_the_ville_isabella_maria_klaus_init")
     sim_name = os.environ.get("SIM_NAME", "test-simulation")
-    sim_folder = f"{fs_storage}/{sim_name}"
 
     logger = configure_loguru_integration(
         f'./logs', f'{sim_name}.log', mode = 'w', console = True,
         filter_packages = ['httpcore', 'httpx', 'openai', 'urllib3']
     )
-    set_openai_api_log_file(f'{sim_folder}/openai_api_log.csv')
+    set_openai_api_log_file(f'{fs_storage}/{sim_name}/openai_api_log.csv')
 
     rs = ReverieServer(fork_sim, sim_name)
     rs.open_server()

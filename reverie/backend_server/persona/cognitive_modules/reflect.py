@@ -73,15 +73,10 @@ def _generate_action_event_triple(act_desp, persona):
     EXAMPLE OUTPUT:
       "🧈🍞"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_event_triple>")
     return run_gpt_prompt_event_triple(act_desp, persona)[0]
 
 
 def _generate_poig_score(persona, event_type, description):
-    if debug:
-        print("GNS FUNCTION: <generate_poig_score>")
-
     if "is idle" in description:
         return 1
 
@@ -94,14 +89,10 @@ def _generate_poig_score(persona, event_type, description):
 
 
 def _generate_planning_thought_on_convo(persona, all_utt):
-    if debug:
-        print("GNS FUNCTION: <generate_planning_thought_on_convo>")
     return run_gpt_prompt_planning_thought_on_convo(persona, all_utt)[0]
 
 
 def _generate_memo_on_convo(persona, all_utt):
-    if debug:
-        print("GNS FUNCTION: <generate_memo_on_convo>")
     return run_gpt_prompt_memo_on_convo(persona, all_utt)[0]
 
 
@@ -125,8 +116,6 @@ def run_reflect(persona):
     # agent's memory.
     for focal_pt, nodes in retrieved.items():
         xx = [i.embedding_key for i in nodes]
-        for xxx in xx:
-            print(xxx)
 
         thoughts = _generate_insights_and_evidence(persona, nodes, 5)
         for thought, evidence in thoughts.items():

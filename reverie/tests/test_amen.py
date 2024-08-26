@@ -1,6 +1,8 @@
 #%%
 import sys
 sys.path.append('../backend_server')
+from dotenv import load_dotenv
+load_dotenv("../backend_server/.env")
 
 import os
 import glob

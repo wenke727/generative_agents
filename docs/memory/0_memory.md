@@ -49,8 +49,30 @@ add_(event|chat|thought)
 ```
 
 
+## 2. Associative Memory
 
-## 2. Scratch Memory Module
+Agent 的联想记忆，其主要功能是维护一个 ConceptNode对象的列表。
+
+ConceptNode节点可以是事件、想法或者对话
+
+
+| Name            | Desc              | 调用                            |
+| ---------------------------- | -------------------------------- | ------------------------------------------------------------ |
+| add_event          | 添加一个新的**事件**节点    | perceive.perceive                      |
+| add_chat          | 添加一个新的**对话**节点    | perceive.perceive                      |
+| add_thought         | 添加一个新的**反思**节点    | converse.load_history_via_whisper<br />converse.open_convo_session<br />plan._long_term_planning<br />reflect.run_reflect<br />reflect.reflect |
+| get_summarized_latest_events | 获取最近一段时间的事件摘要   | perceive.perceive                      |
+| retrieve_relevant_events  | 根据关键词检索相关的事件节点  | retrieve.retrieve                      |
+| retrieve_relevant_thoughts | 根据关键词检索相关的思考节点  | retrieve.retrieve<br />`run_gpt_prompt_create_conversation` |
+| get_last_chat        | 获取与指定人物的最后一次聊天记录 | reflect.reflect<br />`run_gpt_prompt_decide_to_talk`    |
+| **属性**          |                 |                               |
+| id_to_node         |                 |  `retrieve.new_retrieve`                   |
+| embedding          | *dict*: str 2 embedding     | `retrieve._extract_relevance`                |
+| seq_event          |                 |  `reflect._generate_focal_points`<br />`reflect._reflection_trigger`<br />`retrieve.new_retrieve` |
+| seq_thought         |                 |  `reflect._generate_focal_points`<br />`reflect._reflection_trigger`<br />`retrieve.new_retrieve` |
+| seq_chat          |                 |  `run_gpt_prompt_create_conversation`<br />`run_gpt_generate_iterative_chat_utt` |
+
+## 3. Scratch Memory Module
 
 Agent 的短期记忆，包含个人以及世界相关的参数、个人的计划（长期、当天、小时计划）、当前进行的动作、已经规划好的行动路径等，并提供所有参数的修改接口。
 
@@ -72,7 +94,7 @@ Agent 的短期记忆，包含个人以及世界相关的参数、个人的计�
 | get_str_daily_schedule_summary      | 返回  `f_daily_schedule` 的字符串摘要            | reverie.ReverieServer.open_server              |
 | get_str_daily_schedule_hourly_org_summary | 返回  `f_daily_schedule_hourly_org` 的字符串摘要       | reverie.ReverieServer.open_server              |
 
-## 3. Spatial Memory
+## 4. Spatial Memory
 
 
 | Name         | Desc            | 调用              |
@@ -81,18 +103,3 @@ Agent 的短期记忆，包含个人以及世界相关的参数、个人的计�
 | get_str_accessible_sector_arenas  | 返回代理在当前区域中可访问的所有子区域的摘要字符串 | run_gpt_prompt_action_sector<br />run_gpt_prompt_action_arena -> plan._determine_action |
 | get_str_accessible_arena_game_objects | 获取在指定竞技场中可访问的所有游戏对象的字符串列表 | plan._generate_action_game_object<br />run_gpt_prompt_action_game_object |
 
-## 4. Associative Memory
-
-Agent 的联想记忆，其主要功能是维护一个 ConceptNode对象的列表。
-
-ConceptNode节点可以是事件、想法或者对话
-
-| Name      | Desc       | 调用              |
-| ---------------------------- | -------------------------------- | ------------------------------------------------------------ |
-| add_event     | 添加一个新的**事件**节点  | perceive.perceive           |
-| add_chat     | 添加一个新的**对话**节点  | perceive.perceive           |
-| add_thought     | 添加一个新的**反思**节点  | converse.load_history_via_whisper<br />converse.open_convo_session<br />plan._long_term_planning<br />reflect.run_reflect<br />reflect.reflect |
-| get_summarized_latest_events | 获取最近一段时间的事件摘要  | perceive.perceive           |
-| retrieve_relevant_events | 根据关键词检索相关的事件节点 | retrieve.retrieve           |
-| retrieve_relevant_thoughts | 根据关键词检索相关的思考节点 | retrieve.retrieve<br />run_gpt_prompt_create_conversation |
-| get_last_chat    | 获取与指定人物的最后一次聊天记录 | reflect.reflect<br />run_gpt_prompt_decide_to_talk   |

@@ -7,6 +7,7 @@ Description: An extra cognitive module for generating conversations.
 
 import sys
 import datetime
+from loguru import logger
 
 sys.path.append("../")
 
@@ -74,7 +75,7 @@ def _generate_agent_chat(
         target_summ_idea,
     )[0]
     for i in summarized_idea:
-        print(i)
+        logger.debug(i)
     return summarized_idea
 
 
@@ -135,20 +136,14 @@ def _generate_one_utterance(maze, init_persona, target_persona, retrieved, curr_
         + f"{target_persona.name}."
     )
 
-    print("July 23 5")
     x = run_gpt_generate_iterative_chat_utt(
         maze, init_persona, target_persona, retrieved, curr_context, curr_chat)[0]
-
-    print("July 23 6")
-
-    print("adshfoa;khdf;fajslkfjald;sdfa HERE", x)
 
     return x["utterance"], x["end"]
 
 
 def agent_chat_v2(maze, init_persona, target_persona):
     curr_chat = []
-    print("July 23")
 
     for i in range(8):
         focal_points = [f"{target_persona.name}"]
@@ -156,7 +151,8 @@ def agent_chat_v2(maze, init_persona, target_persona):
         relationship = _generate_summarize_agent_relationship(
             init_persona, target_persona, retrieved
         )
-        print("-------- relationshopadsjfhkalsdjf", relationship)
+        logger.info(relationship)
+
         last_chat = ""
         for i in curr_chat[-4:]:
             last_chat += ": ".join(i) + "\n"
@@ -185,7 +181,8 @@ def agent_chat_v2(maze, init_persona, target_persona):
         relationship = _generate_summarize_agent_relationship(
             target_persona, init_persona, retrieved
         )
-        print("-------- relationshopadsjfhkalsdjf", relationship)
+        logger.info(relationship)
+
         last_chat = ""
         for i in curr_chat[-4:]:
             last_chat += ": ".join(i) + "\n"
@@ -209,10 +206,7 @@ def agent_chat_v2(maze, init_persona, target_persona):
         if end:
             break
 
-    print("July 23 PU")
-    for row in curr_chat:
-        print(row)
-    print("July 23 FIN")
+    logger.debug(f"curr_chat:\n\t{'\n\t'.join(curr_chat)}")
 
     return curr_chat
 
@@ -253,15 +247,10 @@ def _generate_action_event_triple(act_desp, persona):
     EXAMPLE OUTPUT:
       "🧈🍞"
     """
-    if debug:
-        print("GNS FUNCTION: <generate_action_event_triple>")
     return run_gpt_prompt_event_triple(act_desp, persona)[0]
 
 
 def _generate_poig_score(persona, event_type, description):
-    if debug:
-        print("GNS FUNCTION: <generate_poig_score>")
-
     if "is idle" in description:
         return 1
 
@@ -311,7 +300,7 @@ def open_convo_session(persona, convo_mode):
                 break
 
             if int(run_gpt_generate_safety_score(persona, line)[0]) >= 8:
-                print(
+                logger.debug(
                     f"{persona.name} is a computational agent, and as such, it may be inappropriate to attribute human agency to the agent in your communication."
                 )
 
