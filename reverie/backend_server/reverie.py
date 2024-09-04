@@ -620,7 +620,7 @@ class ReverieServer:
 
                     load_history_via_whisper(self.personas, clean_whispers)
 
-                logger.info(ret_str)
+                if ret_str: logger.info(ret_str)
 
             except:
                 traceback.print_exc()

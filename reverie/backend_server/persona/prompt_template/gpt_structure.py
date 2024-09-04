@@ -29,7 +29,7 @@ def ChatGPT_single_request(prompt):
     completion = chat(
         model=GPT_35_TURBO, messages=[{"role": "user", "content": prompt}]
     )
-    return completion["choices"][0]["message"]["content"]
+    return completion.choices[0].message.content
 
 
 """ SECTION 1: CHATGPT-3 STRUCTURE """
@@ -52,7 +52,7 @@ def _GPT4_request(prompt):
             model="gpt-4",
             messages=[{"role": "user", "content": prompt}]
         )
-        return completion["choices"][0]["message"]["content"]
+        return completion.choices[0].message.content
 
     except openai.error.OpenAIError as e:
         logger.error(f"OpenAI API error: {e}")
@@ -77,7 +77,6 @@ def _ChatGPT_request(prompt):
             model=GPT_35_TURBO, messages=[{"role": "user", "content": prompt}]
         )
         return completion.choices[0].message.content
-        # return completion["choices"][0]["message"]["content"]
 
     except openai.error.OpenAIError as e:
         logger.error(f"OpenAI API error: {e}")
