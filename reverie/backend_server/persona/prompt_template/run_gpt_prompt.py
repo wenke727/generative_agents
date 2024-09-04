@@ -611,8 +611,7 @@ def run_gpt_prompt_action_sector(action_description, persona, maze, test_input=N
         # output = random.choice(x)
         output = persona.scratch.living_area.split(":")[1]
 
-    logger.debug(f'Random choice:{random.choice(x)}, Output: {output}')
-
+    # logger.debug(f'Random choice:{random.choice(x)}, Output: {output}')
     if debug or verbose:
         logger.debug(formatted_llm_respond.format(output=output, prompt=prompt))
 
@@ -1040,7 +1039,7 @@ def run_gpt_prompt_act_obj_desc(act_game_object, act_desp, persona, verbose=Fals
         fail_safe,
         __chat_func_validate,
         __chat_func_clean_up,
-        True,
+        False,
     )
 
     logger.debug(f"{persona.name}, desp: {act_desp}, object: {act_game_object} -> {output}")

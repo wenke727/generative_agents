@@ -42,7 +42,7 @@ class ConceptNode:
 
         self.created = created
         self.expiration = expiration
-        self.last_accessed = self.created
+        self.last_accessed = self.created # 单独维护，这个不写入到数据库中
 
         self.subject = s
         self.predicate = p

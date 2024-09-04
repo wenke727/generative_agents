@@ -206,7 +206,8 @@ def agent_chat_v2(maze, init_persona, target_persona):
         if end:
             break
 
-    logger.debug(f"curr_chat:\n\t{'\n\t'.join(curr_chat)}")
+    tmp = '\n\t'.join(curr_chat)
+    logger.debug(f"curr_chat:\n\t{tmp}")
 
     return curr_chat
 

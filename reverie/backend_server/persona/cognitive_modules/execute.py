@@ -88,6 +88,7 @@ def execute(persona, maze:Maze, personas:list, plan):
 
         elif "<random>" in plan:
             # Executing a random location action.
+            plan = plan.replace("::", ":")
             plan = ":".join(plan.split(":")[:-1])
             target_tiles = maze.address_tiles[plan]
             target_tiles = random.sample(list(target_tiles), 1)

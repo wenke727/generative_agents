@@ -1,0 +1,15 @@
+{
+    "collection_name":  "memory",
+    "fields": [
+      {"name":  "id", "dtype":  "INT64", "is_primary":  true, "auto_id":  true},
+      {"name":  "created", "dtype":  "VARCHAR", "max_length":  50},
+      {"name":  "subject", "dtype":  "VARCHAR", "max_length": 65535},
+      {"name":  "predicate", "dtype":  "VARCHAR", "max_length":  65535},
+      {"name":  "object", "dtype":  "VARCHAR", "max_length":  65535},
+      {"name":  "embedding_key", "dtype":  "VARCHAR", "max_length":  65535},
+      {"name":  "poignancy", "dtype":  "INT64"},
+      {"name":  "owner", "dtype":  "VARCHAR", "max_length":  100},
+      {"name":  "vector", "dtype":  "FLOAT_VECTOR", "dim":  1536}
+    ],
+    "metric_type":  "IP"
+}
