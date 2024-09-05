@@ -1,282 +1,188 @@
-#%%
-import sys
-sys.path.append('../')
-from dotenv import load_dotenv
-load_dotenv('../.env')
-
 import os
-import json
-import pandas as pd
 from loguru import logger
+from typing import Dict, List, Optional, Union
+from pymilvus import MilvusClient, DataType
 
-from qdrant_client import QdrantClient
-from qdrant_client.http.models import PointStruct, VectorParams, Distance
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "memory")
+EMBEDDING_DIM = os.environ.get("EMBEDDING_DIM", 1536)
+MILVUS_URI = os.environ.get("MILVUS_URI", "../data/test_milvus.db")
 
 
-def get_qdrant_client_cfg():
-    """读取并解析 QDRANT_CLIENT_CFG"""
-    qdrant_client_cfg = json.loads(
-        os.environ.get(
-            "QDRANT_CLIENT_CFG",
-            '{"location": ":memory:"}'
-        )
-    )
-
-    return qdrant_client_cfg
-
-class VectoreDB:
-    def __init__(self, cfg, collection_name, embed_dim):
-        self.client = QdrantClient(**cfg)
+class VectorDB:
+    def __init__(self, collection_name, embedding_dim, milvus_uri=MILVUS_URI):
         self.collection_name = collection_name
+        self.embedding_dim = embedding_dim
+        self.milvus_uri = milvus_uri or os.environ.get("MILVUS_URI", "../data/test_milvus.db")
+        self.client = MilvusClient(self.milvus_uri)
 
-        self.create_collection(
-            collection_name = self.collection_name,
-            vectors_config = VectorParams(size=embed_dim, distance=Distance.COSINE),
+        self.schema = None
+        self.index_params = None
+
+    def create_schema(self):
+        """Creates a schema for the collection."""
+        schema = self.client.create_schema(enable_dynamic_field=True)
+        schema.add_field(field_name='id', datatype=DataType.INT64, is_primary=True, auto_id=False)
+        schema.add_field(field_name='owner', datatype=DataType.VARCHAR, max_length=100)
+        schema.add_field(field_name='subject', datatype=DataType.VARCHAR, max_length=100)
+        schema.add_field(field_name='predicate', datatype=DataType.VARCHAR, max_length=256)
+        schema.add_field(field_name='object', datatype=DataType.VARCHAR, max_length=256)
+        schema.add_field(field_name='created', datatype=DataType.VARCHAR, max_length=50)
+        schema.add_field(field_name='embedding_key', datatype=DataType.VARCHAR, max_length=4096)
+        schema.add_field(field_name='poignancy', datatype=DataType.INT64)
+        schema.add_field(field_name='vector', datatype=DataType.FLOAT_VECTOR, dim=self.embedding_dim)
+        self.schema = schema
+
+        formatted_json = str(schema.fields).replace('}, {', '}, \n {')
+        logger.debug(f"schema:\n{formatted_json}")
+        return schema
+
+    def create_index_params(self):
+        """Creates index parameters for the collection."""
+        index_params = self.client.prepare_index_params()
+        index_params.add_index(
+            field_name='vector',
+            # index_type="IVF_FLAT",
+            metric_type='IP',
+            index_name="text_emb",
+            params={"nlist": 128}
         )
+        index_params.add_index(field_name='subject', index_name='subject_index')
+        index_params.add_index(field_name='predicate', index_name='predicate_index')
+        index_params.add_index(field_name='object', index_name='object_index')
 
-    def create_collection(self, collection_name, vectors_config):
-        """
-        Create a collection in Qdrant if it does not exist.
-        """
-        if self.client.collection_exists(self.collection_name):
-            return False
+        self.index_params = index_params
+        formatted_json = str(index_params).replace('}, {', '}, \n {')
+        logger.debug(f"index_params: \n{formatted_json}")
+
+        return index_params
+
+    def create_collection(self, replace=False):
+        """Drops and creates the collection with schema and index."""
+        if self.client.has_collection(self.collection_name):
+            if not replace:
+                self.client.load_collection(self.collection_name)
+                return
+            self.client.drop_collection(self.collection_name)
 
         self.client.create_collection(
-            collection_name=collection_name,
-            vectors_config=vectors_config
+            collection_name=self.collection_name,
+            dimension=self.embedding_dim,
+            schema=self.schema,
+            index_params=self.index_params
         )
-        return True
+        indexes = self.client.list_indexes(self.collection_name)
+        logger.debug(f"Indexes: {indexes}")
 
-    def add(self, points):
-        """
-        Add or upsert points into the collection.
+        return
 
-        :param points: A list of PointStruct to be added.
-        :return: Operation info from Qdrant.
+    def insert(self, all_points, **kwargs):
+        """Inserts data into the collection."""
+        self.client.insert(self.collection_name, all_points, **kwargs)
+
+    def delete(self, **kwargs):
+        return self.client.delete(self.collection_name, **kwargs)
+
+    def delete_by_ids(self, ids:list, **kwargs):
+        return self.client.delete(self.collection_name, ids, **kwargs)
+
+    """ search, query & get """
+    def search(
+        self,
+        data: Union[List[list], list],
+        filter: str = "",
+        limit: int = 10,
+        output_fields: Optional[List[str]] = None,
+        search_params: Optional[dict] = None,
+        timeout: Optional[float] = None,
+        partition_names: Optional[List[str]] = None,
+        anns_field: Optional[str] = None,
+        **kwargs,
+    ):
+        return self.client.search(
+            self.collection_name,
+            data=data,
+            filter=filter,
+            limit=limit,
+            output_fields=output_fields,
+            search_params=search_params,
+            timeout=timeout,
+            partition_names=partition_names,
+            anns_field=anns_field,
+            **kwargs
+        )
+
+    def get(self, ids, output_fields=None, timeout=None, partition_names=None, **kwargs):
         """
+        Grab the inserted vectors using the primary key from the Collection.
+        """
+        return self.client.get(
+            self.collection_name,
+            ids=ids,
+            output_fields=output_fields,
+            timeout=timeout,
+            partition_names=partition_names,
+            **kwargs
+        )
+
+    def query(
+        self,
+        filter: str = "",
+        output_fields: Optional[List[str]] = None,
+        timeout: Optional[float] = None,
+        ids: Optional[Union[List, str, int]] = None,
+        partition_names: Optional[List[str]] = None,
+        **kwargs,
+    ):
+        return self.client.query(
+            self.collection_name,
+            filter=filter,
+            output_fields=output_fields,
+            timeout=timeout,
+            ids=ids,
+            partition_names=partition_names,
+            **kwargs
+        )
+
+    def update(self, ids, update_params: dict, timeout=None, partition_names=None, **kwargs):
+        data = self.get(ids=ids)
+        for i in data:
+            for key, val in update_params.items():
+                i[key] = val
+
         return self.client.upsert(
-            collection_name=self.collection_name,
-            points=points,
-            wait=True
+            self.collection_name,
+            data=data,
+            timeout=timeout,
+            partition_name=partition_names,
+            **kwargs
         )
 
-    def delete(self, point_ids):
-        """
-        Delete points from the collection by their IDs.
-
-        :param point_ids: A list of point IDs to delete.
-        :return: Operation info from Qdrant.
-        """
-        # First, retrieve the points to check if they exist
-        existing_points = self.client.retrieve(collection_name=self.collection_name, ids=point_ids)
-
-        if not existing_points:
-            logger.warning("No points found with the provided IDs, nothing to delete.")
-            return {"status": "No points found with the provided IDs, nothing to delete."}
-
-        # If points exist, proceed with deletion
-        return self.client.delete(
-            collection_name=self.collection_name,
-            points_selector=point_ids
-        )
-
-    def modify(self, uuid, *args, **kwargs):
-        """
-        Modify the payload of a vector in the collection.
-
-        :param uuid: The ID of the vector to modify.
-        :param args: List of key-value pairs to update in the payload.
-        :param kwargs: Dictionary of key-value pairs to update in the payload.
-        :return: The updated payload.
-        """
-        existing_points = self.client.retrieve(collection_name=self.collection_name, ids=[uuid])
-
-        if not existing_points:
-            raise ValueError(f"No vector found with ID {uuid} in collection {self.collection_name}.")
-
-        existing_payload = existing_points[0].payload
-
-        for key, value in args:
-            existing_payload[key] = value
-
-        existing_payload.update(kwargs)
-
-        self.client.set_payload(
-            collection_name=self.collection_name,
-            payload=existing_payload,
-            points=[uuid]
-        )
-
-        return existing_payload
-
-    def search(self, query_vector, to_df=True, limit=128):
-        """
-        Query the collection using a vector.
-
-        :param query_vector: The vector to search for.
-        :param limit: The maximum number of results to return.
-        :return: A list of search results.
-        """
-        search_result = self.client.search(
-            collection_name=self.collection_name,
-            query_vector=query_vector,
-            limit=limit
-        )
-
-        if to_df:
-            res = pd.DataFrame([
-                {'id': i.id, **i.payload, 'score': i.score}
-                    for i in search_result]
-            )
-
-            return res
-
-        # payloads = [hit.payload for hit in search_result]
-        return search_result
-
-    def search_with_filter(self, query_vector, filter_condition, limit=10):
-        """
-        Search the collection using a vector with a filter condition.
-
-        :param query_vector: The vector to search for.
-        :param filter_condition: The condition to filter search results.
-        :param limit: The maximum number of results to return.
-        :return: A list of search results.
-        """
-        search_result = self.client.search(
-            collection_name=self.collection_name,
-            query_vector=query_vector,
-            limit=limit,
-            filter=filter_condition
-        )
-        return [hit.payload for hit in search_result]
-
-    def get_collection_info(self):
-        """
-        Get information about the collection.
-
-        :return: A dictionary with collection information.
-        """
-        return self.client.get_collection(self.collection_name)
-
-    def clear_collection(self):
-        """
-        Remove all points from the collection.
-
-        :return: Operation info from Qdrant.
-        """
-        return self.client.clear_payload(collection_name=self.collection_name)
-
-    def delete_collection(self):
-        """
-        Delete the entire collection and its contents.
-
-        :return: Operation info from Qdrant.
-        """
-        return self.client.delete_collection(self.collection_name)
-
-    def retrieve_points(self, point_ids):
-        """
-        Retrieve multiple points by their IDs.
-
-        :param point_ids: A list of point IDs to retrieve.
-        :return: A list of points with their details.
-        """
-        return self.client.retrieve(collection_name=self.collection_name, ids=point_ids)
-
-    def search_recent_with_filters(self, query_vector, limit=10, filters=None):
-        """
-        Search the collection for the most recent points with additional filtering.
-
-        :param query_vector: The vector to search for.
-        :param limit: The maximum number of results to return (default is 10).
-        :param filters: A dictionary of filtering conditions. Example:
-                        {"must": [{"key": "some_attribute", "match": {"value": "some_value"}}]}
-        :return: A list of search results, sorted by the most recent timestamp.
-        """
-        # Define the filtering condition
-        filter_condition = filters if filters else {}
-
-        # Define the sorting condition by timestamp in descending order (most recent first)
-        sort_by_timestamp = [
-            {"key": "timestamp", "order": "desc"}  # Sort by timestamp in descending order
-        ]
-
-        # Perform the search with filter and sorting
-        search_result = self.client.search(
-            collection_name=self.collection_name,
-            query_vector=query_vector,
-            limit=limit,
-            filter=filter_condition,
-            with_payload=True,  # Ensure we retrieve payload data (which includes timestamp)
-            sort=sort_by_timestamp
-        )
-
-        # Extract and return the payloads of the search results
-        return [hit.payload for hit in search_result]
-
-    def get_recent_records(self, limit=10, filters=None):
-        """
-        Retrieve the most recent records from the collection based on timestamp, with additional filtering.
-
-        :param limit: The maximum number of results to return (default is 10).
-        :param filters: A dictionary of filtering conditions. Example:
-                        {"must": [{"key": "some_attribute", "match": {"value": "some_value"}}]}
-        :return: A list of the most recent records, sorted by the most recent timestamp.
-        """
-        # Define the filtering condition
-        filter_condition = filters if filters else {}
-
-        # Define the sorting condition by timestamp in descending order (most recent first)
-        sort_by_timestamp = [
-            {"key": "timestamp", "order": "desc"}  # Sort by timestamp in descending order
-        ]
-
-        # Perform the search with filter and sorting, without using any query vector
-        search_result = self.client.scroll(
-            collection_name=self.collection_name,
-            limit=limit,
-            filter=filter_condition,
-            with_payload=True,  # Ensure we retrieve payload data (which includes timestamp)
-            sort=sort_by_timestamp
-        )
-
-        # Extract and return the payloads of the search results
-        return [hit.payload for hit in search_result]
+    def get_collection_stats(self):
+        """Retrieves collection statistics."""
+        return self.client.get_collection_stats(self.collection_name)
 
 
 if __name__ == "__main__":
-    # client_cfg = {'path': "./db"}
-    client_cfg = get_qdrant_client_cfg()
-    collection_name = "demo_collection"
+    vector_db = VectorDB(COLLECTION_NAME, EMBEDDING_DIM)
 
-    client = VectoreDB(client_cfg, collection_name, 4)
+    vector_db.create_collection(replace=False)
+    client = vector_db.client
 
-    points = [
-        PointStruct(id=1, vector=[0.05, 0.61, 0.76, 0.74], payload={"city": "Berlin"}),
-        PointStruct(id=2, vector=[0.19, 0.81, 0.75, 0.11], payload={"city": "London"}),
-        PointStruct(id=3, vector=[0.36, 0.55, 0.47, 0.94], payload={"city": "Moscow"}),
-        PointStruct(id=4, vector=[0.18, 0.01, 0.85, 0.80], payload={"city": "New York"}),
-        PointStruct(id=5, vector=[0.24, 0.18, 0.22, 0.44], payload={"city": "Beijing"}),
-        PointStruct(id=6, vector=[0.35, 0.08, 0.11, 0.44], payload={"city": "Mumbai"}),
-    ]
+    # 增
+    # vector_db.insert(COLLECTION_NAME, all_points)
 
-    # insert
-    client.add(points)
+    # 删
+    # vector_db.delete(filter="")
+    # vector_db.delete_by_ids(ids=[1,2])
 
-    # delete
-    client.delete([4])
-    client.delete([4])
+    # 改
+    # vector_db.update([1], {'node_count': -1})
 
-    # delete
-    client.modify(uuid=3, city='深圳')
+    # 查
+    # vector_db.get(ids=[1, 2])
+    # vector_db.query(filter=' id in [1, 2] ')
+    # vector_db.searc(xxx)
 
-    # search
-    res = client.search(query_vector=[0.2, 0.1, 0.9, 0.7], limit=6)
-    res
-    # pd.DataFrame(res)
-
-    # from persona.prompt_template.openai_helper import initialize_openai_client
-    # client, chat, embeddings = initialize_openai_client()
-
+    # 获取状态
+    client.get_collection_stats(COLLECTION_NAME)
 
